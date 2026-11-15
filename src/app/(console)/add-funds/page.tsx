@@ -1,0 +1,134 @@
+'use client'
+
+import { useState } from 'react'
+import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import { FormField } from '@/components/shared/FormField'
+import { Input } from '@/components/ui/Input'
+
+const paymentGroups = [
+  { title: 'Instant', methods: ['UPI', 'Card', 'Net Banking'] },
+  { title: 'Manual', methods: ['Bank transfer'] },
+]
+
+export default function AddFundsPage() {
+  const [method, setMethod] = useState('')
+  const [accountType, setAccountType] = useState('Individual')
+  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
+  const [amount, setAmount] = useState('')
+  const [touched, setTouched] = useState(false)
+  const [success, setSuccess] = useState('')
+
+  const emailError = !email.trim()
+    ? 'Enter an email address.'
+    : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ? 'Enter a valid email address.'
+      : undefined
+  const amountError = Number(amount) > 0 ? undefined : 'Enter an amount greater than zero.'
+
+  function addFunds() {
+    setTouched(true)
+    if (!method || emailError || amountError) return
+    setSuccess(`Mock request created for ₹${Number(amount).toLocaleString('en-IN')} via ${method}. No payment was made.`)
+  }
+
+  return (
+    <div className="mx-auto max-w-7xl">
+      <header>
+        <p className="text-sm font-medium text-brand-700">Advertiser workspace</p>
+        <h1 className="mt-1 text-2xl font-bold text-navy-900">Add Funds</h1>
+        <p className="mt-2 text-sm text-slate-600">This demo does not connect to payment providers or move money.</p>
+      </header>
+
+      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+        <div className="space-y-6">
+          <Card className="p-5 sm:p-6">
+            <h2 className="text-lg font-semibold text-navy-900">Payment method</h2>
+            {paymentGroups.map((group) => (
+              <fieldset key={group.title} className="mt-5">
+                <legend className="text-sm font-medium text-slate-600">{group.title}</legend>
+                <div className="mt-2 grid gap-3 sm:grid-cols-3">
+                  {group.methods.map((item) => (
+                    <label key={item} className="cursor-pointer">
+                      <input
+                        className="peer sr-only"
+                        type="radio"
+                        name="funding-method"
+                        value={item}
+                        checked={method === item}
+                        onChange={() => { setMethod(item); setSuccess('') }}
+                      />
+                      <span className={`flex min-h-16 items-center justify-center rounded-xl border p-4 text-center text-sm font-semibold peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 ${
+                        method === item ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-200 text-slate-700 hover:border-brand-500'
+                      }`}>
+                        {item}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            ))}
+            {touched && !method && <p className="mt-3 text-xs text-danger-600" role="alert">Choose a payment method.</p>}
+            <div className="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+              <p>Deposit limits: <span className="font-medium">set by platform</span></p>
+              <p className="mt-1">Fees: <span className="font-medium">set by platform</span></p>
+            </div>
+          </Card>
+
+          <Card className="p-5 sm:p-6">
+            <h2 className="text-lg font-semibold text-navy-900">Amount</h2>
+            <Input
+              id="funding-amount"
+              label="Amount (₹)"
+              name="amount"
+              type="number"
+              min="1"
+              value={amount}
+              onChange={(event) => { setAmount(event.target.value); setSuccess('') }}
+              onBlur={() => setTouched(true)}
+              error={touched ? amountError : undefined}
+              placeholder="Enter amount"
+            />
+            <div className="mt-3 flex flex-wrap gap-2" aria-label="Quick amount choices">
+              {[500, 1000, 5000].map((value) => (
+                <Button key={value} type="button" variant="outline" className="px-3 py-2" onClick={() => { setAmount(String(value)); setSuccess('') }}>
+                  ₹{value.toLocaleString('en-IN')}
+                </Button>
+              ))}
+            </div>
+            <Button type="button" className="mt-5" onClick={addFunds}>Add Funds</Button>
+            {success && <p className="mt-3 text-sm text-success-600" role="status">{success}</p>}
+          </Card>
+        </div>
+
+        <div className="space-y-5 lg:sticky lg:top-24">
+          <Card className="p-5 sm:p-6">
+            <h2 className="text-lg font-semibold text-navy-900">Account details</h2>
+            <p className="mt-1 text-sm text-slate-600">Editable demo information for invoice preview only.</p>
+            <div className="mt-4 space-y-4">
+              <FormField id="invoice-account-type" label="Account type">
+                <select id="invoice-account-type" value={accountType} onChange={(event) => setAccountType(event.target.value)} className="h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                  <option>Individual</option><option>Business</option>
+                </select>
+              </FormField>
+              <Input id="invoice-email" label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} onBlur={() => setTouched(true)} error={touched ? emailError : undefined} />
+              <FormField id="invoice-address" label="Address">
+                <textarea id="invoice-address" rows={3} value={address} onChange={(event) => setAddress(event.target.value)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+              </FormField>
+            </div>
+          </Card>
+
+          <Card className="flex items-center justify-between gap-4 p-5">
+            <div>
+              <h2 className="font-semibold text-navy-900">Verification</h2>
+              <p className="mt-1 text-sm text-slate-600">Mock account status</p>
+            </div>
+            <Badge tone="warning">Not verified</Badge>
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -44,8 +44,9 @@ export function TopBar({ role, onRoleChange, onMenuClick }: TopBarProps) {
         </div>
         {role === 'advertiser' && (
           <>
-            <ButtonLink href="/campaigns/new" className="hidden px-3 py-2 sm:inline-flex">
-              Create Campaign
+            <ButtonLink href="/campaigns/new" aria-label="Create Campaign" className="px-2 py-2 text-xs sm:px-3 sm:text-sm">
+              <span className="sm:hidden">Create</span>
+              <span className="hidden sm:inline">Create Campaign</span>
             </ButtonLink>
             <Link
               href="/add-funds"
