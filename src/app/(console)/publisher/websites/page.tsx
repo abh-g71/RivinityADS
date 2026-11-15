@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
-import { FormField } from '@/components/shared/FormField'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import {
   mockVerificationCode,
   publisherWebsiteCategories,
@@ -114,21 +114,19 @@ export default function PublisherWebsitesPage() {
               onBlur={() => setTouched((current) => ({ ...current, domain: true }))}
               error={touched.domain ? domainError : undefined}
             />
-            <FormField id="publisher-category" label="Category" error={touched.category ? categoryError : undefined}>
-              <select
+            <Select
                 id="publisher-category"
+                label="Category"
                 name="category"
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
                 onBlur={() => setTouched((current) => ({ ...current, category: true }))}
-                aria-invalid={Boolean(touched.category && categoryError)}
-                aria-describedby={touched.category && categoryError ? 'publisher-category-error' : undefined}
-                className="h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-              >
-                <option value="">Choose a category</option>
-                {publisherWebsiteCategories.map((option) => <option key={option} value={option}>{option}</option>)}
-              </select>
-            </FormField>
+                error={touched.category ? categoryError : undefined}
+                options={[
+                  { value: '', label: 'Choose a category' },
+                  ...publisherWebsiteCategories.map((option) => ({ value: option, label: option })),
+                ]}
+              />
             <Button type="submit">Add website</Button>
           </form>
         </Card>

@@ -6,8 +6,8 @@ import { Card } from '@/components/ui/Card'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { EmptyState } from '@/components/shared/EmptyState'
-import { FormField } from '@/components/shared/FormField'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import {
   createMockAdCode,
   publisherAdFormats,
@@ -73,23 +73,19 @@ export default function PublisherPlacementsPage() {
       <Card className="mt-6 p-5 sm:p-6">
         <h2 className="text-lg font-semibold text-navy-900">Create placement</h2>
         <form className="mt-5 grid gap-5 lg:grid-cols-2" onSubmit={createPlacement} noValidate>
-          <FormField id="placement-website" label="Website" error={touched.website ? websiteError : undefined}>
-            <select
+          <Select
               id="placement-website"
+              label="Website"
               name="website"
               value={website}
               onChange={(event) => setWebsite(event.target.value)}
               onBlur={() => setTouched((current) => ({ ...current, website: true }))}
-              aria-invalid={Boolean(touched.website && websiteError)}
-              aria-describedby={touched.website && websiteError ? 'placement-website-error' : undefined}
-              className="h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-            >
-              <option value="">Choose a website</option>
-              {websites.map((site) => (
-                <option key={site.id} value={site.domain}>{site.domain}</option>
-              ))}
-            </select>
-          </FormField>
+              error={touched.website ? websiteError : undefined}
+              options={[
+                { value: '', label: 'Choose a website' },
+                ...websites.map((site) => ({ value: site.domain, label: site.domain })),
+              ]}
+            />
 
           <Input
             id="placement-name"

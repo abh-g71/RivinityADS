@@ -6,6 +6,12 @@ import type { IconType } from 'react-icons'
 import { Input } from '../../components/ui/Input'
 import { Select } from '../../components/ui/Select'
 import { Checkbox } from '../../components/ui/Checkbox'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/primitives/accordion'
 import { PhotoUpload } from './PhotoUpload'
 import type { StepProps } from './types'
 
@@ -21,18 +27,19 @@ function Section({
   children: ReactNode
 }) {
   return (
-    <details open={open} className="group rounded-xl border border-slate-200 bg-white">
-      <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
+    <Accordion type="single" collapsible defaultValue={open ? title : undefined}>
+      <AccordionItem value={title} className="rounded-xl border border-slate-200 bg-white last:border-b">
+      <AccordionTrigger className="px-4 py-3 text-sm font-medium hover:no-underline">
         <span className="flex items-center gap-3">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
             <Icon className="h-4 w-4" aria-hidden />
           </span>
           {title}
         </span>
-        <span className="text-slate-400 transition-transform group-open:rotate-180">⌄</span>
-      </summary>
-      <div className="border-t border-slate-100 p-4">{children}</div>
-    </details>
+      </AccordionTrigger>
+      <AccordionContent className="border-t border-slate-100 p-4">{children}</AccordionContent>
+      </AccordionItem>
+    </Accordion>
   )
 }
 

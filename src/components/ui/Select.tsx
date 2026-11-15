@@ -1,33 +1,87 @@
+'use client'
+
 import { useId } from 'react'
 import type { SelectHTMLAttributes } from 'react'
+import { cn } from '@/lib/utils'
+import {
+  Select as PrimitiveSelect,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/primitives/select'
 
 type SelectOption = { value: string; label: string }
+type SelectValueChange = { target: { value: string } }
 
-type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
+type SelectProps = Pick<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  'id' | 'name' | 'value' | 'defaultValue' | 'disabled' | 'required' | 'className'
+> & {
   label: string
+  labelClassName?: string
+  error?: string
   options: SelectOption[]
+  onChange?: (event: SelectValueChange) => void
+  onBlur?: () => void
 }
 
-export function Select({ label, options, className = '', id, ...props }: SelectProps) {
+const EMPTY_VALUE = '__rivinityads_empty_option__'
+
+function toPrimitiveValue(value: string | undefined) {
+  return value === '' ? EMPTY_VALUE : value
+}
+
+export function Select({
+  label,
+  labelClassName = '',
+  error,
+  options,
+  className = '',
+  id,
+  value,
+  defaultValue,
+  onChange,
+  disabled,
+  name,
+  required,
+  onBlur,
+}: SelectProps) {
   const autoId = useId()
   const selectId = id ?? autoId
+  const errorId = `${selectId}-error`
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={selectId} className="text-sm font-medium text-slate-700">
+      <label htmlFor={selectId} className={cn('text-sm font-medium text-slate-700', labelClassName)}>
         {label}
       </label>
-      <select
-        id={selectId}
-        className={`h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 ${className}`}
-        {...props}
+      <PrimitiveSelect
+        value={value === undefined ? undefined : toPrimitiveValue(String(value))}
+        defaultValue={defaultValue === undefined ? undefined : toPrimitiveValue(String(defaultValue))}
+        onValueChange={(nextValue) => onChange?.({ target: { value: nextValue === EMPTY_VALUE ? '' : nextValue } })}
+        disabled={disabled}
+        name={name}
+        required={required}
       >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger
+          id={selectId}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          onBlur={onBlur}
+          className={cn('h-11 w-full rounded-xl border-slate-300 bg-white', className)}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option.value} value={toPrimitiveValue(option.value) ?? EMPTY_VALUE}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </PrimitiveSelect>
+      {error && <p id={errorId} className="text-xs text-danger-600" role="alert">{error}</p>}
     </div>
   )
 }

@@ -7,7 +7,10 @@ import { Button, ButtonLink } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { useToast } from '@/components/shared/Toast'
 import { Select } from '@/components/ui/Select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/tabs'
 import {
   advertiserAdUnits,
   advertiserCountries,
@@ -19,6 +22,7 @@ import {
 type ViewTab = 'campaigns' | 'statistics'
 
 export default function CampaignsPage() {
+  const toast = useToast()
   const [tab, setTab] = useState<ViewTab>('campaigns')
   const [campaigns, setCampaigns] = useState(mockAdvertiserCampaigns)
   const [dateRange, setDateRange] = useState('30-days')
@@ -73,6 +77,7 @@ export default function CampaignsPage() {
     setApplied({ country, adUnit, status })
     setPage(1)
     setSelectedIds([])
+    toast({ title: 'Filters applied', description: 'Campaign data reflects your selected filters.', variant: 'success' })
   }
 
   function resetFilters() {
@@ -102,6 +107,7 @@ export default function CampaignsPage() {
     link.download = `rivinityads-${tab}.csv`
     link.click()
     URL.revokeObjectURL(url)
+    toast({ title: 'CSV exported', description: 'The current campaign view was downloaded.', variant: 'success' })
   }
 
   function applyBulkAction() {
@@ -112,19 +118,18 @@ export default function CampaignsPage() {
       ))
       setSelectedIds([])
       setBulkAction('')
+      toast({ title: 'Campaigns updated', description: `${selectedIds.length} mock campaign${selectedIds.length === 1 ? '' : 's'} updated.`, variant: 'success' })
     }
   }
 
   return (
     <div className="mx-auto max-w-7xl">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium text-brand-700">Advertiser workspace</p>
-          <h1 className="mt-1 text-2xl font-bold text-navy-900">Campaigns &amp; Statistics</h1>
-          <p className="mt-2 text-sm text-slate-600">The displayed sample records are mock data.</p>
-        </div>
-        <ButtonLink href="/campaigns/new">Create Campaign</ButtonLink>
-      </header>
+      <PageHeader
+        breadcrumbs={[{ label: 'Advertiser workspace', href: '/dashboard' }, { label: 'Campaigns' }]}
+        title="Campaigns & Statistics"
+        description="The displayed sample records are mock data."
+        action={<ButtonLink href="/campaigns/new">Create Campaign</ButtonLink>}
+      />
 
       <Card className="mt-6 p-4 sm:p-5">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -152,36 +157,34 @@ export default function CampaignsPage() {
         </div>
       </Card>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
-        <div className="flex gap-2" role="tablist" aria-label="Campaign data">
+      <Tabs value={tab} onValueChange={(value) => {
+        if (value === 'campaigns' || value === 'statistics') setTab(value)
+      }} className="mt-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200">
+        <TabsList variant="line" aria-label="Campaign data" className="min-w-0 flex-1 overflow-x-auto">
           {(['campaigns', 'statistics'] as ViewTab[]).map((value) => (
-            <button
+            <TabsTrigger
               key={value}
-              type="button"
-              role="tab"
-              aria-selected={tab === value}
-              aria-controls="campaign-data-panel"
-              onClick={() => setTab(value)}
-              className={`border-b-2 px-4 py-3 text-sm font-medium capitalize ${
-                tab === value ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-700'
-              }`}
+              value={value}
+              className="rounded-t-xl px-4 py-3 capitalize data-[state=active]:text-brand-700 after:bg-brand-600"
             >
               {value}
-            </button>
+            </TabsTrigger>
           ))}
-        </div>
+        </TabsList>
         <div className="flex flex-wrap items-center gap-2 pb-2">
-          <label className="sr-only" htmlFor="campaign-bulk-action">Bulk action</label>
-          <select
+          <Select
             id="campaign-bulk-action"
-            className="h-10 rounded-lg border border-slate-300 bg-white px-3 text-sm"
+            label="Bulk action"
+            className="h-10 min-w-40"
             value={bulkAction}
             onChange={(event) => setBulkAction(event.target.value)}
-          >
-            <option value="">Bulk actions</option>
-            <option value="pause">Pause selected</option>
-            <option value="activate">Activate selected</option>
-          </select>
+            options={[
+              { value: '', label: 'Bulk actions' },
+              { value: 'pause', label: 'Pause selected' },
+              { value: 'activate', label: 'Activate selected' },
+            ]}
+          />
           <Button type="button" variant="outline" onClick={applyBulkAction} disabled={!bulkAction || selectedIds.length === 0}>
             Apply action
           </Button>
@@ -189,7 +192,7 @@ export default function CampaignsPage() {
         </div>
       </div>
 
-      <section id="campaign-data-panel" role="tabpanel" className="mt-4">
+      <TabsContent value={tab} id="campaign-data-panel" className="mt-4">
         {shownRows.length > 0 ? (
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
@@ -234,7 +237,7 @@ export default function CampaignsPage() {
         ) : (
           <EmptyState title="No data. Check your filters or create a new campaign." description="Try adjusting the selected filters or create a campaign to get started." />
         )}
-      </section>
+      </TabsContent>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
         <p>Showing {shownRows.length ? (page - 1) * pageSize + 1 : 0}–{Math.min(page * pageSize, filtered.length)} of {filtered.length} mock campaigns · Grouped by {groupBy}</p>
@@ -247,6 +250,7 @@ export default function CampaignsPage() {
           <Button type="button" variant="outline" className="px-3 py-2" onClick={() => setPage((current) => Math.min(pageCount, current + 1))} disabled={page >= pageCount}>Next</Button>
         </div>
       </div>
+      </Tabs>
     </div>
   )
 }

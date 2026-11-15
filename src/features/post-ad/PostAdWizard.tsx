@@ -34,15 +34,19 @@ export function PostAdWizard() {
 
   // Load saved draft once, after the page opens
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY)
-      if (raw) {
-        const saved = JSON.parse(raw)
-        setData({ ...initialData, ...saved.data })
-        setStep(typeof saved.step === 'number' ? saved.step : 0)
+    queueMicrotask(() => {
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY)
+        if (raw) {
+          const saved = JSON.parse(raw)
+          setData({ ...initialData, ...saved.data })
+          setStep(typeof saved.step === 'number' ? saved.step : 0)
+        }
+      } catch {
+        // Keep the initial draft when saved data is unavailable or invalid.
       }
-    } catch {}
-    setLoaded(true)
+      setLoaded(true)
+    })
   }, [])
 
   // Save draft on every change

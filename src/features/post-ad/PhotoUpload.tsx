@@ -8,7 +8,10 @@ export function PhotoUpload() {
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const photosRef = useRef<Photo[]>([])
-  photosRef.current = photos
+
+  useEffect(() => {
+    photosRef.current = photos
+  }, [photos])
 
   useEffect(() => {
     return () => photosRef.current.forEach((p) => URL.revokeObjectURL(p.url))

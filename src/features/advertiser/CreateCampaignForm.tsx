@@ -7,9 +7,10 @@ import { useRouter } from 'next/navigation'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { FormField } from '@/components/shared/FormField'
 import { Toggle } from '@/components/shared/Toggle'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/tabs'
 import {
   advertiserAdUnits,
   advertiserConnections,
@@ -27,8 +28,6 @@ type CountryBudget = { id: string; country: string; price: string }
 type LocationRule = { id: string; country: string; region: string; city: string; mode: 'Include' | 'Exclude' }
 type TargetingRule = { id: string; value: string; include: boolean }
 type UploadedImage = { id: string; url: string; name: string }
-
-const shortInput = 'h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500'
 
 function ChoiceCards({
   label,
@@ -366,12 +365,18 @@ export function CreateCampaignForm({ initialCountry = '', initialAdUnit = '' }: 
           <Card className="space-y-5 p-5 sm:p-6">
             <h2 className="text-lg font-semibold text-navy-900">Countries &amp; locations</h2>
             <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
-              <FormField id="campaign-country" label="Country" error={touched.country && !country ? 'Choose a country.' : undefined}>
-                <select id="campaign-country" value={country} onChange={(event) => setCountry(event.target.value)} onBlur={() => setTouched((current) => ({ ...current, country: true }))} aria-invalid={Boolean(touched.country && !country)} aria-describedby={touched.country && !country ? 'campaign-country-error' : undefined} className={shortInput}>
-                  <option value="">Choose a country</option>
-                  {advertiserCountriesTarget.filter((item) => !countries.some((entry) => entry.country === item)).map((item) => <option key={item}>{item}</option>)}
-                </select>
-              </FormField>
+              <Select
+                id="campaign-country"
+                label="Country"
+                value={country}
+                onChange={(event) => setCountry(event.target.value)}
+                onBlur={() => setTouched((current) => ({ ...current, country: true }))}
+                error={touched.country && !country ? 'Choose a country.' : undefined}
+                options={[
+                  { value: '', label: 'Choose a country' },
+                  ...advertiserCountriesTarget.filter((item) => !countries.some((entry) => entry.country === item)).map((item) => ({ value: item, label: item })),
+                ]}
+              />
               <Input id="country-price" label="Price (₹)" type="number" min="0.01" step="0.01" value={countryPrice} onChange={(event) => setCountryPrice(event.target.value)} onBlur={() => setTouched((current) => ({ ...current, countryPrice: true }))} error={touched.countryPrice && Number(countryPrice) <= 0 ? 'Enter a price greater than zero.' : undefined} placeholder="e.g. 25" />
               <Button type="button" variant="outline" onClick={() => { setTouched((current) => ({ ...current, country: true, countryPrice: true })); addCountry() }} disabled={!country || Number(countryPrice) <= 0}>Add Country</Button>
             </div>
@@ -390,29 +395,45 @@ export function CreateCampaignForm({ initialCountry = '', initialAdUnit = '' }: 
             <div className="border-t border-slate-100 pt-5">
               <h3 className="font-medium text-navy-900">Location targeting (optional)</h3>
               <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <FormField id="location-country" label="Country">
-                  <select id="location-country" value={locationCountry} onChange={(event) => { setLocationCountry(event.target.value); setLocationRegion(''); setLocationCity('') }} className={shortInput}>
-                    <option value="">Choose country</option>
-                    {advertiserCountriesTarget.map((item) => <option key={item}>{item}</option>)}
-                  </select>
-                </FormField>
-                <FormField id="location-region" label="Region">
-                  <select id="location-region" value={locationRegion} onChange={(event) => { setLocationRegion(event.target.value); setLocationCity('') }} disabled={!locationCountry} className={shortInput}>
-                    <option value="">Choose region</option>
-                    {(advertiserCountriesLocations[locationCountry] ?? []).map((item) => <option key={item}>{item}</option>)}
-                  </select>
-                </FormField>
-                <FormField id="location-city" label="City">
-                  <select id="location-city" value={locationCity} onChange={(event) => setLocationCity(event.target.value)} disabled={!locationRegion} className={shortInput}>
-                    <option value="">Choose city</option>
-                    {locationRegion && [`${locationRegion} City`, `${locationRegion} Central`].map((item) => <option key={item}>{item}</option>)}
-                  </select>
-                </FormField>
-                <FormField id="location-mode" label="Rule">
-                  <select id="location-mode" value={locationMode} onChange={(event) => setLocationMode(event.target.value as 'Include' | 'Exclude')} className={shortInput}>
-                    <option>Include</option><option>Exclude</option>
-                  </select>
-                </FormField>
+                <Select
+                  id="location-country"
+                  label="Country"
+                  value={locationCountry}
+                  onChange={(event) => { setLocationCountry(event.target.value); setLocationRegion(''); setLocationCity('') }}
+                  options={[
+                    { value: '', label: 'Choose country' },
+                    ...advertiserCountriesTarget.map((item) => ({ value: item, label: item })),
+                  ]}
+                />
+                <Select
+                  id="location-region"
+                  label="Region"
+                  value={locationRegion}
+                  onChange={(event) => { setLocationRegion(event.target.value); setLocationCity('') }}
+                  disabled={!locationCountry}
+                  options={[
+                    { value: '', label: 'Choose region' },
+                    ...(advertiserCountriesLocations[locationCountry] ?? []).map((item) => ({ value: item, label: item })),
+                  ]}
+                />
+                <Select
+                  id="location-city"
+                  label="City"
+                  value={locationCity}
+                  onChange={(event) => setLocationCity(event.target.value)}
+                  disabled={!locationRegion}
+                  options={[
+                    { value: '', label: 'Choose city' },
+                    ...(locationRegion ? [`${locationRegion} City`, `${locationRegion} Central`] : []).map((item) => ({ value: item, label: item })),
+                  ]}
+                />
+                <Select
+                  id="location-mode"
+                  label="Rule"
+                  value={locationMode}
+                  onChange={(event) => setLocationMode(event.target.value === 'Exclude' ? 'Exclude' : 'Include')}
+                  options={[{ value: 'Include', label: 'Include' }, { value: 'Exclude', label: 'Exclude' }]}
+                />
               </div>
               <Button type="button" className="mt-3" variant="outline" onClick={addLocation} disabled={!locationCountry || !locationRegion || !locationCity}>Add Location</Button>
               {locations.length > 0 && (
@@ -453,20 +474,24 @@ export function CreateCampaignForm({ initialCountry = '', initialAdUnit = '' }: 
 
           <Card className="p-5 sm:p-6">
             <h2 className="text-lg font-semibold text-navy-900">Additional targeting (optional)</h2>
-            <div className="mt-4 flex gap-1 overflow-x-auto border-b border-slate-200" role="tablist" aria-label="Targeting categories">
+            <Tabs value={activeTargetTab} onValueChange={setActiveTargetTab} className="mt-4">
+            <TabsList variant="line" aria-label="Targeting categories" className="max-w-full overflow-x-auto border-b border-slate-200">
               {targetingCategories.map((tab) => (
-                <button key={tab} type="button" role="tab" aria-selected={activeTargetTab === tab} onClick={() => setActiveTargetTab(tab)} className={`whitespace-nowrap border-b-2 px-3 py-2 text-sm ${
-                  activeTargetTab === tab ? 'border-brand-600 font-semibold text-brand-700' : 'border-transparent text-slate-500'
-                }`}>{tab}</button>
+                <TabsTrigger key={tab} value={tab} className="whitespace-nowrap rounded-t-xl px-3 py-2 text-sm data-[state=active]:text-brand-700 after:bg-brand-600">{tab}</TabsTrigger>
               ))}
-            </div>
-            <div className="mt-4 space-y-3">
+            </TabsList>
+            <TabsContent value={activeTargetTab} className="mt-4 space-y-3">
               {(targeting[activeTargetTab] ?? []).map((rule) => (
                 <div key={rule.id} className="flex flex-wrap items-center gap-3">
-                  <label className="sr-only" htmlFor={`target-${rule.id}`}>{activeTargetTab} rule</label>
-                  <select id={`target-${rule.id}`} value={rule.value} onChange={(event) => updateTargetingRule(rule.id, { value: event.target.value })} className={`${shortInput} min-w-48 flex-1`}>
-                    {targetingOptions[activeTargetTab].map((option) => <option key={option}>{option}</option>)}
-                  </select>
+                  <Select
+                    id={`target-${rule.id}`}
+                    label={`${activeTargetTab} rule`}
+                    labelClassName="sr-only"
+                    value={rule.value}
+                    onChange={(event) => updateTargetingRule(rule.id, { value: event.target.value })}
+                    className="min-w-48 flex-1"
+                    options={targetingOptions[activeTargetTab].map((option) => ({ value: option, label: option }))}
+                  />
                   <label className="inline-flex items-center gap-2 text-sm">
                     <input type="checkbox" checked={rule.include} onChange={(event) => updateTargetingRule(rule.id, { include: event.target.checked })} className="accent-brand-600" />
                     Include
@@ -475,7 +500,8 @@ export function CreateCampaignForm({ initialCountry = '', initialAdUnit = '' }: 
                 </div>
               ))}
               <Button type="button" variant="outline" onClick={addTargetingRule}>Add rule</Button>
-            </div>
+            </TabsContent>
+            </Tabs>
           </Card>
 
           <Card className="p-5 sm:p-6">
@@ -487,7 +513,7 @@ export function CreateCampaignForm({ initialCountry = '', initialAdUnit = '' }: 
                   <div className="grid gap-3 sm:grid-cols-3">
                     <Input id="impressions-limit" label="Impressions limit" type="number" min="1" value={impressionLimit} onChange={(event) => setImpressionLimit(event.target.value)} />
                     <Input id="impressions-budget" label="Budget (₹)" type="number" min="1" value={impressionBudget} onChange={(event) => setImpressionBudget(event.target.value)} />
-                    <FormField id="impressions-period" label="Period"><select id="impressions-period" value={impressionPeriod} onChange={(event) => setImpressionPeriod(event.target.value)} className={shortInput}><option>Daily</option><option>Hourly</option><option>Total</option></select></FormField>
+                    <Select id="impressions-period" label="Period" value={impressionPeriod} onChange={(event) => setImpressionPeriod(event.target.value)} options={['Daily', 'Hourly', 'Total'].map((value) => ({ value, label: value }))} />
                   </div>
                 )}
               </div>
@@ -496,7 +522,7 @@ export function CreateCampaignForm({ initialCountry = '', initialAdUnit = '' }: 
                 {!budgetLimitUnlimited && (
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Input id="budget-limit" label="Budget limit (₹)" type="number" min="1" value={budgetLimit} onChange={(event) => setBudgetLimit(event.target.value)} />
-                    <FormField id="budget-period" label="Period"><select id="budget-period" value={budgetPeriod} onChange={(event) => setBudgetPeriod(event.target.value)} className={shortInput}><option>Daily</option><option>Hourly</option><option>Total</option></select></FormField>
+                    <Select id="budget-period" label="Period" value={budgetPeriod} onChange={(event) => setBudgetPeriod(event.target.value)} options={['Daily', 'Hourly', 'Total'].map((value) => ({ value, label: value }))} />
                   </div>
                 )}
               </div>

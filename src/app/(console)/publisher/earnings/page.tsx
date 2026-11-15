@@ -4,7 +4,9 @@ import { useState } from 'react'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { Select } from '@/components/ui/Select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/tabs'
 import { mockDailyEarnings, mockWebsiteEarnings, type EarningsRow } from '@/data/publisher'
 
 type EarningsView = 'daily' | 'website'
@@ -24,12 +26,12 @@ export default function PublisherEarningsPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-brand-700">Publisher workspace</p>
-          <h1 className="mt-1 text-2xl font-bold text-navy-900">Earnings</h1>
-          <p className="mt-2 text-sm text-slate-600">Mock reporting; no actual earnings are shown.</p>
-        </div>
+      <PageHeader
+        breadcrumbs={[{ label: 'Publisher workspace', href: '/publisher' }, { label: 'Earnings' }]}
+        title="Earnings"
+        description="Mock reporting; no actual earnings are shown."
+      />
+      <div className="mt-6 flex justify-end">
         <div className="w-full sm:w-56">
           <Select
             label="Date range"
@@ -42,31 +44,27 @@ export default function PublisherEarningsPage() {
             ]}
           />
         </div>
-      </header>
+      </div>
 
-      <div className="mt-6 flex gap-2 border-b border-slate-200" role="tablist" aria-label="Earnings breakdown">
+      <Tabs value={view} onValueChange={(value) => {
+        if (value === 'daily' || value === 'website') setView(value)
+      }} className="mt-6">
+      <TabsList variant="line" aria-label="Earnings breakdown" className="border-b border-slate-200">
         {([
           { id: 'daily', label: 'Daily' },
           { id: 'website', label: 'By Website' },
         ] as const).map((tab) => (
-          <button
+          <TabsTrigger
             key={tab.id}
-            type="button"
-            role="tab"
-            id={`earnings-tab-${tab.id}`}
-            aria-selected={view === tab.id}
-            aria-controls="earnings-panel"
-            onClick={() => setView(tab.id)}
-            className={`border-b-2 px-4 py-3 text-sm font-medium ${
-              view === tab.id ? 'border-brand-600 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-700'
-            }`}
+            value={tab.id}
+            className="rounded-t-xl px-4 py-3 data-[state=active]:text-brand-700 after:bg-brand-600"
           >
             {tab.label}
-          </button>
+          </TabsTrigger>
         ))}
-      </div>
+      </TabsList>
 
-      <section id="earnings-panel" role="tabpanel" aria-labelledby={`earnings-tab-${view}`} className="mt-5">
+      <TabsContent value={view} id="earnings-panel" className="mt-5">
         <DataTable label={`${view === 'daily' ? 'Daily' : 'Website'} earnings`} columns={columns} rows={rows} />
         {rows.length === 0 && (
           <div className="mt-4">
@@ -76,7 +74,8 @@ export default function PublisherEarningsPage() {
             />
           </div>
         )}
-      </section>
+      </TabsContent>
+      </Tabs>
     </div>
   )
 }

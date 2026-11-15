@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { FormField } from '@/components/shared/FormField'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 
 const paymentGroups = [
   { title: 'Instant', methods: ['UPI', 'Card', 'Net Banking'] },
@@ -108,11 +109,13 @@ export default function AddFundsPage() {
             <h2 className="text-lg font-semibold text-navy-900">Account details</h2>
             <p className="mt-1 text-sm text-slate-600">Editable demo information for invoice preview only.</p>
             <div className="mt-4 space-y-4">
-              <FormField id="invoice-account-type" label="Account type">
-                <select id="invoice-account-type" value={accountType} onChange={(event) => setAccountType(event.target.value)} className="h-11 rounded-lg border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
-                  <option>Individual</option><option>Business</option>
-                </select>
-              </FormField>
+              <Select
+                id="invoice-account-type"
+                label="Account type"
+                value={accountType}
+                onChange={(event) => setAccountType(event.target.value)}
+                options={[{ value: 'Individual', label: 'Individual' }, { value: 'Business', label: 'Business' }]}
+              />
               <Input id="invoice-email" label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} onBlur={() => setTouched(true)} error={touched ? emailError : undefined} />
               <FormField id="invoice-address" label="Address">
                 <textarea id="invoice-address" rows={3} value={address} onChange={(event) => setAddress(event.target.value)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
