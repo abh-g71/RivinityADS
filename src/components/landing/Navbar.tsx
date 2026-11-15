@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { FiMenu, FiX } from 'react-icons/fi'
@@ -16,19 +16,28 @@ export function Navbar() {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
+  useEffect(() => {
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [])
+
   return (
-    <header className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
+    <header className="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
       <Link href="/" className="flex items-center gap-2 text-lg font-bold">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-600 text-white">A</span>
+        <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-600 text-white" aria-hidden="true">R</span>
         RivinityADS
       </Link>
 
-      <nav className="hidden gap-8 text-sm font-medium md:flex">
+      <nav aria-label="Main navigation" className="hidden gap-8 text-sm font-medium md:flex">
         {links.map((l) => (
           <Link
             key={l.label}
             href={l.href}
-            className={pathname === l.href ? 'text-accent-600' : 'text-slate-700 hover:text-slate-950'}
+            aria-current={pathname === l.href ? 'page' : undefined}
+            className={pathname === l.href ? 'text-brand-700' : 'text-slate-700 transition-colors hover:text-navy-900'}
           >
             {l.label}
           </Link>
@@ -37,13 +46,15 @@ export function Navbar() {
 
       <div className="flex items-center gap-3 text-sm font-semibold">
         <Link href="/login" className="hidden sm:inline">Sign in</Link>
-        <Link href="/signup" className="rounded-full bg-navy-900 px-4 py-2 text-white hover:bg-navy-800">
+        <Link href="/signup" className="rounded-xl bg-navy-900 px-4 py-2 text-white transition-colors hover:bg-navy-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
           Sign up
         </Link>
         <button
           type="button"
-          className="md:hidden"
+          className="rounded-xl p-2 text-navy-900 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 md:hidden"
           aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          aria-controls="mobile-navigation"
           onClick={() => setOpen(!open)}
         >
           {open ? <FiX className="h-6 w-6" /> : <FiMenu className="h-6 w-6" />}
@@ -51,18 +62,19 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="absolute left-4 right-4 top-full z-50 flex flex-col gap-1 rounded-xl border border-slate-200 bg-white p-3 shadow-lg md:hidden">
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className="absolute left-4 right-4 top-full z-50 flex flex-col gap-1 rounded-xl border border-slate-200 bg-white p-3 shadow-lg md:hidden">
           {links.map((l) => (
             <Link
               key={l.label}
               href={l.href}
               onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              aria-current={pathname === l.href ? 'page' : undefined}
+              className="rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             >
               {l.label}
             </Link>
           ))}
-        </div>
+        </nav>
       )}
     </header>
   )
