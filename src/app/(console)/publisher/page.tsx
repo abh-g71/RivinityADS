@@ -1,8 +1,10 @@
 import Link from 'next/link'
 import { Badge } from '@/components/ui/Badge'
-import { ButtonLink } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { EmptyState } from '@/components/shared/EmptyState'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { StatCard } from '@/components/shared/StatCard'
+import { StaggerGrid } from '@/components/shared/StaggerGrid'
 import { mockPublisherChecklist, mockPublisherStats } from '@/data/publisher'
 
 const checklistItems = [
@@ -20,20 +22,23 @@ export default function PublisherDashboardPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium text-brand-700">Publisher workspace</p>
-          <h1 className="mt-1 text-2xl font-bold text-navy-900">Dashboard</h1>
-          <p className="mt-2 text-sm text-slate-600">A mock overview of your publisher activity.</p>
-        </div>
-        <Badge tone="neutral">Mock data</Badge>
-      </header>
+      <PageHeader
+        breadcrumbs={[{ label: 'Publisher' }, { label: 'Dashboard' }]}
+        title="Start earning"
+        description="A mock overview of your publisher activity."
+        action={
+          <div className="flex items-center gap-3">
+            <Badge tone="neutral">Mock data</Badge>
+            <Link href="/publisher/websites" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Add website</Link>
+          </div>
+        }
+      />
 
-      <section aria-label="Publisher statistics" className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {mockPublisherStats.map((stat) => (
+      <StaggerGrid aria-label="Publisher statistics" className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {mockPublisherStats.length ? mockPublisherStats.map((stat) => (
           <StatCard key={stat.label} label={stat.label} value={stat.value} />
-        ))}
-      </section>
+        )) : <EmptyState title="No mock statistics" description="No sample publisher metrics are configured." />}
+      </StaggerGrid>
 
       <section aria-labelledby="earning-checklist" className="mt-8">
         <Card className="p-5 sm:p-6">
@@ -71,9 +76,9 @@ export default function PublisherDashboardPage() {
                   </span>
                   <span className="text-sm font-medium text-slate-700">{item.title}</span>
                 </div>
-                <ButtonLink href={item.href} variant="outline" className="shrink-0 px-3 py-2">
+                <Link href={item.href} className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                   Open
-                </ButtonLink>
+                </Link>
               </li>
             ))}
           </ol>

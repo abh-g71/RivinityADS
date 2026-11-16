@@ -166,3 +166,14 @@ html {
     transform: none;
   }
 }
+
+@media print {
+  body {
+    background: var(--background) !important;
+    color: var(--foreground) !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+}

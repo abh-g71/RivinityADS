@@ -6,8 +6,11 @@ import { Card } from '@/components/ui/Card'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
+import { useToast } from '@/components/shared/Toast'
+import Link from 'next/link'
 import {
   createMockAdCode,
   publisherAdFormats,
@@ -23,6 +26,7 @@ export default function PublisherPlacementsPage() {
   const [touched, setTouched] = useState({ website: false, format: false, name: false })
   const [adCode, setAdCode] = useState('')
   const [copyMessage, setCopyMessage] = useState('')
+  const toast = useToast()
 
   const websiteError = website ? undefined : 'Choose a website.'
   const formatError = format ? undefined : 'Choose an ad format.'
@@ -44,14 +48,18 @@ export default function PublisherPlacementsPage() {
     addPlacement(newPlacement)
     setAdCode(createMockAdCode(placementId))
     setCopyMessage('')
+    toast({ title: 'Mock placement created', description: 'No ad delivery is connected to this placement.', variant: 'success' })
   }
 
   async function copyAdCode() {
     try {
       await navigator.clipboard.writeText(adCode)
       setCopyMessage('Copied to clipboard.')
-    } catch {
+      toast({ title: 'Mock ad code copied', description: 'The reserved .example endpoint does not serve ads.', variant: 'success' })
+    } catch (error) {
+      console.error('Unable to copy mock placement code', error)
       setCopyMessage('Could not access the clipboard. Select and copy the code manually.')
+      toast({ title: 'Could not copy ad code', description: 'Select and copy the displayed code manually.', variant: 'error' })
     }
   }
 
@@ -64,13 +72,14 @@ export default function PublisherPlacementsPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <header>
-        <p className="text-sm font-medium text-brand-700">Publisher workspace</p>
-        <h1 className="mt-1 text-2xl font-bold text-navy-900">Ad Placements</h1>
-        <p className="mt-2 text-sm text-slate-600">Create a mock placement and preview a placeholder ad snippet.</p>
-      </header>
+      <PageHeader
+        breadcrumbs={[{ label: 'Publisher', href: '/publisher' }, { label: 'Ad Placements' }]}
+        title="Ad Placements"
+        description="Create a mock placement and preview a placeholder ad snippet."
+        action={<Link href="#create-placement" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create placement</Link>}
+      />
 
-      <Card className="mt-6 p-5 sm:p-6">
+      <Card id="create-placement" className="mt-6 p-5 sm:p-6">
         <h2 className="text-lg font-semibold text-navy-900">Create placement</h2>
         <form className="mt-5 grid gap-5 lg:grid-cols-2" onSubmit={createPlacement} noValidate>
           <Select

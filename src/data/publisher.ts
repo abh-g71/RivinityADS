@@ -33,6 +33,17 @@ export type PayoutRow = {
   status: string
 }
 
+export type PublisherStatisticsRow = {
+  id: string
+  date: string
+  website: string
+  format: string
+  impressions: number
+  clicks: number
+  ctr: string
+  earnings: string
+}
+
 // All values and records below are mock examples; they are not real publisher data or performance.
 export const mockPublisherStats = [
   { label: 'Earnings', value: '₹1,245.50' },
@@ -76,8 +87,13 @@ export const mockPublisherPlacements: PublisherPlacement[] = [
 export const mockDailyEarnings: EarningsRow[] = []
 export const mockWebsiteEarnings: EarningsRow[] = []
 export const mockPayoutHistory: PayoutRow[] = []
+export const mockPublisherStatistics: PublisherStatisticsRow[] = []
 export const mockPublisherBalance = '₹1,245.50'
 export const mockVerificationCode = '<meta name="rivinityads-site-verification" content="demo-verification-code" />'
+export const mockPublisherPaymentMethods = [
+  { value: 'upi', label: 'UPI' },
+  { value: 'bank-transfer', label: 'Bank Transfer' },
+] as const
 
 export function createMockAdCode(placementId: string) {
   return `<script async src="https://ads.rivinityads.example/serve.js" data-placement="${placementId}"></script>`

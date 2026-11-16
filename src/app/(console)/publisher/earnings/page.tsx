@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { EmptyState } from '@/components/shared/EmptyState'
@@ -8,13 +8,28 @@ import { PageHeader } from '@/components/shared/PageHeader'
 import { Select } from '@/components/ui/Select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/tabs'
 import { mockDailyEarnings, mockWebsiteEarnings, type EarningsRow } from '@/data/publisher'
+import Link from 'next/link'
 
 type EarningsView = 'daily' | 'website'
 
 export default function PublisherEarningsPage() {
   const [range, setRange] = useState('7-days')
   const [view, setView] = useState<EarningsView>('daily')
-  const rows = view === 'daily' ? mockDailyEarnings : mockWebsiteEarnings
+  const rows = useMemo(() => {
+    const source = view === 'daily' ? mockDailyEarnings : mockWebsiteEarnings
+    if (view === 'website') return source
+    const start = new Date()
+    if (range === '7-days') start.setDate(start.getDate() - 6)
+    else if (range === '30-days') start.setDate(start.getDate() - 29)
+    else start.setDate(1)
+    start.setHours(0, 0, 0, 0)
+    const end = new Date()
+    end.setHours(23, 59, 59, 999)
+    return source.filter((row) => {
+      const rowDate = new Date(`${row.date}T00:00:00`)
+      return rowDate >= start && rowDate <= end
+    })
+  }, [range, view])
 
   const columns: DataTableColumn<EarningsRow>[] = [
     { key: 'date', header: view === 'daily' ? 'Date' : 'Website', render: (row) => row.date },
@@ -30,6 +45,7 @@ export default function PublisherEarningsPage() {
         breadcrumbs={[{ label: 'Publisher workspace', href: '/publisher' }, { label: 'Earnings' }]}
         title="Earnings"
         description="Mock reporting; no actual earnings are shown."
+        action={<Link href="/publisher/statistics" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View statistics</Link>}
       />
       <div className="mt-6 flex justify-end">
         <div className="w-full sm:w-56">

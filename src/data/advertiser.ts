@@ -76,6 +76,82 @@ export const mockAdvertiserCampaigns: AdvertiserCampaign[] = [
   },
 ]
 
+export type CampaignManagerEntity = 'campaign' | 'ad-set' | 'ad'
+
+export type CampaignManagerItem = {
+  id: string
+  entity: CampaignManagerEntity
+  parentId: string | null
+  campaignId: string
+  name: string
+  enabled: boolean
+  status: CampaignStatus
+  budget: string
+  impressions: number
+  clicks: number
+  ctr: string
+  conversions: number
+  spend: string
+  country: string
+  adUnit: string
+  createdDate: string
+}
+
+// Child rows are mock setup records. Their zero metrics avoid implying measured delivery.
+export const mockAdvertiserAdSets: CampaignManagerItem[] = [
+  {
+    id: 'AS-1042-1', entity: 'ad-set', parentId: 'RV-1042', campaignId: 'RV-1042',
+    name: 'Core audience', enabled: true, status: 'Active', budget: '—',
+    impressions: 0, clicks: 0, ctr: '0.00%', conversions: 0, spend: '₹0.00',
+    country: 'India', adUnit: 'Native Banner', createdDate: '2026-10-12',
+  },
+  {
+    id: 'AS-1042-2', entity: 'ad-set', parentId: 'RV-1042', campaignId: 'RV-1042',
+    name: 'Mobile audience', enabled: true, status: 'Active', budget: '—',
+    impressions: 0, clicks: 0, ctr: '0.00%', conversions: 0, spend: '₹0.00',
+    country: 'India', adUnit: 'Native Banner', createdDate: '2026-10-12',
+  },
+  {
+    id: 'AS-1043-1', entity: 'ad-set', parentId: 'RV-1043', campaignId: 'RV-1043',
+    name: 'Product interest', enabled: true, status: 'Pending', budget: '—',
+    impressions: 0, clicks: 0, ctr: '0.00%', conversions: 0, spend: '₹0.00',
+    country: 'United States', adUnit: 'Social Bar', createdDate: '2026-10-27',
+  },
+  {
+    id: 'AS-1044-1', entity: 'ad-set', parentId: 'RV-1044', campaignId: 'RV-1044',
+    name: 'Local audience', enabled: true, status: 'Active', budget: '—',
+    impressions: 0, clicks: 0, ctr: '0.00%', conversions: 0, spend: '₹0.00',
+    country: 'United Kingdom', adUnit: 'Popunder', createdDate: '2026-09-18',
+  },
+]
+
+export const mockAdvertiserAds: CampaignManagerItem[] = [
+  {
+    id: 'AD-1042-1', entity: 'ad', parentId: 'AS-1042-1', campaignId: 'RV-1042',
+    name: 'Spring launch image', enabled: true, status: 'Active', budget: '—',
+    impressions: 0, clicks: 0, ctr: '0.00%', conversions: 0, spend: '₹0.00',
+    country: 'India', adUnit: 'Native Banner', createdDate: '2026-10-12',
+  },
+  {
+    id: 'AD-1042-2', entity: 'ad', parentId: 'AS-1042-2', campaignId: 'RV-1042',
+    name: 'Spring launch mobile', enabled: true, status: 'Active', budget: '—',
+    impressions: 0, clicks: 0, ctr: '0.00%', conversions: 0, spend: '₹0.00',
+    country: 'India', adUnit: 'Native Banner', createdDate: '2026-10-12',
+  },
+  {
+    id: 'AD-1043-1', entity: 'ad', parentId: 'AS-1043-1', campaignId: 'RV-1043',
+    name: 'Product awareness creative', enabled: true, status: 'Pending', budget: '—',
+    impressions: 0, clicks: 0, ctr: '0.00%', conversions: 0, spend: '₹0.00',
+    country: 'United States', adUnit: 'Social Bar', createdDate: '2026-10-27',
+  },
+  {
+    id: 'AD-1044-1', entity: 'ad', parentId: 'AS-1044-1', campaignId: 'RV-1044',
+    name: 'Store visits creative', enabled: true, status: 'Active', budget: '—',
+    impressions: 0, clicks: 0, ctr: '0.00%', conversions: 0, spend: '₹0.00',
+    country: 'United Kingdom', adUnit: 'Popunder', createdDate: '2026-09-18',
+  },
+]
+
 export const mockAdvertiserTraffic: TrafficSample[] = [
   { id: 'traffic-in', country: 'India', dailyImpressions: '12,400', recommendedCpm: '₹18.00' },
   { id: 'traffic-us', country: 'United States', dailyImpressions: '8,750', recommendedCpm: '₹24.00' },
@@ -107,7 +183,23 @@ export const advertiserTrafficTypes = ['Mainstream', 'Search', 'Social']
 export const advertiserConnections = ['Any', 'Wi-Fi', 'Mobile data']
 export const advertiserDevices = ['Desktop', 'Mobile', 'Tablet']
 export const advertiserPricingTypes = ['CPM', 'CPA', 'CPC']
+// Mock option lists for the campaign creation prototype.
+export const campaignObjectives = ['Awareness', 'Traffic', 'Engagement', 'Leads', 'App promotion', 'Sales'] as const
+export const campaignBuyingTypes = ['Auction', 'Reservation'] as const
+export const campaignGenders = ['All', 'Male', 'Female'] as const
+export const campaignInterestOptions = ['Technology', 'Education', 'Travel', 'Food', 'Personal finance', 'Shopping'] as const
+export const campaignPlacementOptions = ['Feed', 'Stories', 'Reels', 'Audience network'] as const
+export const campaignCallToActions = ['Learn more', 'Shop now', 'Sign up', 'Download', 'Get quote'] as const
+export const campaignOperatingSystems = ['Android', 'iOS', 'Windows', 'macOS', 'Linux'] as const
 export const advertiserCountriesTarget = advertiserCountries
+// Mock controls for advertiser finance and conversion-tracking previews only.
+export const mockConversionEvents = ['event1', 'event2', 'event3'] as const
+export const mockPostbackTemplate = 'https://tracking.rivinityads.example/postback?click_id={click_id}&event={event}'
+export const mockPaymentGroups = [
+  { title: 'Instant', methods: ['UPI', 'Card', 'Net Banking'] },
+  { title: 'Manual', methods: ['Bank transfer'] },
+] as const
+export const mockDepositAmountOptions = [500, 1000, 5000] as const
 export const targetingCategories = [
   'OS',
   'Browser',

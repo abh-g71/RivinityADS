@@ -1,8 +1,8 @@
 export type NavItem = { id: string; label: string; href: string }
 export type NavGroup = { title?: string; items: NavItem[] }
-export type ConsoleRole = 'advertiser' | 'publisher'
+export type ConsoleRole = 'advertiser' | 'publisher' | 'admin'
 
-export const navGroups: NavGroup[] = [
+export const advertiserNavGroups: NavGroup[] = [
   {
     items: [
       { id: 'dashboard', label: 'Dashboard', href: '/dashboard' },
@@ -23,6 +23,9 @@ export const navGroups: NavGroup[] = [
       { id: 'notifications', label: 'Notifications', href: '/notifications' },
       { id: 'ad-tester', label: 'Ad Tester', href: '/ad-tester' },
       { id: 'system-health', label: 'System Health', href: '/system-health' },
+      { id: 'reports', label: 'Reports', href: '/reports' },
+      { id: 'support', label: 'Support', href: '/support' },
+      { id: 'settings', label: 'Settings', href: '/settings' },
     ],
   },
 ]
@@ -33,13 +36,48 @@ export const publisherNavGroups: NavGroup[] = [
       { id: 'publisher-dashboard', label: 'Dashboard', href: '/publisher' },
       { id: 'publisher-websites', label: 'Websites', href: '/publisher/websites' },
       { id: 'publisher-placements', label: 'Ad Placements', href: '/publisher/placements' },
+      { id: 'publisher-statistics', label: 'Statistics', href: '/publisher/statistics' },
       { id: 'publisher-earnings', label: 'Earnings', href: '/publisher/earnings' },
       { id: 'publisher-payments', label: 'Payments', href: '/publisher/payments' },
     ],
   },
+  {
+    title: 'Account',
+    items: [
+      { id: 'reports', label: 'Reports', href: '/reports' },
+      { id: 'support', label: 'Support', href: '/support' },
+      { id: 'settings', label: 'Settings', href: '/settings' },
+    ],
+  },
 ]
+
+export const adminNavGroups: NavGroup[] = [
+  {
+    items: [
+      { id: 'admin-dashboard', label: 'Dashboard', href: '/admin' },
+      { id: 'admin-users', label: 'Users', href: '/admin/users' },
+      { id: 'admin-advertisers', label: 'Advertisers', href: '/admin/advertisers' },
+      { id: 'admin-publishers', label: 'Publishers', href: '/admin/publishers' },
+      { id: 'admin-websites', label: 'Websites', href: '/admin/websites' },
+      { id: 'admin-campaigns', label: 'Campaign Review', href: '/admin/campaigns' },
+    ],
+  },
+  {
+    title: 'Operations',
+    items: [
+      { id: 'admin-support', label: 'Support Tickets', href: '/admin/support' },
+      { id: 'admin-settings', label: 'Platform Settings', href: '/admin/settings' },
+      { id: 'admin-billing', label: 'Billing', href: '/admin/billing' },
+      { id: 'reports', label: 'Reports', href: '/reports' },
+    ],
+  },
+]
+
+export const navGroups = advertiserNavGroups
 
 // Role-based navigation is a UI convenience; real permissions must be enforced by the backend.
 export function getNavGroups(role: ConsoleRole): NavGroup[] {
-  return role === 'publisher' ? publisherNavGroups : navGroups
+  if (role === 'publisher') return publisherNavGroups
+  if (role === 'admin') return adminNavGroups
+  return advertiserNavGroups
 }

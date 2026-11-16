@@ -1,15 +1,21 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { Select } from '@/components/ui/Select'
-import { mockPayoutHistory, mockPublisherBalance, type PayoutRow } from '@/data/publisher'
+import { useToast } from '@/components/shared/Toast'
+import { mockPayoutHistory, mockPublisherBalance, mockPublisherPaymentMethods, type PayoutRow } from '@/data/publisher'
+import Link from 'next/link'
 
 export default function PublisherPaymentsPage() {
   const [method, setMethod] = useState('upi')
+  const [saved, setSaved] = useState(false)
+  const toast = useToast()
 
   const columns: DataTableColumn<PayoutRow>[] = [
     { key: 'date', header: 'Date', render: (row) => row.date },
@@ -20,11 +26,12 @@ export default function PublisherPaymentsPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <header>
-        <p className="text-sm font-medium text-brand-700">Publisher workspace</p>
-        <h1 className="mt-1 text-2xl font-bold text-navy-900">Payments</h1>
-        <p className="mt-2 text-sm text-slate-600">Mock payout settings and history.</p>
-      </header>
+      <PageHeader
+        breadcrumbs={[{ label: 'Publisher', href: '/publisher' }, { label: 'Payments' }]}
+        title="Payments"
+        description="Mock payout settings and history."
+        action={<Link href="/publisher/earnings" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View earnings</Link>}
+      />
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">
         <Card className="p-6">
@@ -36,12 +43,25 @@ export default function PublisherPaymentsPage() {
           <Select
             label="Payout method"
             value={method}
-            onChange={(event) => setMethod(event.target.value)}
-            options={[
-              { value: 'upi', label: 'UPI' },
-              { value: 'bank-transfer', label: 'Bank Transfer' },
-            ]}
+            onChange={(event) => {
+              setMethod(event.target.value)
+              setSaved(false)
+            }}
+            options={mockPublisherPaymentMethods.map((option) => ({ ...option }))}
           />
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setSaved(true)
+                toast({ title: 'Mock payout preference saved', description: 'This selection is not sent to a payment provider.', variant: 'success' })
+              }}
+            >
+              Save preference
+            </Button>
+            {saved && <span role="status" className="text-sm text-slate-600">Saved for this view only.</span>}
+          </div>
           <p className="mt-3 text-xs text-slate-500">Demo selection only; no payment details are collected or saved.</p>
         </Card>
       </div>

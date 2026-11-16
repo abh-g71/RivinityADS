@@ -1,0 +1,17 @@
+@media print {
+  .printHidden {
+    display: none !important;
+  }
+
+  .printPage {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .printCard {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+
+}

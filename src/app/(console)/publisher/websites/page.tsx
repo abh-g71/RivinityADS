@@ -1,15 +1,19 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import Link from 'next/link'
+import { useMemo, useState, type FormEvent } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { DataTable } from '@/components/shared/DataTable'
-import type { DataTableColumn } from '@/components/shared/DataTable'
+import { EmptyState } from '@/components/shared/EmptyState'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
+import { useToast } from '@/components/shared/Toast'
 import {
+  createMockAdCode,
   mockVerificationCode,
+  publisherAdFormats,
   publisherWebsiteCategories,
   type PublisherWebsite,
 } from '@/data/publisher'
@@ -21,10 +25,15 @@ export default function PublisherWebsitesPage() {
   const { websites, addWebsite, markWebsiteVerified } = usePublisherData()
   const [domain, setDomain] = useState('')
   const [category, setCategory] = useState('')
+  const [query, setQuery] = useState('')
   const [touched, setTouched] = useState({ domain: false, category: false })
   const [selectedWebsiteId, setSelectedWebsiteId] = useState(
     websites.find((website) => website.status === 'Pending')?.id ?? '',
   )
+  const [tipsVisible, setTipsVisible] = useState(true)
+  const [activeCode, setActiveCode] = useState<{ key: string; code: string } | null>(null)
+  const [copyMessages, setCopyMessages] = useState<Record<string, string>>({})
+  const toast = useToast()
 
   const normalizedDomain = domain.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '')
   const domainError = !normalizedDomain
@@ -36,6 +45,10 @@ export default function PublisherWebsitesPage() {
         : undefined
   const categoryError = category ? undefined : 'Choose a category.'
   const selectedWebsite = websites.find((website) => website.id === selectedWebsiteId)
+  const filteredWebsites = useMemo(
+    () => websites.filter((website) => website.domain.toLowerCase().includes(query.trim().toLowerCase())),
+    [query, websites],
+  )
 
   function handleAddWebsite(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -54,53 +67,155 @@ export default function PublisherWebsitesPage() {
     setDomain('')
     setCategory('')
     setTouched({ domain: false, category: false })
+    toast({ title: 'Mock website added', description: 'Ownership remains pending until you use the mock verification action.', variant: 'success' })
   }
 
   function verifySelectedWebsite() {
-    if (selectedWebsite) markWebsiteVerified(selectedWebsite.id)
+    if (!selectedWebsite) return
+    if (selectedWebsite.status === 'Verified') {
+      toast({ title: 'Website already verified', description: 'This is only a local prototype status.' })
+      return
+    }
+    // Real website ownership verification and publisher permissions must be enforced by the backend.
+    markWebsiteVerified(selectedWebsite.id)
+    toast({ title: 'Mock verification complete', description: 'No website was contacted or checked.', variant: 'success' })
   }
 
-  const columns: DataTableColumn<PublisherWebsite>[] = [
-    { key: 'domain', header: 'Domain', render: (website) => <span className="font-medium text-navy-900">{website.domain}</span> },
-    {
-      key: 'status',
-      header: 'Status',
-      render: (website) => (
-        <Badge tone={website.status === 'Verified' ? 'success' : 'warning'}>{website.status}</Badge>
-      ),
-    },
-    { key: 'added-date', header: 'Added date', render: (website) => website.addedDate },
-    {
-      key: 'actions',
-      header: 'Actions',
-      render: (website) => (
-        <Button
-          type="button"
-          variant="ghost"
-          className="px-2 py-1"
-          onClick={() => setSelectedWebsiteId(website.id)}
-          aria-label={`Select ${website.domain} for verification`}
-        >
-          {website.status === 'Verified' ? 'View verification' : 'Verify ownership'}
-        </Button>
-      ),
-    },
-  ]
+  async function copyAdCode(key: string, code: string) {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopyMessages((current) => ({ ...current, [key]: 'Copied to clipboard.' }))
+      toast({ title: 'Mock ad code copied', description: 'The reserved .example code does not serve ads.', variant: 'success' })
+    } catch (error) {
+      console.error('Unable to copy mock ad code', error)
+      setCopyMessages((current) => ({ ...current, [key]: 'Clipboard unavailable. Select and copy the code manually.' }))
+      toast({ title: 'Could not copy ad code', description: 'Select and copy the displayed code manually.', variant: 'error' })
+    }
+  }
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <header>
-        <p className="text-sm font-medium text-brand-700">Publisher workspace</p>
-        <h1 className="mt-1 text-2xl font-bold text-navy-900">Websites</h1>
-        <p className="mt-2 text-sm text-slate-600">Add a site and verify that you own it. Demo changes are kept in memory and reset on refresh.</p>
-      </header>
+    <div className="mx-auto max-w-7xl space-y-6">
+      <PageHeader
+        breadcrumbs={[{ label: 'Publisher', href: '/publisher' }, { label: 'Websites' }]}
+        title="Websites"
+        description="Add a site and preview mock ownership verification and ad unit code."
+        action={<Link href="#add-website" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Add website</Link>}
+      />
 
-      <section aria-label="Your websites" className="mt-6">
-        <DataTable label="Publisher websites" columns={columns} rows={websites} />
+      {tipsVisible && (
+        <Card className="p-5 sm:p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="font-semibold text-navy-900">Three steps to prepare a site</h2>
+              <ol className="mt-3 grid gap-3 text-sm text-slate-600 sm:grid-cols-3">
+                <li><span className="mr-2 font-semibold text-brand-700">1.</span>Add and categorize your website.</li>
+                <li><span className="mr-2 font-semibold text-brand-700">2.</span>Complete the mock ownership check.</li>
+                <li><span className="mr-2 font-semibold text-brand-700">3.</span>Create placements and copy code.</li>
+              </ol>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              className="shrink-0 px-2 py-1"
+              onClick={() => {
+                setTipsVisible(false)
+                toast({ title: 'Setup tips dismissed' })
+              }}
+              aria-label="Dismiss setup tips"
+            >
+              Dismiss
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      <section aria-label="Your websites" className="space-y-4">
+        <Input
+          id="website-search"
+          label="Search websites"
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search by domain"
+        />
+        {filteredWebsites.length ? filteredWebsites.map((website) => (
+          <Card key={website.id} className="p-5 sm:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-0">
+                <h2 className="break-all font-semibold text-navy-900">{website.domain}</h2>
+                <p className="mt-1 text-sm text-slate-600">{website.category} · Added {website.addedDate}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <Badge tone={website.status === 'Verified' ? 'success' : 'warning'}>{website.status}</Badge>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setSelectedWebsiteId(website.id)}
+                  aria-label={`Select ${website.domain} for verification`}
+                >
+                  {website.status === 'Verified' ? 'View verification' : 'Verify ownership'}
+                </Button>
+              </div>
+            </div>
+            <details className="mt-5 rounded-xl border border-slate-200 p-4">
+              <summary className="cursor-pointer font-medium text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                Ad units for {website.domain}
+              </summary>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {publisherAdFormats.map((format) => {
+                  const key = `${website.id}-${format}`
+                  const code = createMockAdCode(key)
+                  const codeIsActive = activeCode?.key === key
+                  return (
+                    <section key={format} className="min-w-0 rounded-xl bg-slate-50 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <h3 className="font-medium text-navy-900">{format}</h3>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="px-3 py-2"
+                            onClick={() => {
+                              setActiveCode({ key, code })
+                              toast({ title: 'Mock ad code ready', description: 'This code uses a reserved .example endpoint.' })
+                            }}
+                          >
+                            Get code
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="px-3 py-2"
+                            disabled={!codeIsActive}
+                            onClick={() => copyAdCode(key, code)}
+                          >
+                            Copy
+                          </Button>
+                        </div>
+                      </div>
+                      {codeIsActive && (
+                        <div className="mt-3">
+                          <pre className="overflow-x-auto rounded-xl bg-navy-950 p-3 text-xs text-slate-100"><code>{activeCode.code}</code></pre>
+                          {copyMessages[key] && <p role="status" className="mt-2 text-xs text-slate-600">{copyMessages[key]}</p>}
+                          <p className="mt-2 text-xs text-slate-500">Preview only; no ads are delivered.</p>
+                        </div>
+                      )}
+                    </section>
+                  )
+                })}
+              </div>
+            </details>
+          </Card>
+        )) : (
+          <EmptyState
+            title={websites.length ? 'No matching websites' : 'No websites yet'}
+            description={websites.length ? 'Try another domain search.' : 'Add a website to begin the mock publisher setup.'}
+          />
+        )}
       </section>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Card className="p-5 sm:p-6">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
+        <Card id="add-website" className="min-w-0 p-5 sm:p-6">
           <h2 className="text-lg font-semibold text-navy-900">Add a website</h2>
           <form className="mt-4 space-y-4" onSubmit={handleAddWebsite} noValidate>
             <Input
@@ -115,30 +230,30 @@ export default function PublisherWebsitesPage() {
               error={touched.domain ? domainError : undefined}
             />
             <Select
-                id="publisher-category"
-                label="Category"
-                name="category"
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
-                onBlur={() => setTouched((current) => ({ ...current, category: true }))}
-                error={touched.category ? categoryError : undefined}
-                options={[
-                  { value: '', label: 'Choose a category' },
-                  ...publisherWebsiteCategories.map((option) => ({ value: option, label: option })),
-                ]}
-              />
+              id="publisher-category"
+              label="Category"
+              name="category"
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
+              onBlur={() => setTouched((current) => ({ ...current, category: true }))}
+              error={touched.category ? categoryError : undefined}
+              options={[
+                { value: '', label: 'Choose a category' },
+                ...publisherWebsiteCategories.map((option) => ({ value: option, label: option })),
+              ]}
+            />
             <Button type="submit">Add website</Button>
           </form>
         </Card>
 
-        <Card className="p-5 sm:p-6">
+        <Card id="verify-website" className="min-w-0 p-5 sm:p-6">
           <h2 className="text-lg font-semibold text-navy-900">Verify ownership</h2>
           {selectedWebsite ? (
             <>
               <p className="mt-2 text-sm text-slate-600">
                 Add this mock verification tag to <span className="font-medium text-navy-900">{selectedWebsite.domain}</span>:
               </p>
-              <pre className="mt-4 overflow-x-auto rounded-lg bg-navy-950 p-4 text-xs text-slate-100">
+              <pre className="mt-4 overflow-x-auto rounded-xl bg-navy-950 p-4 text-xs text-slate-100">
                 <code>{mockVerificationCode}</code>
               </pre>
               <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -151,7 +266,7 @@ export default function PublisherWebsitesPage() {
               </div>
             </>
           ) : (
-            <p className="mt-2 text-sm text-slate-600">Add a website to begin ownership verification.</p>
+            <EmptyState title="No website selected" description="Add a website or select one above to preview its verification instructions." />
           )}
         </Card>
       </div>

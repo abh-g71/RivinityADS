@@ -2,7 +2,9 @@ import { Card } from '@/components/ui/Card'
 import { DataTable } from '@/components/shared/DataTable'
 import type { DataTableColumn } from '@/components/shared/DataTable'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { mockTransactions, type Transaction } from '@/data/advertiser'
+import Link from 'next/link'
 
 const columns: DataTableColumn<Transaction>[] = [
   { key: 'date', header: 'Date', render: (row) => row.date },
@@ -14,11 +16,12 @@ const columns: DataTableColumn<Transaction>[] = [
 export default function FinancePage() {
   return (
     <div className="mx-auto max-w-7xl">
-      <header>
-        <p className="text-sm font-medium text-brand-700">Advertiser workspace</p>
-        <h1 className="mt-1 text-2xl font-bold text-navy-900">Finance</h1>
-        <p className="mt-2 text-sm text-slate-600">Mock account overview. No payments or transactions are processed.</p>
-      </header>
+      <PageHeader
+        breadcrumbs={[{ label: 'Advertiser' }, { label: 'Finance' }]}
+        title="Finance"
+        description="Mock account overview. No payments or transactions are processed."
+        action={<Link href="/add-funds" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Add funds</Link>}
+      />
 
       <Card className="mt-6 max-w-md p-6">
         <p className="text-sm font-medium text-slate-500">Balance</p>

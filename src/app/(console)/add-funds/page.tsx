@@ -6,12 +6,11 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { FormField } from '@/components/shared/FormField'
 import { Input } from '@/components/ui/Input'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { Select } from '@/components/ui/Select'
-
-const paymentGroups = [
-  { title: 'Instant', methods: ['UPI', 'Card', 'Net Banking'] },
-  { title: 'Manual', methods: ['Bank transfer'] },
-]
+import { useToast } from '@/components/shared/Toast'
+import { mockDepositAmountOptions, mockPaymentGroups } from '@/data/advertiser'
+import Link from 'next/link'
 
 export default function AddFundsPage() {
   const [method, setMethod] = useState('')
@@ -21,6 +20,7 @@ export default function AddFundsPage() {
   const [amount, setAmount] = useState('')
   const [touched, setTouched] = useState(false)
   const [success, setSuccess] = useState('')
+  const toast = useToast()
 
   const emailError = !email.trim()
     ? 'Enter an email address.'
@@ -32,22 +32,25 @@ export default function AddFundsPage() {
   function addFunds() {
     setTouched(true)
     if (!method || emailError || amountError) return
-    setSuccess(`Mock request created for ₹${Number(amount).toLocaleString('en-IN')} via ${method}. No payment was made.`)
+    const message = `Mock request created for ₹${Number(amount).toLocaleString('en-IN')} via ${method}. No payment was made.`
+    setSuccess(message)
+    toast({ title: 'Mock funding request ready', description: 'No payment was initiated.', variant: 'success' })
   }
 
   return (
     <div className="mx-auto max-w-7xl">
-      <header>
-        <p className="text-sm font-medium text-brand-700">Advertiser workspace</p>
-        <h1 className="mt-1 text-2xl font-bold text-navy-900">Add Funds</h1>
-        <p className="mt-2 text-sm text-slate-600">This demo does not connect to payment providers or move money.</p>
-      </header>
+      <PageHeader
+        breadcrumbs={[{ label: 'Advertiser' }, { label: 'Add Funds' }]}
+        title="Add Funds"
+        description="This demo does not connect to payment providers or move money."
+        action={<Link href="/finance" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View finance</Link>}
+      />
 
       <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
         <div className="space-y-6">
           <Card className="p-5 sm:p-6">
             <h2 className="text-lg font-semibold text-navy-900">Payment method</h2>
-            {paymentGroups.map((group) => (
+            {mockPaymentGroups.map((group) => (
               <fieldset key={group.title} className="mt-5">
                 <legend className="text-sm font-medium text-slate-600">{group.title}</legend>
                 <div className="mt-2 grid gap-3 sm:grid-cols-3">
@@ -93,7 +96,7 @@ export default function AddFundsPage() {
               placeholder="Enter amount"
             />
             <div className="mt-3 flex flex-wrap gap-2" aria-label="Quick amount choices">
-              {[500, 1000, 5000].map((value) => (
+              {mockDepositAmountOptions.map((value) => (
                 <Button key={value} type="button" variant="outline" className="px-3 py-2" onClick={() => { setAmount(String(value)); setSuccess('') }}>
                   ₹{value.toLocaleString('en-IN')}
                 </Button>

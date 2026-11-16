@@ -1,8 +1,9 @@
 import { ProgressRing } from '@/components/shared/ProgressRing'
 import { StatCard } from '@/components/shared/StatCard'
-import { Badge } from '@/components/ui/Badge'
+import { StaggerGrid } from '@/components/shared/StaggerGrid'
 import { ButtonLink } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { PageHeader } from '@/components/shared/PageHeader'
 import { mockAdvertiserStats } from '@/data/advertiser'
 
 const setupSteps = [
@@ -15,20 +16,18 @@ const setupSteps = [
 export default function AdvertiserDashboardPage() {
   return (
     <div className="mx-auto max-w-7xl">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium text-brand-700">Advertiser workspace</p>
-          <h1 className="mt-1 text-2xl font-bold text-navy-900">Dashboard</h1>
-          <p className="mt-2 text-sm text-slate-600">A mock overview of campaign activity.</p>
-        </div>
-        <Badge tone="neutral">Mock data</Badge>
-      </header>
+      <PageHeader
+        breadcrumbs={[{ label: 'Advertiser workspace' }, { label: 'Dashboard' }]}
+        title="Dashboard"
+        description="A mock overview of campaign activity."
+        action={<ButtonLink href="/campaigns/new">Create campaign</ButtonLink>}
+      />
 
-      <section aria-label="Campaign statistics" className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <StaggerGrid aria-label="Campaign statistics" className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {mockAdvertiserStats.map((stat) => (
           <StatCard key={stat.label} label={stat.label} value={stat.value} />
         ))}
-      </section>
+      </StaggerGrid>
 
       <section aria-labelledby="first-campaign-heading" className="mt-8">
         <Card className="p-5 sm:p-6">
@@ -39,7 +38,7 @@ export default function AdvertiserDashboardPage() {
               </h2>
               <p className="mt-1 text-sm text-slate-600">A few steps help you get campaign-ready.</p>
             </div>
-            <ProgressRing value={25} label="1/4" />
+            <ProgressRing value={0} label="0/4" />
           </div>
 
           <ol className="mt-5 space-y-3">
