@@ -1,28 +1,24 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/primitives/accordion'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/primitives/accordion'
 
 const faqs = [
-  ['What is RivinityADS?', 'RivinityADS is a frontend prototype for exploring advertiser campaign workflows and publisher website tools.'],
-  ['Does this site deliver ads or process payments?', 'No. The prototype uses mock data and does not connect to ad delivery, payment, or tracking services.'],
-  ['Are the prices real?', 'No. Any pricing shown is illustrative mock content and is not an offer or live platform pricing.'],
+  ['What is RivinityADS?', 'A demo workspace for exploring advertiser campaign setup and publisher tools.'],
+  ['Does a campaign go live when I publish?', 'No. This prototype uses mock data and does not deliver ads or process payments.'],
+  ['How much does advertising cost?', 'You choose a daily budget in the campaign setup. Any result ranges shown are illustrative mock estimates, not a forecast.'],
+  ['Can I change my campaign before publishing?', 'Yes. Review the draft, select a value to edit it, and save it in this browser.'],
 ]
 
 export function Faq() {
   return (
     <section id="faq" className="scroll-mt-24 mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 md:grid-cols-2">
       <div>
-        <p className="font-mono text-xs text-slate-500">[FAQ]</p>
-        <h2 className="mt-2 text-3xl font-bold">Got questions? We have answers.</h2>
+        <p className="text-sm font-semibold text-brand-700">FAQ</p>
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy-900">A few quick answers.</h2>
       </div>
-      <Accordion type="single" collapsible defaultValue="faq-0" className="space-y-3">
-        {faqs.map(([q, a], i) => (
-          <AccordionItem key={q} value={`faq-${i}`} className="rounded-xl border border-slate-200 bg-white px-4 shadow-sm">
-            <AccordionTrigger className="py-4 text-left text-navy-900 hover:no-underline">{q}</AccordionTrigger>
-            <AccordionContent className="pb-4 text-sm leading-6 text-slate-600">{a}</AccordionContent>
+      <Accordion type="single" collapsible className="space-y-3">
+        {faqs.map(([question, answer], index) => (
+          <AccordionItem key={question} value={`faq-${index}`} className="rounded-xl border border-slate-200 bg-white px-4 shadow-sm">
+            <AccordionTrigger className="py-4 text-left text-navy-900 hover:no-underline">{question}</AccordionTrigger>
+            <AccordionContent className="pb-4 text-sm leading-6 text-slate-600">{answer}</AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>

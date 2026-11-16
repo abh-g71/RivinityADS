@@ -7,6 +7,7 @@ type ToastOptions = {
   title: string
   description?: string
   variant?: 'default' | 'success' | 'error'
+  action?: { label: string; onClick: () => void }
 }
 
 type ToastEntry = ToastOptions & { id: number }
@@ -43,6 +44,18 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <div>
                 <h2 className={`text-sm font-semibold ${entry.variant === 'error' ? 'text-danger-600' : entry.variant === 'success' ? 'text-success-600' : 'text-navy-900'}`}>{entry.title}</h2>
                 {entry.description && <p className="mt-1 text-sm text-slate-600">{entry.description}</p>}
+                {entry.action && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      entry.action?.onClick()
+                      dismiss(entry.id)
+                    }}
+                    className="mt-2 rounded-md text-sm font-semibold text-brand-700 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  >
+                    {entry.action.label}
+                  </button>
+                )}
               </div>
               <button type="button" onClick={() => dismiss(entry.id)} aria-label="Dismiss notification" className="rounded-lg p-1 text-slate-500 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                 <X className="h-4 w-4" aria-hidden="true" />

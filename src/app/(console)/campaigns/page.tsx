@@ -268,6 +268,10 @@ export default function CampaignsPage() {
       title: `${item.entity === 'campaign' ? 'Campaign' : item.entity === 'ad-set' ? 'Ad set' : 'Ad'} ${enabled ? 'turned on' : 'turned off'}`,
       description: `${item.name} own delivery switch was updated.`,
       variant: 'success',
+      action: {
+        label: 'Undo',
+        onClick: () => updateItem(item.id, { enabled: item.enabled }),
+      },
     })
   }
 
@@ -349,6 +353,7 @@ export default function CampaignsPage() {
         }
       }
     }
+    const deletedItems = items.filter((item) => idsToDelete.has(item.id))
     setItems((current) => current.filter((item) => !idsToDelete.has(item.id)))
     if (parentFilter && idsToDelete.has(parentFilter.id)) setParentFilter(null)
     setSelectedIds([])
@@ -356,7 +361,18 @@ export default function CampaignsPage() {
     setPendingDeleteIds([])
     setDeleteDialogOpen(false)
     setPage(1)
-    toast({ title: 'Mock items deleted', description: 'The selected items and their child rows were removed.', variant: 'success' })
+    toast({
+      title: 'Mock items deleted',
+      description: 'The selected items and their child rows were removed.',
+      variant: 'success',
+      action: {
+        label: 'Undo',
+        onClick: () => setItems((current) => {
+          const currentIds = new Set(current.map((item) => item.id))
+          return [...current, ...deletedItems.filter((item) => !currentIds.has(item.id))]
+        }),
+      },
+    })
   }
 
   function openEditor(item: CampaignManagerItem) {

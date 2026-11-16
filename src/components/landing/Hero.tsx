@@ -1,124 +1,51 @@
 import Link from 'next/link'
-import { FaBullseye, FaChartLine, FaCircleCheck, FaWallet } from 'react-icons/fa6'
-
-const bars = [32, 54, 43, 74, 58, 84, 66, 94, 72, 81, 60, 76]
+import { ArrowRight, Check, CircleHelp, MapPin, Wallet } from 'lucide-react'
 
 export function Hero() {
   return (
-    <section
-      id="home"
-      className="relative isolate mx-auto grid max-w-6xl items-center gap-12 px-4 pb-24 pt-10 sm:px-6 lg:grid-cols-2"
-    >
-      {/* Soft dotted background (decorative) */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 opacity-60"
-        style={{
-          backgroundImage: 'radial-gradient(var(--color-brand-100) 1.2px, transparent 1.2px)',
-          backgroundSize: '22px 22px',
-          maskImage: 'linear-gradient(to bottom, black 40%, transparent)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 40%, transparent)',
-        }}
-      />
-
-      <div className="animate-fade-up">
-        <span className="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white px-3 py-1 text-xs font-medium text-slate-700 shadow-sm">
-          <span className="h-2 w-2 rounded-full bg-brand-600" aria-hidden="true" />
-          Campaigns and monetization in one workspace
-        </span>
-
-        <h1 className="mt-5 max-w-xl text-4xl font-bold leading-[1.1] tracking-tight text-navy-900 sm:text-5xl lg:text-6xl">
-          A clearer way to{' '}
-          <span className="bg-gradient-to-r from-brand-600 to-indigo-500 bg-clip-text text-transparent">
-            plan and manage
-          </span>{' '}
-          digital advertising.
+    <section className="mx-auto grid min-h-[72vh] max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:py-16">
+      <div>
+        <h1 className="max-w-2xl text-4xl font-bold leading-[1.08] tracking-tight text-navy-900 sm:text-5xl lg:text-6xl">
+          Your next ad, made simple.
         </h1>
-
-        <p className="mt-5 max-w-lg text-lg leading-8 text-slate-600">
-          RivinityADS brings advertiser campaign tools and publisher website workflows together in one calm,
-          easy-to-navigate console.
+        <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">
+          Create a clear campaign in a few guided steps, with your budget and audience easy to understand.
         </p>
-
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Link
-            href="/signup"
-            className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 active:scale-[0.98]"
-          >
-            Get started
-          </Link>
-          <Link
-            href="/ad-formats"
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-navy-900 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 active:scale-[0.98]"
-          >
-            Explore ad formats
-          </Link>
-        </div>
-
-        <p className="mt-4 text-xs text-slate-500">
-          A frontend prototype with illustrative data. No live ad delivery or payments.
-        </p>
+        <Link href="/signup" className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+          Get started <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
+        <p className="mt-3 text-xs text-slate-500">A product demo with mock data. No ads are delivered.</p>
       </div>
 
-      <div className="relative animate-fade-up [animation-delay:120ms]">
-        {/* Glow behind the preview (decorative) */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -inset-3 -z-10 rounded-[2rem] bg-gradient-to-br from-brand-200 via-blue-100 to-indigo-200 opacity-70 blur-2xl"
-        />
-
-        <div className="rounded-xl border border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur transition duration-300 ease-out hover:-translate-y-1 sm:p-6 lg:[transform:perspective(1200px)_rotateY(-6deg)_rotateX(2deg)] lg:hover:[transform:perspective(1200px)_rotateY(0deg)_rotateX(0deg)]">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Workspace preview</p>
-              <h2 className="mt-1 text-lg font-semibold text-navy-900">Your campaign overview</h2>
-            </div>
-            <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">Mock preview</span>
+      <div aria-label="Campaign setup preview" className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xl shadow-navy-900/5 sm:p-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <p className="text-xs font-medium text-slate-500">NEW CAMPAIGN</p>
+            <h2 className="mt-1 text-base font-semibold text-navy-900">A simple setup</h2>
           </div>
-
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 transition hover:border-brand-100 hover:bg-white hover:shadow-md">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-md shadow-brand-600/20">
-                <FaBullseye className="h-4 w-4" aria-hidden="true" />
-              </span>
-              <p className="mt-3 text-sm font-semibold text-navy-900">Campaigns</p>
-              <p className="mt-1 text-xs leading-5 text-slate-600">Organize goals, budgets, and delivery settings.</p>
-            </div>
-
-            <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 transition hover:border-brand-100 hover:bg-white hover:shadow-md">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-md shadow-brand-600/20">
-                <FaChartLine className="h-4 w-4" aria-hidden="true" />
-              </span>
-              <p className="mt-3 text-sm font-semibold text-navy-900">Reporting</p>
-              <p className="mt-1 text-xs leading-5 text-slate-600">Review sample performance in a single view.</p>
-            </div>
-
-            <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 sm:col-span-2">
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-md shadow-brand-600/20">
-                  <FaWallet className="h-4 w-4" aria-hidden="true" />
-                </span>
-                <p className="text-sm font-semibold text-navy-900">Budget controls</p>
+          <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">Step 2 of 4</span>
+        </div>
+        <div className="mt-5 flex gap-2" aria-label="Campaign progress">
+          {[0, 1, 2, 3].map((step) => <span key={step} className={`h-1.5 flex-1 rounded-full ${step < 2 ? 'bg-brand-600' : 'bg-slate-100'}`} />)}
+        </div>
+        <div className="mt-5 rounded-xl border border-slate-200 p-4">
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-700"><MapPin className="h-4 w-4" aria-hidden="true" /></span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-navy-900">Choose who to reach</p>
+              <p className="mt-1 text-xs text-slate-500">Set a city, radius, and audience.</p>
+              <div className="mt-3 rounded-lg bg-slate-50 p-3">
+                <div className="h-20 rounded-lg bg-[radial-gradient(circle_at_35%_50%,#bfdbfe_0,#dbeafe_32%,#eff6ff_70%)]" aria-hidden="true" />
+                <p className="mt-2 text-xs text-slate-600">Pick a location on the map</p>
               </div>
-              <div className="mt-4 flex h-16 items-end gap-2" aria-label="Illustrative, non-live chart preview">
-                {bars.map((height, index) => (
-                  <span
-                    key={index}
-                    className="flex-1 rounded-t-md bg-gradient-to-t from-brand-500 to-brand-100 transition-opacity duration-200 hover:opacity-80"
-                    style={{ height: `${height}%` }}
-                  />
-                ))}
-              </div>
-              <p className="mt-2 text-xs text-slate-500">Illustrative view · not live campaign data</p>
             </div>
           </div>
         </div>
-
-        {/* Floating status chip (decorative, no numbers) */}
-        <div className="absolute -bottom-4 left-4 hidden items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-navy-900 shadow-lg sm:flex">
-          <FaCircleCheck className="h-4 w-4 text-green-600" aria-hidden="true" />
-          Website verified
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-brand-700"><Wallet className="h-4 w-4" aria-hidden="true" /></span><div><p className="text-xs text-slate-500">Daily budget</p><p className="text-sm font-semibold text-navy-900">Your choice</p></div></div>
+          <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-brand-700"><Check className="h-4 w-4" aria-hidden="true" /></span><div><p className="text-xs text-slate-500">Before publishing</p><p className="text-sm font-semibold text-navy-900">Review every detail</p></div></div>
         </div>
+        <div className="mt-4 flex items-center gap-2 text-xs text-slate-500"><CircleHelp className="h-3.5 w-3.5" aria-hidden="true" />Nothing is published without your approval.</div>
       </div>
     </section>
   )

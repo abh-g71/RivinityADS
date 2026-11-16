@@ -48,6 +48,7 @@ const navIcons: Record<string, LucideIcon> = {
   'admin-dashboard': LayoutDashboard,
   campaigns: Megaphone,
   'create-campaign': Megaphone,
+  billing: CircleDollarSign,
   'admin-campaigns': FileCheck,
   'traffic-chart': BarChart3,
   'conversion-tracking': Activity,
@@ -123,16 +124,24 @@ function NavigationContent({
       <nav className="mt-8 flex flex-col gap-6" aria-label={`${role} navigation`}>
         {navGroups.map((group, index) => (
           <div key={group.title ?? index}>
-            {group.title && !isCollapsed && (
-              <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
-                {group.title}
-              </p>
+            {group.title && !isCollapsed ? (
+              <details open={group.items.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))} className="group/tools">
+                <summary className="mb-2 flex min-h-9 cursor-pointer list-none items-center justify-between rounded-lg px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                  {group.title}
+                  <ChevronRight className="h-3.5 w-3.5 transition-transform group-open/tools:rotate-90" aria-hidden="true" />
+                </summary>
+                <ul className="flex flex-col gap-1">
+                  {group.items.map((item) => <li key={item.id}>{renderNavigationLink(item)}</li>)}
+                </ul>
+              </details>
+            ) : (
+              <>
+                {group.title && isCollapsed && <p className="sr-only">{group.title}</p>}
+                <ul className="flex flex-col gap-1">
+                  {group.items.map((item) => <li key={item.id}>{renderNavigationLink(item)}</li>)}
+                </ul>
+              </>
             )}
-            <ul className="flex flex-col gap-1">
-              {group.items.map((item) => (
-                <li key={item.id}>{renderNavigationLink(item)}</li>
-              ))}
-            </ul>
           </div>
         ))}
       </nav>

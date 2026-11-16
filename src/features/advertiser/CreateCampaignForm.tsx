@@ -78,6 +78,8 @@ type CampaignDraft = {
   customBid: string
   imageName: string
   imageDataUrl: string
+  mapLat?: number | null
+  mapLng?: number | null
   headline: string
   primaryText: string
   description: string
@@ -120,6 +122,8 @@ function makeInitialDraft(initialCountry?: string, initialAdUnit?: string): Camp
     customBid: '',
     imageName: '',
     imageDataUrl: '',
+    mapLat: null,
+    mapLng: null,
     headline: '',
     primaryText: '',
     description: '',
@@ -142,6 +146,8 @@ function isCampaignDraft(value: unknown): value is CampaignDraft {
     && arrays.every((key) => Array.isArray(record[key]) && (record[key] as unknown[]).every((item) => typeof item === 'string'))
     && typeof record.specialCategory === 'boolean'
     && typeof record.abTest === 'boolean'
+    && (record.mapLat === undefined || record.mapLat === null || typeof record.mapLat === 'number')
+    && (record.mapLng === undefined || record.mapLng === null || typeof record.mapLng === 'number')
     && (record.budgetType === '' || record.budgetType === 'daily' || record.budgetType === 'lifetime')
 }
 
@@ -770,7 +776,22 @@ export function CreateCampaignForm({
           <div className="max-w-xs">
             <TextField id="radius" label="Radius (km)" type="number" min={1} max={500} value={draft.radius} onChange={(value) => updateDraft('radius', value)} onBlur={() => markTouched('radius')} error={fieldError('radius')} />
           </div>
-          <MapPicker country={draft.country} state={draft.state} city={draft.city} radius={draft.radius} />
+          <MapPicker
+            location={{
+              lat: draft.mapLat ?? null,
+              lng: draft.mapLng ?? null,
+              radiusKm: Math.min(50, Math.max(1, Number(draft.radius) || 10)),
+              label: [draft.city, draft.state, draft.country].filter(Boolean).join(', '),
+            }}
+            pinCodes={draft.pins}
+            onPinCodesChange={(pins) => updateDraft('pins', pins)}
+            onChange={(location) => {
+              updateDraft('city', location.label)
+              updateDraft('radius', String(location.radiusKm))
+              updateDraft('mapLat', location.lat)
+              updateDraft('mapLng', location.lng)
+            }}
+          />
         </div>
         <SelectableChips label="Devices" options={advertiserDevices} selected={draft.devices} onToggle={(value) => toggle('devices', value)} />
         <SelectableChips label="Operating systems" options={[...campaignOperatingSystems]} selected={draft.operatingSystems} onToggle={(value) => toggle('operatingSystems', value)} />

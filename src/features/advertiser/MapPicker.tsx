@@ -1,25 +1,23 @@
-type MapPickerProps = {
-  country: string
-  state: string
-  city: string
-  radius: string
-}
+'use client'
 
-export function MapPicker({ country, state, city, radius }: MapPickerProps) {
-  const place = [city, state, country].filter(Boolean).join(', ')
+import dynamic from 'next/dynamic'
+import type { CampaignLocation } from '@/types/campaign'
 
-  return (
-    <section
-      role="region"
-      aria-label="Map picker placeholder"
-      className="flex min-h-44 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center"
-    >
-      <p className="text-sm font-semibold text-navy-900">Map picker placeholder</p>
-      <p className="mt-1 text-sm text-slate-600">
-        {place || 'Choose a location to preview it here'}
-        {radius ? ` · ${radius} km radius` : ''}
-      </p>
-      <p className="mt-2 text-xs text-slate-500">No map tiles or location tracking are loaded in this mock.</p>
-    </section>
-  )
+const LeafletMap = dynamic(() => import('./LeafletMap'), {
+  ssr: false,
+  loading: () => <div className="h-64 animate-pulse rounded-xl bg-slate-100" aria-label="Loading map" />,
+})
+
+export function MapPicker({
+  location,
+  onChange,
+  pinCodes,
+  onPinCodesChange,
+}: {
+  location: CampaignLocation
+  onChange: (location: CampaignLocation) => void
+  pinCodes: string[]
+  onPinCodesChange: (pinCodes: string[]) => void
+}) {
+  return <LeafletMap location={location} onChange={onChange} pinCodes={pinCodes} onPinCodesChange={onPinCodesChange} />
 }

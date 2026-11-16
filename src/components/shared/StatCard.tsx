@@ -24,15 +24,13 @@ function getNumericParts(value: string) {
 }
 
 // Picks an icon from the label, so no extra props are needed.
-function iconFor(label: string): IconType {
-  const l = label.toLowerCase()
-  if (/(spend|earn|revenue|balance|budget|payout|fund)/.test(l)) return FiCreditCard
-  if (/(impression|view|traffic|visitor)/.test(l)) return FiEye
-  if (/click/.test(l)) return FiMousePointer
-  if (/(ctr|rate|%)/.test(l)) return FiPercent
-  if (/(conversion|lead|goal)/.test(l)) return FiTarget
-  return FiBarChart2
-}
+const ICON_RULES: Array<{ pattern: RegExp; icon: IconType }> = [
+  { pattern: /(spend|earn|revenue|balance|budget|payout|fund)/, icon: FiCreditCard },
+  { pattern: /(impression|view|traffic|visitor)/, icon: FiEye },
+  { pattern: /click/, icon: FiMousePointer },
+  { pattern: /(ctr|rate|%)/, icon: FiPercent },
+  { pattern: /(conversion|lead|goal)/, icon: FiTarget },
+]
 
 // Decorative mini chart. Mock shape only, generated from the label.
 function sparkPath(seed: string) {
@@ -51,7 +49,8 @@ function sparkPath(seed: string) {
 export function StatCard({ label, value, detail = 'Mock data' }: StatCardProps) {
   const number = useMemo(() => getNumericParts(value), [value])
   const [count, setCount] = useState(0)
-  const Icon = iconFor(label)
+  const loweredLabel = label.toLowerCase()
+  const Icon = ICON_RULES.find(({ pattern }) => pattern.test(loweredLabel))?.icon ?? FiBarChart2
   const spark = useMemo(() => sparkPath(label), [label])
 
   useEffect(() => {

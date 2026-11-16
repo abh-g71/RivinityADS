@@ -1,15 +1,5 @@
-import { CreateCampaignForm } from '@/features/advertiser/CreateCampaignForm'
+import { NewCampaignStart } from '@/features/advertiser/NewCampaignStart'
 
-type NewCampaignPageProps = {
-  searchParams: Promise<{ country?: string; adUnit?: string }>
-}
-
-export default async function NewCampaignPage({ searchParams }: NewCampaignPageProps) {
-  const params = await searchParams
-  return (
-    <CreateCampaignForm
-      initialCountry={params.country ?? ''}
-      initialAdUnit={params.adUnit ?? ''}
-    />
-  )
+export default function NewCampaignPage() {
+  return <NewCampaignStart />
 }
