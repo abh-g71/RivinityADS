@@ -32,7 +32,7 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
   return (
     <TooltipProvider>
       <ToastProvider>
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 lg:h-screen lg:overflow-hidden">
           <Sidebar
             role={role}
             isOpen={menuOpen}
@@ -47,7 +47,7 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
               onMenuClick={() => setMenuOpen(true)}
               onLogout={() => router.push('/login')}
             />
-            <main className="p-4 sm:p-6 lg:p-8">
+            <main className="p-4 sm:p-6 lg:h-[calc(100vh-5.5rem)] lg:overflow-hidden lg:p-5">
               <ConsoleRoleProvider role={role}>
                 <PageTransition pageKey={pathname}>{children}</PageTransition>
               </ConsoleRoleProvider>

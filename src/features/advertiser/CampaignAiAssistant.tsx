@@ -93,19 +93,19 @@ export function CampaignAiAssistant() {
   const hasDraftContent = Boolean(draft.objective || draft.location.label || draft.headline || draft.text || draft.url)
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-6 sm:px-6 sm:py-10">
+    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:h-[calc(100vh-9rem)] lg:min-h-0 lg:overflow-hidden lg:py-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link href="/campaigns/new" className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-slate-600 hover:text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</Link>
         <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">AI assistant (demo)</span>
       </div>
-      <header className="mt-5">
+      <header className="mt-4 lg:mt-3">
         <h1 className="text-2xl font-bold text-navy-900 sm:text-3xl">Let’s put your campaign together</h1>
-        <p className="mt-2 text-sm text-slate-600">Tell me what you have in mind. You can edit every detail before anything is submitted.</p>
+        <p className="mt-1 text-sm text-slate-600">Tell me what you have in mind. You can edit every detail before anything is submitted.</p>
         <p className="mt-2 text-xs text-slate-500" role="status">Draft saved in this browser when updated.</p>
       </header>
 
-      <section aria-label="Campaign assistant conversation" className="mt-5 flex min-h-[26rem] flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-6" aria-live="polite">
+      <section aria-label="Campaign assistant conversation" className="mt-4 flex min-h-[26rem] flex-col rounded-xl border border-slate-200 bg-white shadow-sm lg:h-[calc(100%-8.5rem)] lg:min-h-0">
+        <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-5 lg:min-h-0" aria-live="polite">
           {messages.map((message) => (
             <div key={message.id} className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {message.role === 'assistant' && <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700"><Bot className="h-4 w-4" aria-hidden="true" /></span>}
@@ -116,7 +116,7 @@ export function CampaignAiAssistant() {
           <div ref={tailRef} />
         </div>
         {quickReplies.length > 0 && (
-          <div className="flex flex-wrap gap-2 border-t border-slate-100 px-4 py-3 sm:px-6">
+          <div className="flex flex-wrap gap-2 border-t border-slate-100 px-4 py-3 sm:px-5">
             {quickReplies.map((reply) => <button key={reply} type="button" disabled={loading} onClick={() => void sendMessage(reply)} className="min-h-10 rounded-full border border-brand-200 bg-brand-50 px-3 text-sm font-medium text-brand-700 hover:bg-brand-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">{reply}</button>)}
           </div>
         )}
@@ -128,7 +128,7 @@ export function CampaignAiAssistant() {
         {error && <div className="flex items-center justify-between gap-3 px-4 pb-4 text-sm text-red-700" role="alert"><span>{error}</span><button type="button" onClick={() => void sendMessage(lastMessage)} className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-red-200 px-3 text-xs font-semibold hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"><RotateCcw className="h-3 w-3" aria-hidden="true" />Retry</button></div>}
       </section>
 
-      <section aria-labelledby="ai-draft-title" className="mt-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <section aria-labelledby="ai-draft-title" className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:max-h-[18rem] lg:overflow-y-auto">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 id="ai-draft-title" className="text-lg font-semibold text-navy-900">Your campaign draft</h2>

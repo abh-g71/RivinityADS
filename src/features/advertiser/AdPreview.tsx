@@ -23,7 +23,7 @@ export function AdPreview({ draft }: { draft: CampaignDraft }) {
   const textTooLong = draft.text.length > 125
 
   return (
-    <section aria-labelledby="preview-title" className="space-y-4">
+    <section aria-labelledby="preview-title" className="space-y-4 lg:h-full lg:flex lg:flex-col">
       <div>
         <h3 id="preview-title" className="font-semibold text-navy-900">Live ad preview</h3>
         <p className="mt-1 text-sm text-slate-600">See how your ad may look before you save it.</p>

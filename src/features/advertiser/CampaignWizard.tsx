@@ -305,7 +305,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10">
+    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:h-[calc(100vh-9rem)] lg:min-h-0 lg:overflow-hidden lg:py-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link href="/campaigns/new" className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-slate-600 hover:text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Exit setup</Link>
         <div className="flex items-center gap-3">
@@ -314,7 +314,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
         </div>
       </div>
 
-      <section className="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <section className="mt-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:mt-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-navy-900">{review ? 'Review your campaign' : `Step ${step + 1} of 4`}</p>
@@ -330,8 +330,8 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       </section>
 
       {!review ? (
-        <section className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)]">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+        <section className={`mt-4 lg:min-h-0 ${step === 1 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-stretch' : step === 3 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)] lg:items-stretch' : 'grid gap-5'}`}>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-y-auto">
             {step === 0 && (
               <>
                 <h1 className="text-2xl font-bold text-navy-900">What is your main goal?</h1>
@@ -354,13 +354,10 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 <div className="mt-5 space-y-5">
                   <div>
                     <label className="mb-2 block text-sm font-semibold text-navy-900">Location</label>
-                    <p className="mb-3 text-xs text-slate-500">Search for a city or place a pin on the map.</p>
-                    <MapPicker
-                      location={draft.location}
-                      onChange={(location) => updateDraft((current) => ({ ...current, location }))}
-                      pinCodes={draft.pinCodes}
-                      onPinCodesChange={(pinCodes) => setField('pinCodes', pinCodes)}
-                    />
+                    <p className="mb-3 text-xs text-slate-500">Use the map to set your target area.</p>
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                      {draft.location.label ? `Current target: ${draft.location.label}` : 'No location selected yet'}
+                    </div>
                     {missingLocation && <p className="mt-2 text-sm text-amber-700">Choose a location or add PIN codes to continue.</p>}
                   </div>
                   <div>
@@ -475,11 +472,29 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
               <button type="button" onClick={() => step === 3 ? setReview(true) : setStep(step + 1)} disabled={step === 0 && missingGoal} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">{step === 3 ? 'Review campaign' : 'Continue'}<ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
             </div>
           </div>
-          {step === 3 && <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"><AdPreview draft={draft} /></aside>}
+          {step === 3 && <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto"><AdPreview draft={draft} /></aside>}
+          {step === 1 && (
+            <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-hidden">
+              <div className="flex h-full flex-col gap-3">
+                <div>
+                  <h2 className="text-base font-semibold text-navy-900">Map preview</h2>
+                  <p className="mt-1 text-xs text-slate-500">Your audience radius updates in real time.</p>
+                </div>
+                <div className="lg:flex-1">
+                  <MapPicker
+                    location={draft.location}
+                    onChange={(location) => updateDraft((current) => ({ ...current, location }))}
+                    pinCodes={draft.pinCodes}
+                    onPinCodesChange={(pinCodes) => setField('pinCodes', pinCodes)}
+                  />
+                </div>
+              </div>
+            </aside>
+          )}
         </section>
       ) : (
-        <section className="mt-5 space-y-5">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+        <section className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)] lg:min-h-0">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h1 className="text-2xl font-bold text-navy-900">Review your campaign</h1>
@@ -508,7 +523,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
               {totalBudget === null ? `Daily cap: ₹${draft.dailyBudget.toLocaleString('en-IN')} · no end date` : `Total budget: ₹${totalBudget.toLocaleString('en-IN')} (${draft.duration} days)`}. Estimated results are a mock range, not a forecast.
             </p>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
             <h2 className="text-lg font-semibold text-navy-900">Ad readiness</h2>
             <p className="mt-1 text-sm text-slate-600">Warnings are optional. Fix any errors before publishing.</p>
             <ul className="mt-4 space-y-3">

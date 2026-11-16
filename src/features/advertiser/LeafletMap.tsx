@@ -76,7 +76,7 @@ export default function LeafletMap({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 lg:h-full lg:flex lg:flex-col">
       <div className="flex flex-col gap-2 sm:flex-row">
         <div className="relative min-w-0 flex-1">
           <label htmlFor="city-search" className="sr-only">Search Indian cities</label>
@@ -104,8 +104,8 @@ export default function LeafletMap({
           Use my location
         </button>
       </div>
-      <div className="overflow-hidden rounded-xl border border-slate-200">
-        <MapContainer center={position} zoom={location.lat === null ? 4 : 11} scrollWheelZoom={false} className="h-64 w-full">
+      <div className="overflow-hidden rounded-xl border border-slate-200 lg:min-h-0 lg:flex-1">
+        <MapContainer center={position} zoom={location.lat === null ? 4 : 11} scrollWheelZoom={false} className="h-64 w-full lg:h-[28rem]">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
