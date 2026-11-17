@@ -44,7 +44,9 @@ export default function LeafletMap({
   const [pinInput, setPinInput] = useState(pinCodes.join(', '))
   const [pinMode, setPinMode] = useState(false)
   const [pinError, setPinError] = useState('')
-  const position = useMemo<[number, number]>(() => [location.lat ?? 20.5937, location.lng ?? 78.9629], [location.lat ?? 20.5937, location.lng ?? 78.9629])
+  const lat = location.lat ?? 20.5937
+  const lng = location.lng ?? 78.9629
+  const position = useMemo<[number, number]>(() => [lat, lng], [lat, lng])
   const pinIcon = useMemo(() => L.divIcon({
     className: 'campaign-map-pin',
     html: '<span style="display:block;width:18px;height:18px;border:4px solid white;border-radius:999px;background:#2563eb;box-shadow:0 2px 8px #0f172a66"></span>',
