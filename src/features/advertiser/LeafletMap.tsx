@@ -44,7 +44,7 @@ export default function LeafletMap({
   const [pinInput, setPinInput] = useState(pinCodes.join(', '))
   const [pinMode, setPinMode] = useState(false)
   const [pinError, setPinError] = useState('')
-  const position = useMemo<[number, number]>(() => [location.lat ?? 20.5937, location.lng ?? 78.9629], [location.lat, location.lng])
+  const position = useMemo<[number, number]>(() => [location.lat ?? 20.5937, location.lng ?? 78.9629], [location.lat ?? 20.5937, location.lng ?? 78.9629])
   const pinIcon = useMemo(() => L.divIcon({
     className: 'campaign-map-pin',
     html: '<span style="display:block;width:18px;height:18px;border:4px solid white;border-radius:999px;background:#2563eb;box-shadow:0 2px 8px #0f172a66"></span>',
@@ -105,14 +105,14 @@ export default function LeafletMap({
         </button>
       </div>
       <div className="overflow-hidden rounded-xl border border-slate-200 lg:min-h-0 lg:flex-1">
-        <MapContainer center={position} zoom={location.lat === null ? 4 : 11} scrollWheelZoom={false} className="h-64 w-full lg:h-[28rem]">
+        <MapContainer center={position} zoom={location.lat == null ? 4 : 11} scrollWheelZoom={false} className="h-64 w-full lg:h-[28rem]">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {location.lat !== null && <MoveMap position={position} />}
+          {location.lat != null && <MoveMap position={position} />}
           <ClickToPlace onPlace={(lat, lng) => onChange({ ...location, lat, lng, label: 'Pinned area' })} />
-          {location.lat !== null && location.lng !== null && (
+          {location.lat != null && location.lng != null && (
             <>
               <Marker
                 position={[location.lat, location.lng]}
@@ -125,15 +125,15 @@ export default function LeafletMap({
                   },
                 }}
               />
-              <Circle center={[location.lat, location.lng]} radius={location.radiusKm * 1000} pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.12 }} />
+              <Circle center={[location.lat, location.lng]} radius={(location.radiusKm ?? 10) * 1000} pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.12 }} />
             </>
           )}
         </MapContainer>
       </div>
       <p className="text-xs text-slate-500">Select a city or click the map to place a pin. Map tiles come from OpenStreetMap.</p>
       <label className="block space-y-2 text-sm font-medium text-navy-900" htmlFor="campaign-map-radius">
-        Reach radius: {location.radiusKm} km
-        <input id="campaign-map-radius" type="range" min="1" max="50" value={location.radiusKm} onChange={(event) => onChange({ ...location, radiusKm: Number(event.target.value) })} className="w-full accent-brand-600" />
+        Reach radius: {(location.radiusKm ?? 10)} km
+        <input id="campaign-map-radius" type="range" min="1" max="50" value={location.radiusKm ?? 10} onChange={(event) => onChange({ ...location, radiusKm: Number(event.target.value) })} className="w-full accent-brand-600" />
         <span className="block text-xs font-normal text-slate-500">A smaller radius focuses on nearby people.</span>
       </label>
       <button type="button" onClick={() => setPinMode((current) => !current)} aria-expanded={pinMode} className="rounded-full border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
@@ -148,8 +148,8 @@ export default function LeafletMap({
             const pins = enteredPins.filter((pin) => /^\d{6}$/.test(pin)).slice(0, 6)
             setPinError(enteredPins.length !== pins.length ? 'Use up to 6 valid six-digit PIN codes.' : '')
             onPinCodesChange(pins)
-            const oldPinsLabel = location.label.includes('PIN code')
-            onChange({ ...location, label: pins.length ? `${pins.length} PIN code${pins.length === 1 ? '' : 's'}` : oldPinsLabel ? '' : location.label, lat: pins.length ? null : location.lat, lng: pins.length ? null : location.lng })
+            const oldPinsLabel = Boolean(location.label?.includes('PIN code'))
+            onChange({ ...location, label: pins.length ? `${pins.length} PIN code${pins.length === 1 ? '' : 's'}` : oldPinsLabel ? '' : location.label ?? '', lat: pins.length ? null : location.lat ?? null, lng: pins.length ? null : location.lng ?? null })
           }} placeholder="For example, 400001, 110001" className="h-11 w-full rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
           <p className="text-xs text-slate-500">{pinCodes.length ? `${pinCodes.length} valid PIN code${pinCodes.length === 1 ? '' : 's'} added.` : 'Use six-digit PIN codes, separated by commas.'}</p>
           {pinError && <p role="alert" className="text-xs text-red-700">{pinError}</p>}

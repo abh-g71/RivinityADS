@@ -93,7 +93,7 @@ export function CampaignAiAssistant() {
   const hasDraftContent = Boolean(draft.objective || draft.location.label || draft.headline || draft.text || draft.url)
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:h-[calc(100vh-9rem)] lg:min-h-0 lg:overflow-hidden lg:py-5">
+    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:min-h-[calc(100vh-9rem)] lg:py-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link href="/campaigns/new" className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-slate-600 hover:text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</Link>
         <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">AI assistant (demo)</span>
@@ -104,7 +104,7 @@ export function CampaignAiAssistant() {
         <p className="mt-2 text-xs text-slate-500" role="status">Draft saved in this browser when updated.</p>
       </header>
 
-      <section aria-label="Campaign assistant conversation" className="mt-4 flex min-h-[26rem] flex-col rounded-xl border border-slate-200 bg-white shadow-sm lg:h-[calc(100%-8.5rem)] lg:min-h-0">
+      <section aria-label="Campaign assistant conversation" className="mt-4 flex min-h-[26rem] flex-col rounded-xl border border-slate-200 bg-white shadow-sm lg:h-[min(68vh,48rem)] lg:min-h-0">
         <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-5 lg:min-h-0" aria-live="polite">
           {messages.map((message) => (
             <div key={message.id} className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>

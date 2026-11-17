@@ -1,11 +1,16 @@
 import { createEmptyCampaignDraft, type CampaignDraft, type ChatMessage } from '@/types/campaign'
 
 const cityNames = ['Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai', 'Pune', 'Kolkata', 'Jaipur']
+const countryNames = ['India', 'United States', 'United Kingdom', 'UAE', 'Canada', 'Australia', 'Germany', 'Singapore']
 
 function findMissingFields(draft: CampaignDraft) {
   const missing: string[] = []
+  const countries = draft.location.countries ?? []
+  const cities = draft.location.cities ?? []
+  const regions = draft.location.regions ?? []
+  const pinCodes = draft.location.pinCodes ?? []
   if (!draft.objective) missing.push('campaign goal')
-  if (!draft.location.label && draft.pinCodes.length === 0) missing.push('location')
+  if (!draft.location.mode && countries.length === 0 && cities.length === 0 && regions.length === 0 && pinCodes.length === 0) missing.push('location')
   if (!draft.dailyBudget) missing.push('daily budget')
   if (!draft.headline) missing.push('headline')
   if (!draft.text) missing.push('ad text')
@@ -16,7 +21,7 @@ function findMissingFields(draft: CampaignDraft) {
 function nextQuestion(field: string) {
   const questions: Record<string, string> = {
     'campaign goal': 'What would you like this campaign to do: get website visits, get leads, get sales, or build awareness?',
-    location: 'Which city or area should this campaign reach?',
+    location: 'Which country or city should this campaign reach?',
     'daily budget': 'What daily budget would you like to set? For example, ₹200, ₹500, or ₹1,000.',
     headline: 'What short headline would you like people to see?',
     'ad text': 'What would you like the ad to say?',
@@ -34,15 +39,20 @@ export async function generateCampaignDraft(input: {
   missingFields: string[]
   quickReplies?: string[]
 }> {
-  // TODO: replace with a call to the backend AI endpoint
   await new Promise((resolve) => setTimeout(resolve, 350))
 
   const baseDraft = input.currentDraft ?? createEmptyCampaignDraft()
   const draft: CampaignDraft = {
     ...baseDraft,
-    location: { ...baseDraft.location },
+    location: {
+      ...baseDraft.location,
+      countries: [...(baseDraft.location.countries ?? [])],
+      regions: [...(baseDraft.location.regions ?? [])],
+      cities: [...(baseDraft.location.cities ?? [])],
+      pinCodes: [...(baseDraft.location.pinCodes ?? [])],
+    },
     interests: [...baseDraft.interests],
-    pinCodes: [...baseDraft.pinCodes],
+    pinCodes: [...(baseDraft.pinCodes ?? [])],
   }
   const latestMessage = input.messages.at(-1)?.text.trim() ?? ''
   const lowerMessage = latestMessage.toLowerCase()
@@ -55,9 +65,14 @@ export async function generateCampaignDraft(input: {
   const budgetMatch = latestMessage.match(/(?:₹|rs\.?\s?)(\d[\d,]*)/i)
   if (budgetMatch) draft.dailyBudget = Number(budgetMatch[1].replace(/,/g, ''))
 
+  const detectedCountry = countryNames.find((name) => new RegExp(`\\b${name.split(' ').join('\\s+')}\\b`, 'i').test(latestMessage))
+  if (detectedCountry) {
+    draft.location = { ...draft.location, mode: 'country', countries: [detectedCountry], label: `${detectedCountry} (whole country)` }
+  }
+
   const city = cityNames.find((name) => new RegExp(`\\b${name}\\b`, 'i').test(latestMessage))
   if (city) {
-    draft.location = { ...draft.location, label: city }
+    draft.location = { ...draft.location, mode: 'city', cities: [city], label: city }
   }
 
   const headline = latestMessage.match(/headline\s*:\s*["“]?(.+?)["”]?(?:\s*$)/i)
@@ -77,7 +92,7 @@ export async function generateCampaignDraft(input: {
       quickReplies: field === 'campaign goal'
         ? ['Get website visits', 'Get leads', 'Get sales', 'Build awareness']
         : field === 'location'
-          ? cityNames.slice(0, 4)
+          ? ['India', 'United States', 'United Kingdom', 'Mumbai']
           : field === 'daily budget'
             ? ['₹200', '₹500', '₹1,000']
           : undefined,

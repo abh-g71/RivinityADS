@@ -16,6 +16,13 @@ const goals = [
   { title: 'Get sales', hint: 'Help people discover and buy your products.' },
   { title: 'Build awareness', hint: 'Introduce your business to more people.' },
 ]
+const countryOptions = ['India', 'United States', 'United Kingdom', 'UAE', 'Canada', 'Australia', 'Germany', 'Singapore', 'France', 'Japan', 'Brazil', 'Saudi Arabia', 'South Africa', 'Indonesia', 'Thailand', 'Netherlands', 'Spain', 'Italy']
+const locationModes = [
+  { value: 'country', label: 'Whole country' },
+  { value: 'region', label: 'States / regions' },
+  { value: 'city', label: 'Cities' },
+  { value: 'radius', label: 'Around a point' },
+] as const
 const interests = ['Shopping', 'Food & dining', 'Travel', 'Technology', 'Fitness', 'Events', 'Beauty', 'Education']
 const durations: (number | 'ongoing')[] = [7, 14, 30, 'ongoing']
 
@@ -162,7 +169,12 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   }, [confirming, ready, review, step, published])
 
   const missingGoal = !draft.objective
-  const missingLocation = !draft.location.label && draft.pinCodes.length === 0
+  const locationCountries = draft.location.countries ?? []
+  const locationRegions = draft.location.regions ?? []
+  const locationCities = draft.location.cities ?? []
+  const locationPinCodes = draft.location.pinCodes ?? []
+  const locationSummary = draft.location.label || locationCountries.join(', ') || locationRegions.join(', ') || locationCities.join(', ') || (draft.location.pin ? 'Pinned area' : 'No location selected')
+  const missingLocation = locationCountries.length === 0 && locationRegions.length === 0 && locationCities.length === 0 && locationPinCodes.length === 0 && !draft.location.pin && !draft.location.label
   const headlineError = draft.headline.trim().length === 0
     ? 'Add a short headline for your ad.'
     : draft.headline.length > 40
@@ -225,6 +237,17 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       console.error('Unable to save campaign draft', error)
       toast({ title: 'Draft could not be saved', description: 'Browser storage may be full or unavailable.', variant: 'error' })
     }
+  }
+
+  function setLocationMode(mode: CampaignDraft['location']['mode']) {
+    const countries = draft.location.countries ?? []
+    const regions = draft.location.regions ?? []
+    const cities = draft.location.cities ?? []
+    setField('location', {
+      ...draft.location,
+      mode,
+      label: mode === 'country' ? (countries[0] ? `${countries[0]} (whole country)` : 'India (whole country)') : mode === 'region' ? (regions[0] ? `${regions[0]} region` : 'Region selected') : mode === 'city' ? (cities[0] ? cities[0] : 'City selected') : (draft.location.pin ? 'Pinned area' : 'Area around a point'),
+    })
   }
 
   function focusReadiness(key: string) {
@@ -304,8 +327,27 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
     setEditing(null)
   }
 
+  const advanceStep = () => {
+    if (step === 0 && !draft.objective) {
+      toast({ title: 'Pick a goal for your campaign' })
+      return
+    }
+    if (step === 1 && missingLocation) {
+      toast({ title: 'Pick where your ad should show' })
+      setEditing('location')
+      const input = document.getElementById('country-picker') as HTMLInputElement | null
+      input?.focus()
+      return
+    }
+    if (step === 3) {
+      setReview(true)
+      return
+    }
+    setStep(step + 1)
+  }
+
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:h-[calc(100vh-9rem)] lg:min-h-0 lg:overflow-hidden lg:py-5">
+    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:min-h-[calc(100vh-9rem)] lg:py-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link href="/campaigns/new" className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-slate-600 hover:text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Exit setup</Link>
         <div className="flex items-center gap-3">
@@ -331,7 +373,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
 
       {!review ? (
         <section className={`mt-4 lg:min-h-0 ${step === 1 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-stretch' : step === 3 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)] lg:items-stretch' : 'grid gap-5'}`}>
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-y-auto">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-hidden">
             {step === 0 && (
               <>
                 <h1 className="text-2xl font-bold text-navy-900">What is your main goal?</h1>
@@ -353,11 +395,37 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 <p className="mt-2 text-sm text-slate-600">Choose a place and a broad audience. You can refine this anytime.</p>
                 <div className="mt-5 space-y-5">
                   <div>
+                    <div className="mb-3 flex flex-wrap gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2">
+                      {locationModes.map((mode) => (
+                        <button key={mode.value} type="button" onClick={() => setLocationMode(mode.value)} className={`rounded-lg px-3 py-2 text-xs font-medium transition ${draft.location.mode === mode.value ? 'bg-brand-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100'}`}>
+                          {mode.label}
+                        </button>
+                      ))}
+                    </div>
                     <label className="mb-2 block text-sm font-semibold text-navy-900">Location</label>
                     <p className="mb-3 text-xs text-slate-500">Use the map to set your target area.</p>
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-                      {draft.location.label ? `Current target: ${draft.location.label}` : 'No location selected yet'}
+                      {locationSummary}
                     </div>
+                    {draft.location.mode === 'country' && (
+                      <div className="mt-3 space-y-3">
+                        <input id="country-picker" value={draft.location.countries?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'country', countries: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} (whole country)` : '' })} list="country-list" placeholder="Search a country" className="h-11 w-full rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+                        <datalist id="country-list">
+                          {countryOptions.map((country) => <option key={country} value={country} />)}
+                        </datalist>
+                        <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={Boolean(draft.location.excludeCountries)} onChange={(event) => setField('location', { ...draft.location, excludeCountries: event.target.checked })} /> Exclude these countries</label>
+                      </div>
+                    )}
+                    {draft.location.mode === 'region' && (
+                      <div className="mt-3 space-y-3">
+                        <input value={draft.location.regions?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'region', regions: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} region` : '' })} placeholder="Search state or region" className="h-11 w-full rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+                      </div>
+                    )}
+                    {draft.location.mode === 'city' && (
+                      <div className="mt-3 space-y-3">
+                        <input value={draft.location.cities?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'city', cities: event.target.value ? [event.target.value] : [], label: event.target.value ? event.target.value : '' })} placeholder="Search a city" className="h-11 w-full rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+                      </div>
+                    )}
                     {missingLocation && <p className="mt-2 text-sm text-amber-700">Choose a location or add PIN codes to continue.</p>}
                   </div>
                   <div>
@@ -467,12 +535,14 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 </div>
               </>
             )}
-            <div className="mt-6 flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-              <button type="button" onClick={() => updateStep(step - 1)} disabled={step === 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</button>
-              <button type="button" onClick={() => step === 3 ? setReview(true) : setStep(step + 1)} disabled={step === 0 && missingGoal} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">{step === 3 ? 'Review campaign' : 'Continue'}<ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
+            <div className="sticky bottom-0 z-10 mt-6 -mx-4 border-t border-slate-100 bg-white/95 px-4 pb-4 pt-4 backdrop-blur sm:-mx-5 sm:px-5">
+              <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <button type="button" onClick={() => updateStep(step - 1)} disabled={step === 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</button>
+                <button type="button" onClick={advanceStep} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{step === 3 ? 'Review campaign' : 'Continue'}<ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
+              </div>
             </div>
           </div>
-          {step === 3 && <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto"><AdPreview draft={draft} /></aside>}
+          {step === 3 && <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-hidden"><AdPreview draft={draft} /></aside>}
           {step === 1 && (
             <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-hidden">
               <div className="flex h-full flex-col gap-3">
@@ -514,7 +584,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                       <button type="button" onClick={() => setEditing(null)} className="rounded-lg px-2 text-xs font-semibold text-brand-700 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Done</button>
                     </div>
                   ) : (
-                    <button type="button" onClick={() => setEditing(field)} className="mt-1 block max-w-full break-words text-left text-sm font-medium text-navy-900 underline decoration-dotted underline-offset-4 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{reviewFieldValue(field)}</button>
+                    <button type="button" onClick={() => setEditing(field)} className="mt-1 block max-w-full break-words text-left text-sm font-medium text-navy-900 underline decoration-dotted underline-offset-4 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{reviewFieldValue(field) ?? ''}</button>
                   )}
                 </div>
               ))}

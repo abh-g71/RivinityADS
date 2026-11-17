@@ -23,7 +23,7 @@ export function NewCampaignStart() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:h-[calc(100vh-9rem)] lg:min-h-0 lg:overflow-hidden lg:py-5">
+    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:min-h-[calc(100vh-9rem)] lg:py-5">
       <Link href="/campaigns" className="text-sm font-medium text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
         ← Back to campaigns
       </Link>

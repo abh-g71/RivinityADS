@@ -786,7 +786,7 @@ export function CreateCampaignForm({
             pinCodes={draft.pins}
             onPinCodesChange={(pins) => updateDraft('pins', pins)}
             onChange={(location) => {
-              updateDraft('city', location.label)
+              updateDraft('city', location.label ?? '')
               updateDraft('radius', String(location.radiusKm))
               updateDraft('mapLat', location.lat)
               updateDraft('mapLng', location.lng)
