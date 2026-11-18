@@ -3,19 +3,15 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
-import { ArrowLeft, ArrowRight, Check, ChevronDown, ImagePlus } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, ChevronDown } from 'lucide-react'
 import { MapPicker } from '@/features/advertiser/MapPicker'
 import { AdPreview } from '@/features/advertiser/AdPreview'
 import { campaignDraftStorageKey, campaignTemplates } from '@/features/advertiser/campaignTemplates'
 import { useToast } from '@/components/shared/Toast'
-import { createEmptyCampaignDraft, type CampaignDraft } from '@/types/campaign'
+import { createEmptyCampaignDraft, createObjectiveDetails, migrateCampaignDraft, type CampaignDraft } from '@/types/campaign'
+import { campaignObjectives, getObjectiveReadiness, isCampaignObjective } from '@/features/advertiser/campaignObjectives'
+import { ObjectiveAdStep } from '@/features/advertiser/ObjectiveAdStep'
 
-const goals = [
-  { title: 'Get website visits', hint: 'Bring more people to your website.' },
-  { title: 'Get leads', hint: 'Encourage people to contact you.' },
-  { title: 'Get sales', hint: 'Help people discover and buy your products.' },
-  { title: 'Build awareness', hint: 'Introduce your business to more people.' },
-]
 const countryOptions = ['India', 'United States', 'United Kingdom', 'UAE', 'Canada', 'Australia', 'Germany', 'Singapore', 'France', 'Japan', 'Brazil', 'Saudi Arabia', 'South Africa', 'Indonesia', 'Thailand', 'Netherlands', 'Spain', 'Italy']
 const locationModes = [
   { value: 'country', label: 'Whole country' },
@@ -27,20 +23,6 @@ const interests = ['Shopping', 'Food & dining', 'Travel', 'Technology', 'Fitness
 const durations: (number | 'ongoing')[] = [7, 14, 30, 'ongoing']
 
 type ReviewField = 'objective' | 'location' | 'age' | 'gender' | 'interests' | 'budget' | 'duration' | 'headline' | 'text' | 'cta' | 'url'
-
-function isValidDraft(value: unknown): value is CampaignDraft {
-  if (!value || typeof value !== 'object') return false
-  const draft = value as Partial<CampaignDraft>
-  return typeof draft.objective === 'string'
-    && Boolean(draft.location && typeof draft.location.label === 'string' && typeof draft.location.radiusKm === 'number')
-    && typeof draft.dailyBudget === 'number'
-    && (typeof draft.duration === 'number' || draft.duration === 'ongoing')
-    && Array.isArray(draft.interests)
-    && typeof draft.headline === 'string'
-    && typeof draft.text === 'string'
-    && typeof draft.cta === 'string'
-    && typeof draft.url === 'string'
-}
 
 function urlError(value: string) {
   if (!value.trim()) return 'Add the website link people should open.'
@@ -60,13 +42,13 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   const [step, setStep] = useState(0)
   const [review, setReview] = useState(startReview)
   const [confirming, setConfirming] = useState(false)
+  const [pendingObjective, setPendingObjective] = useState<CampaignDraft['objective']>( '')
   const [published, setPublished] = useState(false)
   const [editing, setEditing] = useState<ReviewField | null>(null)
   const [imageError, setImageError] = useState('')
   const [saveMessage, setSaveMessage] = useState('Saving…')
   const currentDraft = useRef<CampaignDraft>(draft)
   const focusedDraft = useRef<CampaignDraft>(draft)
-  const fileInput = useRef<HTMLInputElement>(null)
   const imageUploadButton = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -75,9 +57,8 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
         const template = campaignTemplates.find((item) => item.id === templateId)
         const stored = window.localStorage.getItem(campaignDraftStorageKey)
         const value: unknown = stored ? JSON.parse(stored) : null
-        const savedDraft = isValidDraft(value)
-          ? { ...value, dailyBudget: value.dailyBudget || 500 }
-          : { ...createEmptyCampaignDraft(), dailyBudget: 500 }
+        const migrated = migrateCampaignDraft(value)
+        const savedDraft = { ...migrated, dailyBudget: migrated.dailyBudget || 500 }
         const initial = template?.draft ?? savedDraft
         setDraft(initial)
         currentDraft.current = initial
@@ -182,17 +163,27 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       : ''
   const adTextError = draft.text.trim().length === 0 ? 'Add a short message to your ad.' : ''
   const landingError = urlError(draft.url)
-  const readiness = [
-    { key: 'image' as const, label: 'Image added', ready: Boolean(draft.imageDataUrl), warning: true, step: 3 },
-    { key: 'headline' as const, label: 'Headline is under 40 characters', ready: Boolean(draft.headline.trim()) && draft.headline.length <= 40, warning: false, step: 3 },
-    { key: 'url' as const, label: 'Website link is valid', ready: !landingError, warning: false, step: 3 },
-    { key: 'location' as const, label: 'Location is set', ready: !missingLocation, warning: false, step: 1 },
-  ]
-  const canPublish = !missingGoal && !missingLocation && !headlineError && !adTextError && !landingError
+  const readiness = getObjectiveReadiness(draft)
+  const canPublish = Boolean(draft.objective) && readiness.filter((item) => !item.warning).every((item) => item.ready)
   const totalBudget = draft.duration === 'ongoing' ? null : draft.dailyBudget * draft.duration
 
   function chooseGoal(goal: string) {
-    setField('objective', goal, true)
+    if (!isCampaignObjective(goal)) return
+    const currentDetails = draft.objectiveDetails
+    const defaults = createObjectiveDetails(currentDetails.objective)
+    const hasObjectiveData = JSON.stringify(currentDetails) !== JSON.stringify(defaults) || Boolean(draft.url.trim())
+    if (draft.objective && draft.objective !== goal && hasObjectiveData) {
+      setPendingObjective(goal)
+      return
+    }
+    applyObjective(goal)
+  }
+
+  function applyObjective(goal: CampaignDraft['objective']) {
+    if (!isCampaignObjective(goal)) return
+    const details = createObjectiveDetails(goal)
+    updateDraft((current) => ({ ...current, objective: goal, objectiveDetails: details, cta: details.buttonText, url: '' }), true)
+    setPendingObjective('')
     window.setTimeout(() => setStep(1), 400)
   }
 
@@ -208,12 +199,18 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   function uploadImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file) return
-    if (!file.type.startsWith('image/')) {
-      setImageError('Choose an image file.')
+    const acceptsVideo = draft.objective === 'Build awareness' && file.type.startsWith('video/')
+    if (!file.type.startsWith('image/') && !acceptsVideo) {
+      setImageError(draft.objective === 'Build awareness' ? 'Choose an image or video file.' : 'Choose an image file.')
       return
     }
     if (file.size > 5 * 1024 * 1024) {
       setImageError('Choose an image smaller than 5 MB.')
+      return
+    }
+    if (acceptsVideo) {
+      updateDraft((current) => ({ ...current, imageName: file.name, imageDataUrl: '', objectiveDetails: current.objectiveDetails.objective === 'Build awareness' ? { ...current.objectiveDetails, mediaKind: 'video' } : current.objectiveDetails }))
+      setImageError('')
       return
     }
     const reader = new FileReader()
@@ -258,7 +255,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       window.setTimeout(() => imageUploadButton.current?.focus(), 0)
       return
     }
-    const fields: Record<string, ReviewField> = { headline: 'headline', url: 'url', location: 'location' }
+    const fields: Record<string, ReviewField> = { headline: 'headline', url: 'url', website: 'url', location: 'location' }
     setStep(key === 'location' ? 1 : 3)
     setReview(false)
     setEditing(fields[key] ?? null)
@@ -283,7 +280,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
 
   function updateReviewField(field: ReviewField, value: string) {
     switch (field) {
-      case 'objective': setField('objective', value); break
+      case 'objective': if (isCampaignObjective(value)) applyObjective(value); break
       case 'location': setField('location', { ...draft.location, label: value }); break
       case 'age': {
         const [min, max] = value.split('-').map(Number)
@@ -359,15 +356,15 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       <section className="mt-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:mt-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-navy-900">{review ? 'Review your campaign' : `Step ${step + 1} of 4`}</p>
+            <p className="text-sm font-semibold text-navy-900">{review ? 'Review your campaign' : `Step ${step + 1} of 5`}</p>
             <p className="mt-1 text-xs text-slate-500">{review ? 'Check each detail before you publish.' : step === 0 ? 'About 2 minutes left' : step < 3 ? 'About 1 minute left' : 'Less than 1 minute left'}</p>
           </div>
-          <div className="flex gap-1.5" aria-label={`${review ? 4 : step + 1} of 4 steps complete`}>
-            {goals.map((goal, index) => <span key={goal.title} className={`h-1.5 w-8 rounded-full sm:w-12 ${index <= step ? 'bg-brand-600' : 'bg-slate-200'}`} />)}
+          <div className="flex gap-1.5" aria-label={`${review ? 5 : step + 1} of 5 steps complete`}>
+            {campaignObjectives.map((goal, index) => <span key={goal.title} className={`h-1.5 w-8 rounded-full sm:w-12 ${index <= step ? 'bg-brand-600' : 'bg-slate-200'}`} />)}
           </div>
         </div>
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
-          <div className="h-full rounded-full bg-brand-600" style={{ width: `${review ? 100 : ((step + 1) / 4) * 100}%` }} />
+          <div className="h-full rounded-full bg-brand-600" style={{ width: `${review ? 100 : ((step + 1) / 5) * 100}%` }} />
         </div>
       </section>
 
@@ -379,7 +376,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 <h1 className="text-2xl font-bold text-navy-900">What is your main goal?</h1>
                 <p className="mt-2 text-sm text-slate-600">Choose one. You can change this later.</p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {goals.map((goal) => (
+                  {campaignObjectives.map((goal) => (
                     <button key={goal.title} type="button" onClick={() => chooseGoal(goal.title)} className={`min-h-28 rounded-lg border p-4 text-left transition hover:border-brand-500 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.objective === goal.title ? 'border-brand-600 bg-brand-50' : 'border-slate-200'}`}>
                       <span className="block font-semibold text-navy-900">{goal.title}</span>
                       <span className="mt-1 block text-sm text-slate-600">{goal.hint}</span>
@@ -392,7 +389,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
             {step === 1 && (
               <>
                 <h1 className="text-2xl font-bold text-navy-900">Where and who?</h1>
-                <p className="mt-2 text-sm text-slate-600">Choose a place and a broad audience. You can refine this anytime.</p>
+                <p className="mt-2 text-sm text-slate-600">{campaignObjectives.find((item) => item.title === draft.objective)?.locationHint ?? 'Choose a place and a broad audience. You can refine this anytime.'}</p>
                 <div className="mt-5 space-y-5">
                   <div>
                     <div className="mb-3 flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
@@ -459,7 +456,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
             )}
             {step === 2 && (
               <>
-                <h1 className="text-2xl font-bold text-navy-900">Choose your budget</h1>
+                <h1 className="text-2xl font-bold text-navy-900">{campaignObjectives.find((item) => item.title === draft.objective)?.budgetTitle ?? 'Choose your budget'}</h1>
                 <p className="mt-2 text-sm text-slate-600">Set a daily limit. You can change it whenever you like.</p>
                 <div className="mt-5 rounded-lg border border-brand-200 bg-brand-50 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -474,10 +471,12 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                   {[200, 500, 1000].map((amount) => <button key={amount} type="button" aria-pressed={draft.dailyBudget === amount} onClick={() => setField('dailyBudget', amount, true)} className={`min-h-10 rounded-lg border px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.dailyBudget === amount ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>₹{amount.toLocaleString('en-IN')}{amount === 500 ? ' · Recommended' : ''}</button>)}
                 </div>
                 <div className="mt-5 rounded-lg bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-navy-900">Estimated results</p>
-                  <p className="mt-1 text-sm text-slate-700">About {(draft.dailyBudget * 2).toLocaleString('en-IN')}–{(draft.dailyBudget * 5).toLocaleString('en-IN')} people per day</p>
-                  <p className="mt-1 text-xs text-slate-500">Illustrative mock range only, not a forecast.</p>
+                  <p className="text-sm font-semibold text-navy-900">{campaignObjectives.find((item) => item.title === draft.objective)?.estimateLabels[0] ?? 'Estimated results'}</p>
+                  <p className="mt-1 text-sm text-slate-700">{draft.objective === 'Get leads' ? `${Math.max(1, Math.round(draft.dailyBudget / 250))}–${Math.max(2, Math.round(draft.dailyBudget / 100))} leads · Cost per lead ₹${Math.max(50, Math.round(draft.dailyBudget / 5))}` : draft.objective === 'Get sales' ? `${Math.max(1, Math.round(draft.dailyBudget / 500))}–${Math.max(2, Math.round(draft.dailyBudget / 200))} sales · Return on ad spend 1.8×` : draft.objective === 'Build awareness' ? `${(draft.dailyBudget * 20).toLocaleString('en-IN')}–${(draft.dailyBudget * 45).toLocaleString('en-IN')} people · ${draft.objectiveDetails.objective === 'Build awareness' ? draft.objectiveDetails.frequency : 3} times each` : `${(draft.dailyBudget * 2).toLocaleString('en-IN')}–${(draft.dailyBudget * 5).toLocaleString('en-IN')} visits`}</p>
+                  <p className="mt-1 text-xs text-slate-500">Estimated, sample data</p>
                 </div>
+                {draft.objective === 'Build awareness' && draft.objectiveDetails.objective === 'Build awareness' && <label className="mt-4 block text-sm font-medium text-navy-900">Average frequency: {draft.objectiveDetails.frequency}<input aria-label="Average frequency" type="range" min="1" max="8" value={draft.objectiveDetails.frequency} onChange={(event) => updateDraft((current) => current.objectiveDetails.objective === 'Build awareness' ? { ...current, objectiveDetails: { ...current.objectiveDetails, frequency: Number(event.target.value) } } : current)} className="mt-2 w-full accent-brand-600" /></label>}
+                {draft.objective === 'Get sales' && <p className="mt-4 rounded-lg border border-slate-200 p-3 text-sm text-slate-700">Conversion tracking: Mock status · ready to configure</p>}
                 <fieldset className="mt-5">
                   <legend className="text-sm font-semibold text-navy-900">How long should it run?</legend>
                   <p className="mt-1 text-xs text-slate-500">Choose a run time or keep the campaign running.</p>
@@ -492,47 +491,6 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-navy-900">More options <ChevronDown className="h-4 w-4" aria-hidden="true" /></summary>
                   <p className="mt-3 text-sm text-slate-600">Your daily budget is a spending limit, not a promise to spend the full amount.</p>
                 </details>
-              </>
-            )}
-            {step === 3 && (
-              <>
-                <h1 className="text-2xl font-bold text-navy-900">Add your ad</h1>
-                <p className="mt-2 text-sm text-slate-600">Write a clear message and check the preview as you go.</p>
-                <div className="mt-5 space-y-4">
-                  <div>
-                    <span className="block text-sm font-semibold text-navy-900">Image <span className="font-normal text-slate-500">(optional)</span></span>
-                    <p className="mt-1 text-xs text-slate-500">A square image works well in most placements.</p>
-                    <input ref={fileInput} id="campaign-image" type="file" accept="image/*" onChange={uploadImage} className="sr-only" />
-                    <div className="mt-2 flex flex-wrap items-center gap-3">
-                      <button ref={imageUploadButton} type="button" onClick={() => fileInput.current?.click()} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-300 px-4 text-sm font-medium text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ImagePlus className="h-4 w-4" aria-hidden="true" />{draft.imageName ? 'Change image' : 'Add an image'}</button>
-                      {draft.imageName && <span className="max-w-40 truncate text-sm text-slate-600">{draft.imageName}</span>}
-                    </div>
-                    {imageError && <p role="alert" className="mt-2 text-sm text-red-700">{imageError}</p>}
-                  </div>
-                  <label className="block text-sm font-semibold text-navy-900" htmlFor="headline">Headline
-                    <input id="headline" value={draft.headline} maxLength={60} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('headline', event.target.value)} aria-invalid={Boolean(headlineError)} aria-describedby="headline-hint headline-count" className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" placeholder="A short headline" />
-                    <span id="headline-hint" className="mt-1 block text-xs font-normal text-slate-500">Keep it clear and under 40 characters.</span>
-                    <span id="headline-count" className={`mt-1 block text-xs font-normal ${headlineError ? 'text-amber-700' : 'text-slate-500'}`}>{draft.headline.length}/40 characters</span>
-                    {headlineError && <span className="mt-1 block text-xs font-normal text-red-700">{headlineError}</span>}
-                  </label>
-                  <label className="block text-sm font-semibold text-navy-900" htmlFor="ad-text">Ad text
-                    <textarea id="ad-text" value={draft.text} maxLength={200} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('text', event.target.value)} aria-invalid={Boolean(adTextError)} aria-describedby="text-hint text-count" className="mt-2 min-h-24 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" placeholder="What should people know?" />
-                    <span id="text-hint" className="mt-1 block text-xs font-normal text-slate-500">One helpful sentence is a good place to start.</span>
-                    <span id="text-count" className={`mt-1 block text-xs font-normal ${draft.text.length > 125 ? 'text-amber-700' : 'text-slate-500'}`}>{draft.text.length}/125 characters</span>
-                    {adTextError && <span className="mt-1 block text-xs font-normal text-red-700">{adTextError}</span>}
-                  </label>
-                  <label className="block text-sm font-semibold text-navy-900" htmlFor="cta">Button text
-                    <select id="cta" value={draft.cta} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('cta', event.target.value)} className="mt-2 h-11 w-full rounded-lg border border-slate-300 bg-white px-3 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-                      {['Learn more', 'Shop now', 'Sign up', 'Contact us', 'Get offer'].map((cta) => <option key={cta}>{cta}</option>)}
-                    </select>
-                    <span className="mt-1 block text-xs font-normal text-slate-500">Choose the action that best fits your goal.</span>
-                  </label>
-                  <label className="block text-sm font-semibold text-navy-900" htmlFor="website-url">Website link
-                    <input id="website-url" type="url" inputMode="url" value={draft.url} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('url', event.target.value)} aria-invalid={Boolean(landingError)} aria-describedby="url-hint" className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" placeholder="https://example.com" />
-                    <span id="url-hint" className="mt-1 block text-xs font-normal text-slate-500">Use the page you want people to visit.</span>
-                    {draft.url && landingError && <span className="mt-1 block text-xs font-normal text-red-700">{landingError}</span>}
-                  </label>
-                </div>
               </>
             )}
             <div className="sticky bottom-0 z-10 mt-6 -mx-4 border-t border-slate-200 bg-white px-4 pb-4 pt-4 sm:-mx-5 sm:px-5">
@@ -589,6 +547,9 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 </div>
               ))}
             </div>
+            {draft.objectiveDetails.objective === 'Get leads' && <section className="mt-4 rounded-lg border border-slate-200 p-4"><h2 className="text-sm font-semibold text-navy-900">Lead form: {draft.objectiveDetails.leadForm.name || 'Unnamed form'}</h2><p className="mt-2 text-sm text-slate-600">Fields: {draft.objectiveDetails.leadForm.fields.filter((field) => field.enabled).map((field) => `${field.label}${field.required ? ' (required)' : ''}`).join(', ') || 'No fields selected'}</p><p className="mt-1 break-all text-xs text-slate-500">Privacy policy: {draft.objectiveDetails.leadForm.privacyPolicyUrl || 'Not set'}</p></section>}
+            {draft.objectiveDetails.objective === 'Get sales' && <section className="mt-4 rounded-lg border border-slate-200 p-4"><h2 className="text-sm font-semibold text-navy-900">Product details</h2><p className="mt-2 text-sm text-slate-600">{draft.objectiveDetails.productName || 'Product name'} · ₹{draft.objectiveDetails.offerPrice || draft.objectiveDetails.price || '0'}{draft.objectiveDetails.offerPrice ? ` (regular ₹${draft.objectiveDetails.price})` : ''}</p></section>}
+            {draft.objectiveDetails.objective === 'Build awareness' && <section className="mt-4 rounded-lg border border-slate-200 p-4"><h2 className="text-sm font-semibold text-navy-900">Brand details</h2><p className="mt-2 text-sm text-slate-600">{draft.objectiveDetails.brandName || 'Brand name'} · {draft.objectiveDetails.tagline || 'Tagline'} · Frequency {draft.objectiveDetails.frequency}</p></section>}
             <p className="mt-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
               {totalBudget === null ? `Daily cap: ₹${draft.dailyBudget.toLocaleString('en-IN')} · no end date` : `Total budget: ₹${totalBudget.toLocaleString('en-IN')} (${draft.duration} days)`}. Estimated results are a mock range, not a forecast.
             </p>
@@ -627,6 +588,18 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
             <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button autoFocus type="button" onClick={() => setConfirming(false)} className="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Keep editing</button>
               <button type="button" onClick={() => { setConfirming(false); setPublished(true) }} className="min-h-11 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Confirm publish</button>
+            </div>
+          </section>
+        </div>
+      )}
+      {pendingObjective && (
+        <div className="fixed inset-0 z-[110] flex items-end justify-center bg-navy-950/40 p-0 sm:items-center sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setPendingObjective('') }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="objective-change-title" className="w-full max-w-md rounded-t-xl border border-slate-200 bg-white p-5 shadow-sm sm:rounded-xl">
+            <h2 id="objective-change-title" className="text-lg font-semibold text-navy-900">Change campaign goal?</h2>
+            <p className="mt-2 text-sm text-slate-600">This clears details entered for {draft.objective}. Your location, audience and budget will stay.</p>
+            <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="button" onClick={() => setPendingObjective('')} className="min-h-10 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900">Keep current goal</button>
+              <button type="button" onClick={() => applyObjective(pendingObjective)} className="min-h-10 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white">Change goal</button>
             </div>
           </section>
         </div>

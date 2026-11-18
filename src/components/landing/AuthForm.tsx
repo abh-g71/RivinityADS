@@ -116,15 +116,13 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     <Card className="p-6 shadow-sm sm:p-8">
       <p className="text-sm font-semibold text-brand-700">RivinityADS</p>
       <h1 className="mt-2 text-2xl font-bold text-navy-900">{heading}</h1>
-      <p className="mt-2 text-sm leading-6 text-slate-600">
+      {!isLogin && <p className="mt-2 text-sm leading-6 text-slate-600">
         {isSignup
           ? 'Choose a workspace to explore. No account is created.'
-          : isLogin
-            ? 'Choose a workspace to continue. No sign-in request is sent.'
-            : isForgot
-              ? 'Enter your email to preview the recovery flow.'
-              : 'Set a password to preview the reset flow.'}
-      </p>
+          : isForgot
+            ? 'Enter your email to preview the recovery flow.'
+            : 'Set a password to preview the reset flow.'}
+      </p>}
 
       <form className="mt-6 space-y-5" onSubmit={handleSubmit} noValidate>
         {isSignup && (

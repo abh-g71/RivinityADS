@@ -7,7 +7,7 @@ import { ArrowLeft, ArrowRight, Bot, RotateCcw, Send } from 'lucide-react'
 import { generateCampaignDraft } from '@/services/campaignAi'
 import { useToast } from '@/components/shared/Toast'
 import { campaignDraftStorageKey } from '@/features/advertiser/campaignTemplates'
-import { createEmptyCampaignDraft, type CampaignDraft, type ChatMessage } from '@/types/campaign'
+import { createEmptyCampaignDraft, migrateCampaignDraft, type CampaignDraft, type ChatMessage } from '@/types/campaign'
 
 function draftFromStorage(): CampaignDraft {
   try {
@@ -15,7 +15,7 @@ function draftFromStorage(): CampaignDraft {
     if (!stored) return createEmptyCampaignDraft()
     const value: unknown = JSON.parse(stored)
     if (value && typeof value === 'object' && 'objective' in value && 'location' in value) {
-      return value as CampaignDraft
+      return migrateCampaignDraft(value)
     }
   } catch (error) {
     console.error('Unable to read campaign draft for AI assistant', error)
