@@ -10,7 +10,7 @@ export const advertiserNavGroups: NavGroup[] = [
       { id: 'create-campaign', label: 'Create', href: '/campaigns/new' },
       { id: 'reports', label: 'Reports', href: '/reports' },
       { id: 'finance', label: 'Billing', href: '/finance' },
-      { id: 'support', label: 'Help', href: '/support' },
+      { id: 'support', label: 'Support', href: '/support' },
     ],
   },
   {

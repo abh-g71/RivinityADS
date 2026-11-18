@@ -65,7 +65,7 @@ export type CampaignDraft = {
 
 export function createLeadFormDraft(): LeadFormDraft {
   return {
-    name: '',
+    name: 'Lead form 1',
     fields: [
       { id: 'name', label: 'Name', enabled: true, required: true },
       { id: 'email', label: 'Email', enabled: true, required: true },
@@ -152,7 +152,7 @@ function normalizeObjectiveDetails(value: unknown, objective: CampaignObjective 
       ...defaults,
       buttonText: typeof saved.buttonText === 'string' ? saved.buttonText : defaults.buttonText,
       leadForm: {
-        name: stringOr(form.name, defaultForm.name),
+        name: stringOr(form.name, defaultForm.name).trim() || defaultForm.name,
         fields: normalizedFields,
         introText: stringOr(form.introText, defaultForm.introText),
         consentText: stringOr(form.consentText, defaultForm.consentText),

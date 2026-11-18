@@ -252,14 +252,33 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       setReview(false)
       setStep(3)
       setEditing(null)
-      window.setTimeout(() => imageUploadButton.current?.focus(), 0)
+      window.setTimeout(() => {
+        imageUploadButton.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        imageUploadButton.current?.focus()
+      }, 0)
       return
     }
-    const fields: Record<string, ReviewField> = { headline: 'headline', url: 'url', website: 'url', location: 'location' }
-    setStep(key === 'location' ? 1 : 3)
+    const targets: Record<string, { step: number; id: string }> = {
+      location: { step: 1, id: draft.location.mode === 'city' ? 'city-search' : draft.location.mode === 'region' ? 'region-search' : 'country-picker' },
+      headline: { step: 3, id: 'headline' },
+      adText: { step: 3, id: 'ad-text' },
+      website: { step: 3, id: 'website-url' },
+      leadFormName: { step: 3, id: 'lead-form-name' },
+      leadPrivacy: { step: 3, id: 'lead-privacy-url' },
+      productName: { step: 3, id: 'product-name' },
+      productPrice: { step: 3, id: 'price' },
+      brandName: { step: 3, id: 'brand-name' },
+      tagline: { step: 3, id: 'tagline' },
+    }
+    const target = targets[key] ?? { step: 3, id: key }
+    setStep(target.step)
     setReview(false)
-    setEditing(fields[key] ?? null)
-    window.setTimeout(() => document.getElementById(key === 'location' ? 'city-search' : key)?.focus(), 0)
+    setEditing(null)
+    window.setTimeout(() => {
+      const element = document.getElementById(target.id)
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      element?.focus()
+    }, 0)
   }
 
   function reviewFieldValue(field: ReviewField) {
@@ -369,8 +388,8 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       </section>
 
       {!review ? (
-        <section className={`mt-4 lg:min-h-0 ${step === 1 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-stretch' : step === 3 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)] lg:items-stretch' : 'grid gap-5'}`}>
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-hidden">
+        <section className={`mt-4 min-w-0 ${step === 1 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-stretch' : step === 3 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)] lg:items-start' : 'grid gap-5'}`}>
+          <div className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             {step === 0 && (
               <>
                 <h1 className="text-2xl font-bold text-navy-900">What is your main goal?</h1>
@@ -415,12 +434,12 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                     )}
                     {draft.location.mode === 'region' && (
                       <div className="mt-3 space-y-3">
-                        <input value={draft.location.regions?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'region', regions: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} region` : '' })} placeholder="Search state or region" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+                        <input id="region-search" value={draft.location.regions?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'region', regions: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} region` : '' })} placeholder="Search state or region" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
                       </div>
                     )}
                     {draft.location.mode === 'city' && (
                       <div className="mt-3 space-y-3">
-                        <input value={draft.location.cities?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'city', cities: event.target.value ? [event.target.value] : [], label: event.target.value ? event.target.value : '' })} placeholder="Search a city" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+                        <input id="city-search" value={draft.location.cities?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'city', cities: event.target.value ? [event.target.value] : [], label: event.target.value ? event.target.value : '' })} placeholder="Search a city" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
                       </div>
                     )}
                     {missingLocation && <p className="mt-2 text-sm text-amber-700">Choose a location or add PIN codes to continue.</p>}
@@ -493,6 +512,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 </details>
               </>
             )}
+            {step === 3 && <ObjectiveAdStep draft={draft} updateDraft={updateDraft} beginFieldEdit={beginFieldEdit} finishFieldEdit={finishFieldEdit} uploadImage={uploadImage} imageError={imageError} imageUploadButton={imageUploadButton} />}
             <div className="sticky bottom-0 z-10 mt-6 -mx-4 border-t border-slate-200 bg-white px-4 pb-4 pt-4 sm:-mx-5 sm:px-5">
               <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <button type="button" onClick={() => updateStep(step - 1)} disabled={step === 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</button>
@@ -568,7 +588,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 </li>
               ))}
             </ul>
-            {!canPublish && <p role="alert" className="mt-3 text-sm text-red-700">Fix the required items above before publishing. The image reminder is optional.</p>}
+            {!canPublish && <p role="alert" className="mt-3 text-sm text-red-700">Complete each required item above before publishing. Use Fix to jump to the field; the image reminder is optional.</p>}
             <div className="mt-5 flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:justify-between">
               <button type="button" onClick={() => { setReview(false); setStep(3) }} className="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Back to ad</button>
               <div className="flex flex-col gap-2 sm:flex-row">

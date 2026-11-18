@@ -61,7 +61,7 @@ function ObjectiveFieldView({ objective, field, draft, updateDraft, beginFieldEd
     const error = draft.url && !isValidHttpsUrl(draft.url) ? 'Enter a complete https:// URL.' : ''
     return (
       <label className={labelClass} htmlFor="website-url">{field.label}{field.required ? ' *' : ''}
-        <input id="website-url" type="url" inputMode="url" value={draft.url} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateDraft((current) => ({ ...current, url: event.target.value }))} aria-invalid={Boolean(error)} className={inputClass} placeholder="https://example.com" />
+        <input id="website-url" type="url" inputMode="url" value={draft.url} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateDraft((current) => ({ ...current, url: event.target.value }))} aria-invalid={field.required ? !isValidHttpsUrl(draft.url) : Boolean(error)} className={inputClass} placeholder="https://example.com" />
         <span className="mt-1 block text-xs font-normal text-slate-500">{field.helper}</span>
         {error && <span className="mt-1 block text-xs font-normal text-red-700">{error}</span>}
       </label>
@@ -77,7 +77,7 @@ function ObjectiveFieldView({ objective, field, draft, updateDraft, beginFieldEd
     ) : null
   }
   if (field.kind === 'lead-form') return objective === 'Get leads' && draft.objectiveDetails.objective === 'Get leads' ? (
-    <LeadFormBuilder form={draft.objectiveDetails.leadForm} updateDraft={updateDraft} />
+    <LeadFormBuilder form={draft.objectiveDetails.leadForm} updateDraft={updateDraft} beginFieldEdit={beginFieldEdit} finishFieldEdit={finishFieldEdit} />
   ) : null
   if (field.kind === 'product-name' || field.kind === 'price' || field.kind === 'offer-price' || field.kind === 'offer-date') {
     if (draft.objectiveDetails.objective !== 'Get sales') return null
@@ -115,7 +115,7 @@ function ObjectiveFieldView({ objective, field, draft, updateDraft, beginFieldEd
   return null
 }
 
-function LeadFormBuilder({ form, updateDraft }: { form: LeadFormDraft; updateDraft: Props['updateDraft'] }) {
+function LeadFormBuilder({ form, updateDraft, beginFieldEdit, finishFieldEdit }: { form: LeadFormDraft; updateDraft: Props['updateDraft']; beginFieldEdit: Props['beginFieldEdit']; finishFieldEdit: Props['finishFieldEdit'] }) {
   const updateForm = (update: (current: LeadFormDraft) => LeadFormDraft) => updateDraft((current) => {
     if (current.objectiveDetails.objective !== 'Get leads') return current
     return { ...current, objectiveDetails: { ...current.objectiveDetails, leadForm: update(current.objectiveDetails.leadForm) } }
@@ -125,8 +125,8 @@ function LeadFormBuilder({ form, updateDraft }: { form: LeadFormDraft; updateDra
   return (
     <fieldset className="min-w-0 space-y-4 rounded-lg border border-slate-200 p-4">
       <legend className="px-1 text-sm font-semibold text-navy-900">Lead form</legend>
-      <label className="block text-sm font-medium text-navy-900">Form name *
-        <input value={form.name} onChange={(event) => updateForm((current) => ({ ...current, name: event.target.value }))} className={fieldInputClass} placeholder="Contact request" />
+      <label htmlFor="lead-form-name" className="block text-sm font-medium text-navy-900">Form name *
+        <input id="lead-form-name" value={form.name} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateForm((current) => ({ ...current, name: event.target.value }))} className={fieldInputClass} placeholder="Lead form 1" />
       </label>
       <div>
         <p className="text-sm font-medium text-navy-900">Fields to collect</p>
@@ -140,9 +140,9 @@ function LeadFormBuilder({ form, updateDraft }: { form: LeadFormDraft; updateDra
       <label className="block text-sm font-medium text-navy-900">Consent checkbox text
         <input value={form.consentText} onChange={(event) => updateForm((current) => ({ ...current, consentText: event.target.value }))} className={fieldInputClass} />
       </label>
-      <label className="block text-sm font-medium text-navy-900">Privacy policy URL *
-        <input type="url" inputMode="url" value={form.privacyPolicyUrl} onChange={(event) => updateForm((current) => ({ ...current, privacyPolicyUrl: event.target.value }))} className={fieldInputClass} placeholder="https://example.com/privacy" />
-        {form.privacyPolicyUrl && !isValidHttpsUrl(form.privacyPolicyUrl) && <span className="mt-1 block text-xs font-normal text-red-700">Enter a complete https:// URL.</span>}
+      <label htmlFor="lead-privacy-url" className="block text-sm font-medium text-navy-900">Privacy policy URL *
+        <input id="lead-privacy-url" type="url" inputMode="url" value={form.privacyPolicyUrl} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateForm((current) => ({ ...current, privacyPolicyUrl: event.target.value }))} aria-invalid={!isValidHttpsUrl(form.privacyPolicyUrl)} className={fieldInputClass} placeholder="https://example.com/privacy" />
+        {!isValidHttpsUrl(form.privacyPolicyUrl) && <span className="mt-1 block text-xs font-normal text-red-700">Enter a valid secure https:// privacy policy URL.</span>}
       </label>
       <label className="block text-sm font-medium text-navy-900">Thank-you message
         <textarea value={form.thankYouMessage} onChange={(event) => updateForm((current) => ({ ...current, thankYouMessage: event.target.value }))} className="mt-2 min-h-16 w-full rounded-lg border border-slate-300 p-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
