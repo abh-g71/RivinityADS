@@ -20,7 +20,7 @@ export function Input({ label, error, className = '', id, ...props }: InputProps
         id={inputId}
         aria-invalid={error ? true : props['aria-invalid']}
         aria-describedby={error ? errorId : props['aria-describedby']}
-        className={`h-11 rounded-lg border bg-white px-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 ${
+        className={`h-11 rounded-lg border bg-white px-3 text-sm text-navy-900 placeholder:text-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500 motion-reduce:transition-none ${
           error ? 'border-danger-600' : 'border-slate-300'
         } ${className}`}
         {...props}

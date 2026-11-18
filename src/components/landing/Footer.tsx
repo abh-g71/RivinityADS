@@ -10,7 +10,7 @@ export function Footer() {
       </div>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500">
         <span className="font-semibold text-navy-900">RivinityADS</span>
-        <span>Demo experience · Mock data only</span>
+        <span>Product preview · Displayed data is simulated</span>
       </div>
     </footer>
   )

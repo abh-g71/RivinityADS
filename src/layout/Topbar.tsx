@@ -12,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/primitives/dropdown-menu'
-import { Select } from '@/components/ui/Select'
 import { useToast } from '@/components/shared/Toast'
 import {
   mockAdvertiserBalance,
@@ -24,7 +23,6 @@ import type { ConsoleRole } from '@/data/navigation'
 
 type TopBarProps = {
   role: ConsoleRole
-  onRoleChange: (role: ConsoleRole) => void
   onMenuClick: () => void
   onLogout: () => void
 }
@@ -35,7 +33,7 @@ const currency = new Intl.NumberFormat('en-IN', {
   minimumFractionDigits: 2,
 })
 
-export function TopBar({ role, onRoleChange, onMenuClick, onLogout }: TopBarProps) {
+export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
   const [notifications, setNotifications] = useState(mockConsoleNotifications)
   const toast = useToast()
   const unreadCount = notifications.filter((notification) => !notification.read).length
@@ -69,26 +67,6 @@ export function TopBar({ role, onRoleChange, onMenuClick, onLogout }: TopBarProp
       </p>
 
       <div className="flex w-full min-w-0 items-center justify-between gap-2 md:w-auto md:shrink-0 md:justify-start md:gap-1 lg:gap-3">
-        <div className="w-24 shrink-0 lg:w-36">
-          <Select
-            label="Role"
-            labelClassName="sr-only"
-            value={role}
-            onChange={(event) => {
-              const nextRole = event.target.value
-              if (nextRole === 'advertiser' || nextRole === 'publisher' || nextRole === 'admin') {
-                onRoleChange(nextRole)
-              }
-            }}
-            options={[
-              { value: 'advertiser', label: 'Advertiser' },
-              { value: 'publisher', label: 'Publisher' },
-              { value: 'admin', label: 'Admin' },
-            ]}
-            className="h-9 px-2 text-xs sm:text-sm"
-          />
-        </div>
-
         {role === 'advertiser' && (
           <>
             <ButtonLink href="/campaigns/new" aria-label="Create Campaign" className="shrink-0 px-2 py-2 text-xs sm:px-3 sm:text-sm">

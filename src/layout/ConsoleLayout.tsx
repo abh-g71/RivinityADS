@@ -16,18 +16,12 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const [role, setRole] = useState<ConsoleRole>(() =>
+  const role: ConsoleRole =
     pathname.startsWith('/publisher')
       ? 'publisher'
       : pathname.startsWith('/admin')
         ? 'admin'
-        : 'advertiser',
-  )
-
-  function handleRoleChange(nextRole: ConsoleRole) {
-    setRole(nextRole)
-    router.push(nextRole === 'publisher' ? '/publisher' : nextRole === 'admin' ? '/admin' : '/dashboard')
-  }
+        : 'advertiser'
 
   return (
     <TooltipProvider>
@@ -43,7 +37,6 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
           <div className={sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'}>
             <TopBar
               role={role}
-              onRoleChange={handleRoleChange}
               onMenuClick={() => setMenuOpen(true)}
               onLogout={() => router.push('/login')}
             />

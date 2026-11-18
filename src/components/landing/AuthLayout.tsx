@@ -15,13 +15,13 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div className="relative max-w-lg py-12">
           <p className="text-sm font-semibold text-brand-100">One workspace, two ways to grow</p>
           <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight">Bring your advertising workflow into focus.</h1>
-          <p className="mt-5 max-w-md text-base leading-7 text-slate-300">Explore mock advertiser and publisher panels in this frontend prototype. No account, payment, ad delivery, or tracking data is sent to a server.</p>
+          <p className="mt-5 max-w-md text-base leading-7 text-slate-300">Explore advertiser and publisher workspaces for campaign planning, placements, and performance reporting.</p>
           <div className="mt-8 grid gap-3 text-sm text-slate-200 sm:grid-cols-2">
             <div className="rounded-xl border border-slate-700 bg-navy-900/70 p-4">Plan and review campaigns</div>
             <div className="rounded-xl border border-slate-700 bg-navy-900/70 p-4">Manage publisher placements</div>
           </div>
         </div>
-        <p className="relative text-xs text-slate-400">RivinityADS · Interactive demo</p>
+        <p className="relative text-xs text-slate-400">RivinityADS</p>
       </aside>
 
       <section className="flex min-h-screen flex-col px-4 py-6 sm:px-8 lg:px-12">
@@ -35,7 +35,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
         <div className="flex flex-1 items-center justify-center py-10">
           <div className="w-full max-w-md">{children}</div>
         </div>
-        <p className="text-center text-xs text-slate-500">Demo experience · No personal data is submitted</p>
+        <p className="text-center text-xs text-slate-500">Authentication and displayed data are simulated; nothing is sent to a server.</p>
       </section>
     </main>
   )

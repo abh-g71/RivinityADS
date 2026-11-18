@@ -9,7 +9,6 @@ import {
   ArrowRight,
   Banknote,
   BarChart3,
-  Check,
   Code,
   Eye,
   Globe,
@@ -20,7 +19,6 @@ import {
   Moon,
   Plus,
   ShieldCheck,
-  Sparkles,
   Sun,
   Wallet,
   X,
@@ -97,7 +95,7 @@ const cards: Record<'advertiser' | 'publisher', Card[]> = {
     { icon: LayoutGrid, title: 'Create a placement', text: 'Choose where ads appear.' },
     { icon: Code, title: 'Copy the ad code', text: 'Paste one snippet on your site.' },
     { icon: BarChart3, title: 'Track earnings', text: 'See impressions and clicks.' },
-    { icon: Banknote, title: 'Get paid (sample)', text: 'Payout details are sample data for now.' },
+    { icon: Banknote, title: 'Get paid', text: 'Payout details are simulated until payments are available.' },
   ],
 }
 
@@ -106,7 +104,7 @@ const faqs = [
   { q: 'How do I create my first ad?', a: 'Choose a goal, pick where it shows, set a budget and add your ad. Or describe it to the AI assistant.' },
   { q: 'How do I earn as a publisher?', a: 'Add your website, verify it, create a placement and paste the ad code on your site.' },
   { q: 'Which ad formats are available?', a: 'Banner, Native, Popunder, Push and Social Bar.' },
-  { q: 'Is this a live product?', a: 'No. It is a prototype with sample data. Real ad delivery and payments come later.' },
+  { q: 'Is this a live product?', a: 'No. Displayed data is simulated. Real ad delivery and payments are not active.' },
 ]
 
 /* ---------- Nav ---------- */
@@ -191,69 +189,129 @@ function ProductMock() {
     return () => clearInterval(id)
   }, [paused])
 
-  const shape = { Feed: 'h-36 w-36', Story: 'h-48 w-28', Banner: 'h-14 w-56' }[size]
+  const shape = { Feed: 'h-24 w-44', Story: 'h-36 w-24', Banner: 'h-12 w-full max-w-xs' }[size]
 
   return (
     <div
-      className={`rounded-2xl border ${line} ${card} p-3`}
+      className={`overflow-hidden rounded-xl border ${line} bg-[color:var(--bg)] shadow-xl shadow-black/10`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="flex items-center justify-between px-1 pb-3">
-        <div className="flex gap-1.5" aria-hidden="true">
-          <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
-          <span className="h-2.5 w-2.5 rounded-full bg-yellow-400" />
-          <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
+      <div className={`flex flex-wrap items-center justify-between gap-3 border-b ${line} px-4 py-3 sm:px-5`}>
+        <div>
+          <p className="text-sm font-semibold">North &amp; Co. - Spring campaign</p>
+          <p className={`mt-1 text-xs ${muted}`}>Apr 08 - Apr 14, 2025 <span className="mx-1.5">/</span> Delhi, India</p>
         </div>
-        <span className={`text-xs ${muted}`}>Mock preview</span>
+        <span className={`text-[10px] font-semibold uppercase tracking-wider ${muted}`}>Simulated data</span>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-[200px_1fr_260px]">
-        {/* Steps */}
-        <ol className={`rounded-xl border ${line} p-3`} aria-label="Campaign steps">
-          {steps.map((s, i) => (
-            <li key={s.name} className={`flex items-center gap-3 py-2 text-sm ${i === step ? 'font-semibold' : muted}`}>
-              <span
-                className={`flex h-6 w-6 items-center justify-center rounded-full border text-xs ${line} ${
-                  i < step ? 'bg-[color:var(--accent)] text-white' : i === step ? accent : ''
-                }`}
-              >
-                {i < step ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : i + 1}
-              </span>
-              {s.name}
-            </li>
-          ))}
-        </ol>
-
-        {/* Ad preview */}
-        <div className={`flex flex-col items-center rounded-xl border ${line} p-3`}>
-          <div className="flex gap-1" role="tablist" aria-label="Ad size">
-            {(['Feed', 'Story', 'Banner'] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                role="tab"
-                aria-selected={size === t}
-                onClick={() => setSize(t)}
-                className={`rounded-lg px-3 py-1 text-xs font-medium ${size === t ? 'bg-[color:var(--accent)] text-white' : muted}`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-          <div className="flex h-52 items-center justify-center">
-            <div className={`${shape} flex flex-col items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 p-2 text-center text-white transition-all duration-300`}>
-              <p className="text-sm font-bold leading-tight">Fresh styles near you</p>
-              {size !== 'Banner' && <span className="mt-2 rounded-lg bg-white px-3 py-1 text-xs font-semibold text-navy-900">Shop now</span>}
+      <div className="p-4 sm:p-5">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3 border-b pb-4 sm:grid-cols-4 sm:gap-0 sm:divide-x sm:divide-[color:var(--line)] sm:pb-5">
+          {[
+            { label: 'Impressions', value: '48,260', note: '+12.4%' },
+            { label: 'Clicks', value: '1,284', note: '+8.2%' },
+            { label: 'Click-through rate', value: '2.66%', note: '7-day average' },
+            { label: 'Spend', value: <><span aria-label="Indian rupees">INR</span> 3,240</>, note: 'of INR 5,000' },
+          ].map((metric, index) => (
+            <div key={metric.label} className={index > 0 ? 'sm:pl-4' : ''}>
+              <p className={`text-[11px] ${muted}`}>{metric.label}</p>
+              <p className="mt-1 text-lg font-semibold tracking-tight">{metric.value}</p>
+              <p className={`mt-0.5 text-[10px] ${muted}`}>{metric.note}</p>
             </div>
+          ))}
+        </div>
+
+        <div className={`mt-4 border-b ${line} pb-4`}>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <span className="font-medium">Budget pacing</span>
+            <span className={muted}>INR 3,240 spent <span className="mx-1">/</span> INR 5,000 total</span>
+          </div>
+          <div className={`mt-2 h-1.5 overflow-hidden rounded-full bg-[color:var(--line)]`}>
+            <div className="h-full w-[64.8%] rounded-full bg-[color:var(--accent)]" />
           </div>
         </div>
 
-        {/* Assistant */}
-        <div className={`flex flex-col gap-2 rounded-xl border ${line} p-3 text-sm`}>
-          <p className={`text-xs ${muted}`}>AI assistant (demo)</p>
-          <p className="ml-6 rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white">{steps[step].user}</p>
-          <p className={`mr-6 rounded-xl border ${line} px-3 py-2`}>{steps[step].ai}</p>
+        <div className="grid gap-5 py-4 sm:grid-cols-[1.5fr_1fr]">
+          <section aria-label="Campaign clicks chart">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3 className="text-xs font-semibold">Clicks over time</h3>
+                <p className={`mt-1 text-[10px] ${muted}`}>Daily results for campaign period</p>
+              </div>
+              <span className={`text-[10px] ${muted}`}>Clicks</span>
+            </div>
+            <div className="mt-3 flex h-24 gap-2">
+              <div className={`flex flex-col justify-between pb-4 text-[9px] ${muted}`} aria-hidden="true"><span>400</span><span>200</span><span>0</span></div>
+              <div className="relative min-w-0 flex-1">
+                <div className="absolute inset-0 flex flex-col justify-between pb-4" aria-hidden="true">
+                  <span className={`border-t ${line}`} /><span className={`border-t ${line}`} /><span className={`border-t ${line}`} />
+                </div>
+                <svg viewBox="0 0 420 90" preserveAspectRatio="none" className="relative h-[calc(100%-1rem)] w-full" aria-hidden="true">
+                  <path d="M4 75C38 72 51 58 80 63S122 51 150 56 188 36 216 43 251 46 279 35 318 32 347 24 387 28 416 9" fill="none" stroke="#3b82f6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
+                  <circle cx="416" cy="9" r="3.5" fill="#3b82f6" />
+                </svg>
+                <div className={`absolute inset-x-0 bottom-0 flex justify-between text-[9px] ${muted}`} aria-hidden="true">
+                  <span>Apr 08</span><span>10</span><span>12</span><span>14</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className={`border-t ${line} pt-4 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0`} aria-label="Audience insights">
+            <h3 className="text-xs font-semibold">Audience insights</h3>
+            <p className={`mt-1 text-[10px] ${muted}`}>Top segments by impressions</p>
+            <dl className="mt-3 space-y-2.5">
+              {[
+                { label: 'Delhi', value: '42%' },
+                { label: 'Age 25-34', value: '38%' },
+                { label: 'Mobile devices', value: '68%' },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between gap-2 text-[11px]">
+                  <dt className={muted}>{item.label}</dt><dd className="font-medium">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        </div>
+
+        <div className={`grid gap-4 border-t ${line} pt-4 sm:grid-cols-[1fr_1.2fr] sm:items-center`}>
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-xs font-semibold">Campaign setup</h3>
+              <span className={`text-[10px] ${muted}`}>Step {step + 1} of {steps.length}: {steps[step].name}</span>
+            </div>
+            <p className={`mt-1.5 text-[10px] leading-4 ${muted}`} aria-live="polite">{steps[step].ai}</p>
+          </div>
+
+          <div>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className={`text-[10px] ${muted}`}>Ad format</span>
+              <div className="flex gap-1" role="tablist" aria-label="Ad size">
+                {(['Feed', 'Story', 'Banner'] as const).map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    role="tab"
+                    aria-selected={size === t}
+                    onClick={() => setSize(t)}
+                    className={`rounded-md px-2 py-1 text-[10px] font-medium transition-colors ${size === t ? 'bg-[color:var(--accent)] text-white' : muted}`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex min-h-24 items-center justify-center overflow-hidden rounded-md bg-slate-100 p-2">
+              <div className={`${shape} flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded border border-slate-200 bg-white p-2 text-left text-navy-900 transition-all duration-300 ${size === 'Story' ? 'flex-col text-center' : 'flex-row'}`}>
+                <div className={`flex shrink-0 items-center justify-center bg-slate-100 text-[9px] font-semibold text-slate-600 ${size === 'Story' ? 'h-8 w-8' : 'h-8 w-10'}`}>N&amp;C</div>
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold uppercase tracking-wide text-slate-500">North &amp; Co.</p>
+                  <p className="mt-0.5 truncate text-[10px] font-semibold">New season, made for everyday</p>
+                  {size !== 'Banner' && <span className="mt-1 inline-flex rounded bg-blue-700 px-1.5 py-0.5 text-[8px] font-semibold text-white">Shop collection</span>}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -292,37 +350,32 @@ export function HomePage() {
       <Nav dark={dark} onToggle={toggleTheme} />
 
       <main>
-        {/* Hero */}
-        <section className="mx-auto max-w-6xl px-4 pb-16 pt-16 text-center sm:px-6 sm:pt-24">
-          <h1 className="mx-auto max-w-4xl text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-            Create ads in minutes.
-            <br />
-            Earn from your website.
-          </h1>
-          <p className={`mx-auto mt-6 max-w-xl text-lg ${muted}`}>One simple console for advertisers and publishers.</p>
+        {/* Hero and product preview */}
+        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:min-h-[calc(100vh-4rem)] lg:grid-cols-[0.78fr_1.22fr] lg:gap-12 lg:py-14">
+          <div className="max-w-lg">
+            <p className={`mb-5 text-xs font-semibold uppercase tracking-[0.16em] ${accent}`}>Digital advertising, in one place</p>
+            <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.5rem]">
+              Plan campaigns. Reach the right people.
+            </h1>
+            <p className={`mt-5 max-w-md text-base leading-7 sm:text-lg sm:leading-8 ${muted}`}>
+              Build digital ad campaigns with clear targeting and budget controls, then track performance in one place. Publishers can manage their inventory alongside them.
+            </p>
 
-          <div className="mx-auto mt-10 flex max-w-4xl flex-col gap-3 lg:flex-row">
-            <Link
-              href="/campaigns/new/ai"
-              className={`flex flex-1 items-center gap-3 rounded-xl border ${line} ${card} px-4 py-2.5 text-left text-sm transition hover:opacity-80`}
-            >
-              <Sparkles className={`h-4 w-4 shrink-0 ${accent}`} aria-hidden="true" />
-              <span className="min-w-0 flex-1 truncate">Promote my clothing store in Delhi, ₹500 a day</span>
-              <span className="inline-flex items-center gap-1 rounded-lg bg-[color:var(--accent)] px-3 py-1.5 text-xs font-semibold text-white">
-                Try it <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-              </span>
-            </Link>
-            <Link href="/signup" className={primaryBtn}>Get started</Link>
-            <Link href="/publishers" className={outlineBtn}>For publishers</Link>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link href="/signup" className={primaryBtn}>Get started</Link>
+              <Link href="/publishers" className={outlineBtn}>For publishers</Link>
+            </div>
+            <div className={`mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm ${muted}`}>
+              <span>Want a faster start?</span>
+              <Link href="/campaigns/new/ai" className="font-medium text-[color:var(--fg)] underline decoration-[color:var(--line)] underline-offset-4 transition hover:decoration-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]">
+                Create a campaign with AI
+              </Link>
+            </div>
+            <p className={`mt-3 text-xs ${muted}`}>Authentication and displayed data are simulated. No ads are delivered.</p>
           </div>
-          <p className={`mt-4 text-xs ${muted}`}>AI assistant (demo) · No setup needed to explore the prototype</p>
-        </section>
 
-        {/* Product visual */}
-        <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
           <ProductMock />
         </section>
-
         {/* What is */}
         <section className={`border-t ${line}`}>
           <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2">
@@ -447,7 +500,7 @@ export function HomePage() {
         <section className={`border-t ${line}`}>
           <div className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6">
             <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">Start your first campaign</h2>
-            <p className={`mx-auto mt-4 max-w-md ${muted}`}>Explore the prototype with sample data. No setup needed.</p>
+            <p className={`mx-auto mt-4 max-w-md ${muted}`}>Explore RivinityADS with simulated data. No setup needed.</p>
             <Link href="/signup" className={`${primaryBtn} mt-8`}>Get started</Link>
           </div>
         </section>

@@ -10,12 +10,18 @@ import { Input } from '@/components/ui/Input'
 
 type AuthMode = 'login' | 'signup' | 'forgot-password' | 'reset-password'
 type AccountRole = 'advertiser' | 'publisher'
+type LoginRole = AccountRole | 'admin'
 type FieldName = 'name' | 'email' | 'password' | 'confirmPassword' | 'role'
 type FormErrors = Partial<Record<FieldName, string>>
 
-const roles: { id: AccountRole; title: string; description: string }[] = [
+const signupRoles: { id: AccountRole; title: string; description: string }[] = [
   { id: 'advertiser', title: 'Advertiser', description: 'Plan campaigns and review performance.' },
   { id: 'publisher', title: 'Publisher', description: 'Manage websites, placements, and earnings.' },
+]
+
+const loginRoles: { id: LoginRole; title: string; description: string }[] = [
+  ...signupRoles,
+  { id: 'admin', title: 'Admin', description: 'Review platform activity and operations.' },
 ]
 
 function getPasswordStrength(password: string) {
@@ -33,7 +39,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [role, setRole] = useState<AccountRole | ''>('')
+  const [role, setRole] = useState<LoginRole | ''>('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({})
@@ -51,7 +57,9 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     email: !isReset && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ? 'Enter a valid email address.' : undefined,
     password: showPasswordField && password.length < 8 ? 'Use at least 8 characters.' : undefined,
     confirmPassword: isReset && confirmPassword !== password ? 'Passwords do not match.' : undefined,
-    role: isSignup && !role ? 'Choose an account type.' : undefined,
+    role: (isSignup || isLogin) && !role
+      ? isSignup ? 'Choose an account type.' : 'Choose a workspace.'
+      : undefined,
   }
 
   function markTouched(field: FieldName) {
@@ -75,7 +83,8 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         setComplete(true)
         return
       }
-      router.push(role === 'publisher' ? '/publisher' : '/dashboard')
+      if (!role) return
+      router.push(role === 'admin' ? '/admin' : role === 'publisher' ? '/publisher' : '/dashboard')
     }, 450)
   }
 
@@ -90,22 +99,22 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   if (complete) {
     return (
       <Card className="p-6 sm:p-8">
-        <p className="text-sm font-semibold text-brand-700">{isForgot ? 'Demo request complete' : 'Password updated'}</p>
+        <p className="text-sm font-semibold text-brand-700">{isForgot ? 'Recovery request complete' : 'Password reset preview'}</p>
         <h1 className="mt-2 text-2xl font-bold text-navy-900">{isForgot ? 'Check your inbox' : 'You’re all set'}</h1>
         <p className="mt-3 text-sm leading-6 text-slate-600">
           {isForgot
-            ? 'In a real product, password recovery instructions would be sent to this address. This prototype does not send email.'
-            : 'This is a mock confirmation. No account password was changed on a server.'}
+            ? 'In a full product, recovery instructions would be sent to this address. No email is sent in this preview.'
+            : 'This confirmation is simulated. No account password was changed on a server.'}
         </p>
         <Link href="/login" className="mt-6 inline-flex font-semibold text-brand-700 hover:underline">Return to sign in</Link>
-        {isForgot && <p className="mt-4 text-sm text-slate-600">Continue with the <Link href="/reset-password" className="font-semibold text-brand-700 hover:underline">mock reset flow</Link>.</p>}
+        {isForgot && <p className="mt-4 text-sm text-slate-600">Continue with the <Link href="/reset-password" className="font-semibold text-brand-700 hover:underline">password reset preview</Link>.</p>}
       </Card>
     )
   }
 
   return (
     <Card className="p-6 shadow-sm sm:p-8">
-      <p className="text-sm font-semibold text-brand-700">RivinityADS demo</p>
+      <p className="text-sm font-semibold text-brand-700">RivinityADS</p>
       <h1 className="mt-2 text-2xl font-bold text-navy-900">{heading}</h1>
       <p className="mt-2 text-sm leading-6 text-slate-600">
         {isSignup
@@ -214,7 +223,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           <fieldset>
             <legend className="mb-2 text-sm font-medium text-slate-700">{isSignup ? 'Choose your workspace' : 'Continue as'}</legend>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {roles.map((option) => (
+              {(isLogin ? loginRoles : signupRoles).map((option) => (
                 <label key={option.id} className="cursor-pointer">
                   <input
                     className="peer sr-only"
@@ -244,7 +253,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         )}
 
         <Button type="submit" className="w-full" disabled={loading} aria-busy={loading}>
-          {loading ? 'Please wait…' : isSignup ? 'Create demo account' : isLogin ? 'Continue to workspace' : isForgot ? 'Preview recovery' : 'Save new password'}
+          {loading ? 'Please wait…' : isSignup ? 'Create account' : isLogin ? 'Continue to workspace' : isForgot ? 'Preview recovery' : 'Save new password'}
         </Button>
 
         {(isForgot || isReset) && (
@@ -256,7 +265,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
       {(isLogin || isSignup) && (
         <p className="mt-5 text-center text-sm text-slate-600">
-          {isSignup ? 'Already have a demo account?' : 'New to RivinityADS?'}{' '}
+          {isSignup ? 'Already have an account?' : 'New to RivinityADS?'}{' '}
           <Link href={isSignup ? '/login' : '/signup'} className="font-semibold text-brand-700 hover:underline">
             {isSignup ? 'Sign in' : 'Create an account'}
           </Link>

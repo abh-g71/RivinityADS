@@ -69,7 +69,7 @@ export function Select({
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
           onBlur={onBlur}
-          className={cn('h-11 w-full rounded-xl border-slate-300 bg-white', className)}
+          className={cn('h-11 w-full rounded-lg border-slate-300 bg-white text-navy-900 focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500', className)}
         >
           <SelectValue />
         </SelectTrigger>

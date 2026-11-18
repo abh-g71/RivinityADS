@@ -159,7 +159,7 @@ function NavigationContent({
           {!isCollapsed && (
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{roleLabel(role)} workspace</p>
-              <p className="truncate text-xs text-slate-400">Mock account</p>
+              <p className="truncate text-xs text-slate-400">Simulated workspace</p>
             </div>
           )}
         </div>
