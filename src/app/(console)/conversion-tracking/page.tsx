@@ -59,7 +59,7 @@ export default function ConversionTrackingPage() {
           <fieldset className="mt-4 space-y-3">
             <legend className="sr-only">Mock conversion events</legend>
             {mockConversionEvents.map((event) => (
-              <label key={event} className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-3 text-sm text-navy-900 focus-within:ring-2 focus-within:ring-brand-500">
+              <label key={event} className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 p-3 text-sm text-navy-900 focus-within:ring-2 focus-within:ring-brand-500">
                 <input
                   type="checkbox"
                   checked={selectedEvents.includes(event)}

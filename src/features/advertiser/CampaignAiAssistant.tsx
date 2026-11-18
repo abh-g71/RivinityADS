@@ -104,15 +104,15 @@ export function CampaignAiAssistant() {
         <p className="mt-2 text-xs text-slate-500" role="status">Draft saved in this browser when updated.</p>
       </header>
 
-      <section aria-label="Campaign assistant conversation" className="mt-4 flex min-h-[26rem] flex-col rounded-xl border border-slate-200 bg-white shadow-sm lg:h-[min(68vh,48rem)] lg:min-h-0">
+      <section aria-label="Campaign assistant conversation" className="mt-4 flex min-h-[26rem] flex-col rounded-lg border border-slate-200 bg-white shadow-sm lg:h-[min(68vh,48rem)] lg:min-h-0">
         <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-5 lg:min-h-0" aria-live="polite">
           {messages.map((message) => (
             <div key={message.id} className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {message.role === 'assistant' && <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-700"><Bot className="h-4 w-4" aria-hidden="true" /></span>}
-              <p className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-6 ${message.role === 'user' ? 'rounded-br-md bg-brand-600 text-white' : 'rounded-bl-md bg-slate-100 text-navy-900'}`}>{message.text}</p>
+              <p className={`max-w-[85%] whitespace-pre-wrap rounded-lg px-4 py-3 text-sm leading-6 ${message.role === 'user' ? 'rounded-br-md bg-brand-600 text-white' : 'rounded-bl-md bg-slate-100 text-navy-900'}`}>{message.text}</p>
             </div>
           ))}
-          {loading && <div className="flex items-center gap-2 text-sm text-slate-500" role="status"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-700"><Bot className="h-4 w-4" aria-hidden="true" /></span><span className="animate-pulse">Thinking…</span></div>}
+          {loading && <div className="flex items-center gap-2 text-sm text-slate-500" role="status"><span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600"><Bot className="h-4 w-4" aria-hidden="true" /></span><span>Thinking…</span></div>}
           <div ref={tailRef} />
         </div>
         {quickReplies.length > 0 && (
@@ -122,13 +122,13 @@ export function CampaignAiAssistant() {
         )}
         <form onSubmit={submit} className="flex gap-2 border-t border-slate-100 p-3 sm:p-4">
           <label htmlFor="assistant-message" className="sr-only">Your campaign details</label>
-          <input id="assistant-message" value={input} onChange={(event) => setInput(event.target.value)} disabled={loading} placeholder="Write a message…" className="h-11 min-w-0 flex-1 rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:bg-slate-50" />
-          <button type="submit" disabled={!input.trim() || loading} aria-label="Send message" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50"><Send className="h-4 w-4" aria-hidden="true" /></button>
+          <input id="assistant-message" value={input} onChange={(event) => setInput(event.target.value)} disabled={loading} placeholder="Write a message…" className="h-11 min-w-0 flex-1 rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:bg-slate-50" />
+          <button type="submit" disabled={!input.trim() || loading} aria-label="Send message" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50"><Send className="h-4 w-4" aria-hidden="true" /></button>
         </form>
         {error && <div className="flex items-center justify-between gap-3 px-4 pb-4 text-sm text-red-700" role="alert"><span>{error}</span><button type="button" onClick={() => void sendMessage(lastMessage)} className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-red-200 px-3 text-xs font-semibold hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"><RotateCcw className="h-3 w-3" aria-hidden="true" />Retry</button></div>}
       </section>
 
-      <section aria-labelledby="ai-draft-title" className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:max-h-[18rem] lg:overflow-y-auto">
+      <section aria-labelledby="ai-draft-title" className="mt-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:max-h-[18rem] lg:overflow-y-auto">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 id="ai-draft-title" className="text-lg font-semibold text-navy-900">Your campaign draft</h2>
@@ -145,14 +145,14 @@ export function CampaignAiAssistant() {
               ['Headline', draft.headline],
               ['Ad text', draft.text],
               ['Website', draft.url],
-            ].map(([label, value]) => <div key={label} className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">{label}</dt><dd className="mt-1 break-words text-sm font-medium text-navy-900">{value || <span className="font-normal text-slate-500">Not added yet</span>}</dd></div>)}
+            ].map(([label, value]) => <div key={label} className="rounded-lg bg-slate-50 p-3"><dt className="text-xs text-slate-500">{label}</dt><dd className="mt-1 break-words text-sm font-medium text-navy-900">{value || <span className="font-normal text-slate-500">Not added yet</span>}</dd></div>)}
           </dl>
         ) : (
-          <div className="mt-4 rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-600">Start with a goal or tell the assistant about your business and location.</div>
+          <div className="mt-4 rounded-lg border border-dashed border-slate-300 p-4 text-sm text-slate-600">Start with a goal or tell the assistant about your business and location.</div>
         )}
         <div className="mt-5 flex flex-col gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:justify-end">
-          <button type="button" onClick={() => continueWithDraft(false)} disabled={!hasDraftContent} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">Edit manually</button>
-          <button type="button" onClick={() => continueWithDraft(true)} disabled={!hasDraftContent} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">Use this campaign <ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
+          <button type="button" onClick={() => continueWithDraft(false)} disabled={!hasDraftContent} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">Edit manually</button>
+          <button type="button" onClick={() => continueWithDraft(true)} disabled={!hasDraftContent} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">Use this campaign <ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
         </div>
       </section>
     </main>

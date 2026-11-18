@@ -103,7 +103,7 @@ function NavigationContent({
           aria-label="RivinityADS home"
           className="flex min-w-0 items-center gap-2.5 rounded-lg px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-base font-bold text-white shadow-lg shadow-brand-600/30">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-base font-semibold text-white">
             R
           </span>
           {!isCollapsed && <span className="truncate text-lg font-bold tracking-tight">RivinityADS</span>}
@@ -128,7 +128,7 @@ function NavigationContent({
               <details open={group.items.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))} className="group/tools">
                 <summary className="mb-2 flex min-h-9 cursor-pointer list-none items-center justify-between rounded-lg px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
                   {group.title}
-                  <ChevronRight className="h-3.5 w-3.5 transition-transform group-open/tools:rotate-90" aria-hidden="true" />
+                  <ChevronRight className="h-3.5 w-3.5 group-open/tools:rotate-90" aria-hidden="true" />
                 </summary>
                 <ul className="flex flex-col gap-1">
                   {group.items.map((item) => <li key={item.id}>{renderNavigationLink(item)}</li>)}
@@ -149,11 +149,11 @@ function NavigationContent({
       {/* Account card (generic, no real user data) */}
       <div className="mt-auto pt-8">
         <div
-          className={`flex items-center rounded-xl border border-white/10 bg-white/5 ${
+          className={`flex items-center rounded-lg border border-white/10 bg-white/5 ${
             isCollapsed ? 'justify-center p-2' : 'gap-3 p-3'
           }`}
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-slate-300">
             <Users className="h-4 w-4" aria-hidden="true" />
           </span>
           {!isCollapsed && (
@@ -178,19 +178,16 @@ function NavigationContent({
         href={item.href}
         onClick={onClose}
         aria-current={isActive ? 'page' : undefined}
-        className={`group relative flex items-center rounded-xl py-2.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+        className={`group relative flex items-center rounded-lg border-l-2 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
           isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'
         } ${
           isActive
-            ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-600/30'
-            : 'text-slate-300 hover:bg-white/10 hover:text-white'
+            ? 'border-brand-500 bg-navy-800 text-white'
+            : 'border-transparent text-slate-300 hover:bg-white/10 hover:text-white'
         }`}
       >
-        {isActive && (
-          <span aria-hidden="true" className="absolute -left-3 bottom-2 top-2 w-1 rounded-r-full bg-white" />
-        )}
         <Icon
-          className={`h-5 w-5 shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'drop-shadow' : ''}`}
+          className="h-5 w-5 shrink-0"
           aria-hidden="true"
         />
         <span className={isCollapsed ? 'sr-only' : 'min-w-0 truncate'}>{item.label}</span>
@@ -217,7 +214,7 @@ export function Sidebar({
 }: SidebarProps) {
   return (
     <>
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden overflow-y-auto bg-gradient-to-b from-navy-950 to-navy-900 px-3 py-6 text-white transition-[width] duration-200 lg:block ${isCollapsed ? 'w-20' : 'w-64'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-30 hidden overflow-y-auto border-r border-white/10 bg-navy-950 px-3 py-6 text-white transition-[width] duration-200 lg:block ${isCollapsed ? 'w-20' : 'w-64'}`}>
         <NavigationContent
           role={role}
           onClose={onClose}
@@ -227,7 +224,7 @@ export function Sidebar({
         />
       </aside>
       <Sheet open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
-        <SheetContent side="left" className="w-64 overflow-y-auto border-r-0 bg-gradient-to-b from-navy-950 to-navy-900 px-3 py-6 text-white sm:max-w-64">
+        <SheetContent side="left" className="w-64 overflow-y-auto border-r border-white/10 bg-navy-950 px-3 py-6 text-white sm:max-w-64">
           <SheetTitle className="sr-only">Console navigation</SheetTitle>
           <NavigationContent
             role={role}

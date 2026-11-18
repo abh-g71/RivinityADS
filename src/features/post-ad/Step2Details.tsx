@@ -1,8 +1,7 @@
 'use client'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { FiAlignLeft, FiFileText, FiImage, FiMapPin, FiUser } from 'react-icons/fi'
-import type { IconType } from 'react-icons'
+import { AlignLeft, FileText, Image, MapPin, User, type LucideIcon } from 'lucide-react'
 import { Input } from '../../components/ui/Input'
 import { Select } from '../../components/ui/Select'
 import { Checkbox } from '../../components/ui/Checkbox'
@@ -22,13 +21,13 @@ function Section({
   children,
 }: {
   title: string
-  icon: IconType
+  icon: LucideIcon
   open?: boolean
   children: ReactNode
 }) {
   return (
     <Accordion type="single" collapsible defaultValue={open ? title : undefined}>
-      <AccordionItem value={title} className="rounded-xl border border-slate-200 bg-white last:border-b">
+      <AccordionItem value={title} className="rounded-lg border border-slate-200 bg-white last:border-b">
       <AccordionTrigger className="px-4 py-3 text-sm font-medium hover:no-underline">
         <span className="flex items-center gap-3">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
@@ -71,14 +70,14 @@ export function Step2Details({ data, update }: StepProps) {
       <p className="mt-1 text-sm text-slate-500">Create your ad by entering detailed information.</p>
 
       <div className="mt-5 flex flex-col gap-3">
-        <Section title="Contact information" icon={FiUser}>
+        <Section title="Contact information" icon={User}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Input label="Name" placeholder="Your name" />
             <Input label="Phone" type="tel" placeholder="+91" />
           </div>
         </Section>
 
-        <Section title="Ad information" icon={FiFileText} open>
+        <Section title="Ad information" icon={FileText} open>
           <div className="grid gap-4 sm:grid-cols-2">
             <div
               className="sm:col-span-2"
@@ -114,7 +113,7 @@ export function Step2Details({ data, update }: StepProps) {
           </div>
         </Section>
 
-        <Section title="Ad description" icon={FiAlignLeft}>
+        <Section title="Ad description" icon={AlignLeft}>
           <label htmlFor="desc" className="text-sm font-medium text-slate-700">Description</label>
           <textarea
             id="desc"
@@ -126,11 +125,11 @@ export function Step2Details({ data, update }: StepProps) {
           />
         </Section>
 
-        <Section title="Upload photos" icon={FiImage}>
+        <Section title="Upload photos" icon={Image}>
           <PhotoUpload />
         </Section>
 
-        <Section title="Ad location" icon={FiMapPin}>
+        <Section title="Ad location" icon={MapPin}>
           <div className="grid gap-4 sm:grid-cols-2">
             <Input label="City" placeholder="City" />
             <Input label="Area" placeholder="Area or locality" />

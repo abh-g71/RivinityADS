@@ -49,7 +49,7 @@ export default function LeafletMap({
   const position = useMemo<[number, number]>(() => [lat, lng], [lat, lng])
   const pinIcon = useMemo(() => L.divIcon({
     className: 'campaign-map-pin',
-    html: '<span style="display:block;width:18px;height:18px;border:4px solid white;border-radius:999px;background:#2563eb;box-shadow:0 2px 8px #0f172a66"></span>',
+    html: '<span style="display:block;width:18px;height:18px;border:4px solid white;border-radius:999px;background:#2563eb"></span>',
     iconSize: [18, 18],
     iconAnchor: [9, 9],
   }), [])
@@ -88,10 +88,10 @@ export default function LeafletMap({
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search a city in India"
             autoComplete="off"
-            className="h-11 w-full rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           />
           {query && (
-            <div className="absolute z-[1000] mt-1 max-h-44 w-full overflow-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+            <div className="absolute z-[1000] mt-1 max-h-44 w-full overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
               {filteredCities.length
                 ? filteredCities.map((city) => (
                   <button key={city.name} type="button" onClick={() => setCity(city)} className="block min-h-10 w-full rounded-lg px-3 text-left text-sm hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
@@ -102,11 +102,11 @@ export default function LeafletMap({
             </div>
           )}
         </div>
-        <button type="button" onClick={useMyLocation} className="min-h-11 rounded-xl border border-slate-300 px-3 text-sm font-medium hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+        <button type="button" onClick={useMyLocation} className="min-h-11 rounded-lg border border-slate-300 px-3 text-sm font-medium hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
           Use my location
         </button>
       </div>
-      <div className="overflow-hidden rounded-xl border border-slate-200 lg:min-h-0 lg:flex-1">
+      <div className="overflow-hidden rounded-lg border border-slate-200 lg:min-h-0 lg:flex-1">
         <MapContainer center={position} zoom={location.lat == null ? 4 : 11} scrollWheelZoom={false} className="h-64 w-full lg:h-[28rem]">
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -142,7 +142,7 @@ export default function LeafletMap({
         {pinMode ? 'Hide PIN code targeting' : 'Add PIN codes instead'}
       </button>
       {pinMode && (
-        <div className="space-y-2 rounded-xl bg-slate-50 p-3">
+        <div className="space-y-2 rounded-lg bg-slate-50 p-3">
           <label htmlFor="pin-codes" className="text-sm font-medium text-navy-900">PIN codes</label>
           <p className="text-xs text-slate-500">Enter Indian PIN codes separated by commas.</p>
           <input id="pin-codes" value={pinInput} onChange={(event) => setPinInput(event.target.value)} onBlur={() => {
@@ -152,7 +152,7 @@ export default function LeafletMap({
             onPinCodesChange(pins)
             const oldPinsLabel = Boolean(location.label?.includes('PIN code'))
             onChange({ ...location, label: pins.length ? `${pins.length} PIN code${pins.length === 1 ? '' : 's'}` : oldPinsLabel ? '' : location.label ?? '', lat: pins.length ? null : location.lat ?? null, lng: pins.length ? null : location.lng ?? null })
-          }} placeholder="For example, 400001, 110001" className="h-11 w-full rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+          }} placeholder="For example, 400001, 110001" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
           <p className="text-xs text-slate-500">{pinCodes.length ? `${pinCodes.length} valid PIN code${pinCodes.length === 1 ? '' : 's'} added.` : 'Use six-digit PIN codes, separated by commas.'}</p>
           {pinError && <p role="alert" className="text-xs text-red-700">{pinError}</p>}
         </div>

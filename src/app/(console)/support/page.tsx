@@ -125,8 +125,8 @@ export default function SupportPage() {
         title="Support"
         description={role === 'admin' ? 'Open the admin support queue to review user conversations.' : 'Create and review your local mock support tickets.'}
         action={role === 'admin'
-          ? <Link href="/admin/support" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Open ticket queue</Link>
-          : <a href="#create-support-ticket" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create ticket</a>}
+          ? <Link href="/admin/support" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Open ticket queue</Link>
+          : <a href="#create-support-ticket" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create ticket</a>}
       />
 
       {role === 'admin' ? (

@@ -23,7 +23,7 @@ export default function AdminBillingPage() {
         breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Billing' }]}
         title="Billing"
         description="Review mock billing records only. No payments, invoices, or balance changes are processed."
-        action={<Link href="/admin/settings" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Billing settings</Link>}
+        action={<Link href="/admin/settings" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Billing settings</Link>}
       />
       <StaggerGrid aria-label="Billing summary" className="mt-6 grid gap-4 sm:grid-cols-2">
         <StatCard label="Mock billing records" value={String(mockAdminBillingRows.length)} detail="Count of local fixture rows" />

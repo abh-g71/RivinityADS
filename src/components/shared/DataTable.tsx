@@ -18,7 +18,7 @@ export function DataTable<T extends { id: string }>({
   label,
 }: DataTableProps<T>) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
       <table className="w-full min-w-[640px] text-left text-sm" aria-label={label}>
         <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
           <tr>

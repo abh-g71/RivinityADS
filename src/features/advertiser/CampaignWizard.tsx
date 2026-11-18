@@ -301,7 +301,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
     }
   }
 
-  if (!ready) return <main className="mx-auto max-w-3xl px-4 py-10"><div className="h-48 animate-pulse rounded-xl bg-slate-100" /></main>
+  if (!ready) return <main className="mx-auto max-w-3xl px-4 py-10"><div className="h-48 rounded-lg border border-slate-200 bg-slate-100" /></main>
 
   if (published) {
     return (
@@ -311,11 +311,11 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
         <h1 className="mt-2 text-3xl font-bold text-navy-900">Your campaign is ready for review</h1>
         <p className="mt-3 text-slate-600">This demo does not deliver ads. You can view the campaign list or create another draft.</p>
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link href="/campaigns" className="rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View campaigns</Link>
+          <Link href="/campaigns" className="rounded-lg bg-brand-600 px-5 py-3 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View campaigns</Link>
           <button type="button" onClick={() => {
             try { window.localStorage.removeItem(campaignDraftStorageKey) } catch (error) { console.error('Unable to clear campaign draft', error) }
             router.push('/campaigns/new')
-          }} className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create another</button>
+          }} className="rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create another</button>
         </div>
       </main>
     )
@@ -356,7 +356,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
         </div>
       </div>
 
-      <section className="mt-5 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:mt-4">
+      <section className="mt-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:mt-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-navy-900">{review ? 'Review your campaign' : `Step ${step + 1} of 4`}</p>
@@ -367,20 +367,20 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
           </div>
         </div>
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
-          <div className="h-full rounded-full bg-brand-600 transition-all" style={{ width: `${review ? 100 : ((step + 1) / 4) * 100}%` }} />
+          <div className="h-full rounded-full bg-brand-600" style={{ width: `${review ? 100 : ((step + 1) / 4) * 100}%` }} />
         </div>
       </section>
 
       {!review ? (
         <section className={`mt-4 lg:min-h-0 ${step === 1 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-stretch' : step === 3 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)] lg:items-stretch' : 'grid gap-5'}`}>
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-hidden">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-hidden">
             {step === 0 && (
               <>
                 <h1 className="text-2xl font-bold text-navy-900">What is your main goal?</h1>
                 <p className="mt-2 text-sm text-slate-600">Choose one. You can change this later.</p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   {goals.map((goal) => (
-                    <button key={goal.title} type="button" onClick={() => chooseGoal(goal.title)} className={`min-h-28 rounded-xl border p-4 text-left transition hover:border-brand-500 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.objective === goal.title ? 'border-brand-600 bg-brand-50' : 'border-slate-200'}`}>
+                    <button key={goal.title} type="button" onClick={() => chooseGoal(goal.title)} className={`min-h-28 rounded-lg border p-4 text-left transition hover:border-brand-500 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.objective === goal.title ? 'border-brand-600 bg-brand-50' : 'border-slate-200'}`}>
                       <span className="block font-semibold text-navy-900">{goal.title}</span>
                       <span className="mt-1 block text-sm text-slate-600">{goal.hint}</span>
                       <span className="mt-2 block text-xs text-slate-500">Recommended · continue in 1 tap</span>
@@ -395,7 +395,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 <p className="mt-2 text-sm text-slate-600">Choose a place and a broad audience. You can refine this anytime.</p>
                 <div className="mt-5 space-y-5">
                   <div>
-                    <div className="mb-3 flex flex-wrap gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2">
+                    <div className="mb-3 flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
                       {locationModes.map((mode) => (
                         <button key={mode.value} type="button" onClick={() => setLocationMode(mode.value)} className={`rounded-lg px-3 py-2 text-xs font-medium transition ${draft.location.mode === mode.value ? 'bg-brand-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100'}`}>
                           {mode.label}
@@ -404,12 +404,12 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                     </div>
                     <label className="mb-2 block text-sm font-semibold text-navy-900">Location</label>
                     <p className="mb-3 text-xs text-slate-500">Use the map to set your target area.</p>
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
                       {locationSummary}
                     </div>
                     {draft.location.mode === 'country' && (
                       <div className="mt-3 space-y-3">
-                        <input id="country-picker" value={draft.location.countries?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'country', countries: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} (whole country)` : '' })} list="country-list" placeholder="Search a country" className="h-11 w-full rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+                        <input id="country-picker" value={draft.location.countries?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'country', countries: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} (whole country)` : '' })} list="country-list" placeholder="Search a country" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
                         <datalist id="country-list">
                           {countryOptions.map((country) => <option key={country} value={country} />)}
                         </datalist>
@@ -418,12 +418,12 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                     )}
                     {draft.location.mode === 'region' && (
                       <div className="mt-3 space-y-3">
-                        <input value={draft.location.regions?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'region', regions: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} region` : '' })} placeholder="Search state or region" className="h-11 w-full rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+                        <input value={draft.location.regions?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'region', regions: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} region` : '' })} placeholder="Search state or region" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
                       </div>
                     )}
                     {draft.location.mode === 'city' && (
                       <div className="mt-3 space-y-3">
-                        <input value={draft.location.cities?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'city', cities: event.target.value ? [event.target.value] : [], label: event.target.value ? event.target.value : '' })} placeholder="Search a city" className="h-11 w-full rounded-xl border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+                        <input value={draft.location.cities?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'city', cities: event.target.value ? [event.target.value] : [], label: event.target.value ? event.target.value : '' })} placeholder="Search a city" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
                       </div>
                     )}
                     {missingLocation && <p className="mt-2 text-sm text-amber-700">Choose a location or add PIN codes to continue.</p>}
@@ -461,7 +461,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
               <>
                 <h1 className="text-2xl font-bold text-navy-900">Choose your budget</h1>
                 <p className="mt-2 text-sm text-slate-600">Set a daily limit. You can change it whenever you like.</p>
-                <div className="mt-5 rounded-xl border border-brand-200 bg-brand-50 p-4">
+                <div className="mt-5 rounded-lg border border-brand-200 bg-brand-50 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-sm font-semibold text-navy-900">Daily budget</p>
                     <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-brand-700">Recommended</span>
@@ -471,9 +471,9 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                   <p className="mt-1 text-xs text-slate-600">This is the most you plan to spend each day.</p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2" aria-label="Common daily budgets">
-                  {[200, 500, 1000].map((amount) => <button key={amount} type="button" aria-pressed={draft.dailyBudget === amount} onClick={() => setField('dailyBudget', amount, true)} className={`min-h-10 rounded-xl border px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.dailyBudget === amount ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>₹{amount.toLocaleString('en-IN')}{amount === 500 ? ' · Recommended' : ''}</button>)}
+                  {[200, 500, 1000].map((amount) => <button key={amount} type="button" aria-pressed={draft.dailyBudget === amount} onClick={() => setField('dailyBudget', amount, true)} className={`min-h-10 rounded-lg border px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.dailyBudget === amount ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>₹{amount.toLocaleString('en-IN')}{amount === 500 ? ' · Recommended' : ''}</button>)}
                 </div>
-                <div className="mt-5 rounded-xl bg-slate-50 p-4">
+                <div className="mt-5 rounded-lg bg-slate-50 p-4">
                   <p className="text-sm font-semibold text-navy-900">Estimated results</p>
                   <p className="mt-1 text-sm text-slate-700">About {(draft.dailyBudget * 2).toLocaleString('en-IN')}–{(draft.dailyBudget * 5).toLocaleString('en-IN')} people per day</p>
                   <p className="mt-1 text-xs text-slate-500">Illustrative mock range only, not a forecast.</p>
@@ -482,13 +482,13 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                   <legend className="text-sm font-semibold text-navy-900">How long should it run?</legend>
                   <p className="mt-1 text-xs text-slate-500">Choose a run time or keep the campaign running.</p>
                   <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    {durations.map((duration) => <button key={duration} type="button" aria-pressed={draft.duration === duration} onClick={() => setField('duration', duration, true)} className={`min-h-11 rounded-xl border px-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.duration === duration ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>{duration === 'ongoing' ? 'Keep running' : `${duration} days`}</button>)}
+                    {durations.map((duration) => <button key={duration} type="button" aria-pressed={draft.duration === duration} onClick={() => setField('duration', duration, true)} className={`min-h-11 rounded-lg border px-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.duration === duration ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>{duration === 'ongoing' ? 'Keep running' : `${duration} days`}</button>)}
                   </div>
                 </fieldset>
-                <p className="mt-4 rounded-xl border border-slate-200 p-3 text-sm text-navy-900">
+                <p className="mt-4 rounded-lg border border-slate-200 p-3 text-sm text-navy-900">
                   {totalBudget === null ? <>Your daily cap is <strong>₹{draft.dailyBudget.toLocaleString('en-IN')}</strong>. No end date is set.</> : <>Estimated maximum: <strong>₹{totalBudget.toLocaleString('en-IN')}</strong> over {draft.duration} days.</>}
                 </p>
-                <details className="mt-4 rounded-xl border border-slate-200 p-4">
+                <details className="mt-4 rounded-lg border border-slate-200 p-4">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-navy-900">More options <ChevronDown className="h-4 w-4" aria-hidden="true" /></summary>
                   <p className="mt-3 text-sm text-slate-600">Your daily budget is a spending limit, not a promise to spend the full amount.</p>
                 </details>
@@ -504,47 +504,47 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                     <p className="mt-1 text-xs text-slate-500">A square image works well in most placements.</p>
                     <input ref={fileInput} id="campaign-image" type="file" accept="image/*" onChange={uploadImage} className="sr-only" />
                     <div className="mt-2 flex flex-wrap items-center gap-3">
-                      <button ref={imageUploadButton} type="button" onClick={() => fileInput.current?.click()} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 px-4 text-sm font-medium text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ImagePlus className="h-4 w-4" aria-hidden="true" />{draft.imageName ? 'Change image' : 'Add an image'}</button>
+                      <button ref={imageUploadButton} type="button" onClick={() => fileInput.current?.click()} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-300 px-4 text-sm font-medium text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ImagePlus className="h-4 w-4" aria-hidden="true" />{draft.imageName ? 'Change image' : 'Add an image'}</button>
                       {draft.imageName && <span className="max-w-40 truncate text-sm text-slate-600">{draft.imageName}</span>}
                     </div>
                     {imageError && <p role="alert" className="mt-2 text-sm text-red-700">{imageError}</p>}
                   </div>
                   <label className="block text-sm font-semibold text-navy-900" htmlFor="headline">Headline
-                    <input id="headline" value={draft.headline} maxLength={60} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('headline', event.target.value)} aria-invalid={Boolean(headlineError)} aria-describedby="headline-hint headline-count" className="mt-2 h-11 w-full rounded-xl border border-slate-300 px-3 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" placeholder="A short headline" />
+                    <input id="headline" value={draft.headline} maxLength={60} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('headline', event.target.value)} aria-invalid={Boolean(headlineError)} aria-describedby="headline-hint headline-count" className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" placeholder="A short headline" />
                     <span id="headline-hint" className="mt-1 block text-xs font-normal text-slate-500">Keep it clear and under 40 characters.</span>
                     <span id="headline-count" className={`mt-1 block text-xs font-normal ${headlineError ? 'text-amber-700' : 'text-slate-500'}`}>{draft.headline.length}/40 characters</span>
                     {headlineError && <span className="mt-1 block text-xs font-normal text-red-700">{headlineError}</span>}
                   </label>
                   <label className="block text-sm font-semibold text-navy-900" htmlFor="ad-text">Ad text
-                    <textarea id="ad-text" value={draft.text} maxLength={200} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('text', event.target.value)} aria-invalid={Boolean(adTextError)} aria-describedby="text-hint text-count" className="mt-2 min-h-24 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" placeholder="What should people know?" />
+                    <textarea id="ad-text" value={draft.text} maxLength={200} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('text', event.target.value)} aria-invalid={Boolean(adTextError)} aria-describedby="text-hint text-count" className="mt-2 min-h-24 w-full rounded-lg border border-slate-300 px-3 py-2 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" placeholder="What should people know?" />
                     <span id="text-hint" className="mt-1 block text-xs font-normal text-slate-500">One helpful sentence is a good place to start.</span>
                     <span id="text-count" className={`mt-1 block text-xs font-normal ${draft.text.length > 125 ? 'text-amber-700' : 'text-slate-500'}`}>{draft.text.length}/125 characters</span>
                     {adTextError && <span className="mt-1 block text-xs font-normal text-red-700">{adTextError}</span>}
                   </label>
                   <label className="block text-sm font-semibold text-navy-900" htmlFor="cta">Button text
-                    <select id="cta" value={draft.cta} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('cta', event.target.value)} className="mt-2 h-11 w-full rounded-xl border border-slate-300 bg-white px-3 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <select id="cta" value={draft.cta} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('cta', event.target.value)} className="mt-2 h-11 w-full rounded-lg border border-slate-300 bg-white px-3 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                       {['Learn more', 'Shop now', 'Sign up', 'Contact us', 'Get offer'].map((cta) => <option key={cta}>{cta}</option>)}
                     </select>
                     <span className="mt-1 block text-xs font-normal text-slate-500">Choose the action that best fits your goal.</span>
                   </label>
                   <label className="block text-sm font-semibold text-navy-900" htmlFor="website-url">Website link
-                    <input id="website-url" type="url" inputMode="url" value={draft.url} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('url', event.target.value)} aria-invalid={Boolean(landingError)} aria-describedby="url-hint" className="mt-2 h-11 w-full rounded-xl border border-slate-300 px-3 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" placeholder="https://example.com" />
+                    <input id="website-url" type="url" inputMode="url" value={draft.url} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => setField('url', event.target.value)} aria-invalid={Boolean(landingError)} aria-describedby="url-hint" className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" placeholder="https://example.com" />
                     <span id="url-hint" className="mt-1 block text-xs font-normal text-slate-500">Use the page you want people to visit.</span>
                     {draft.url && landingError && <span className="mt-1 block text-xs font-normal text-red-700">{landingError}</span>}
                   </label>
                 </div>
               </>
             )}
-            <div className="sticky bottom-0 z-10 mt-6 -mx-4 border-t border-slate-100 bg-white/95 px-4 pb-4 pt-4 backdrop-blur sm:-mx-5 sm:px-5">
+            <div className="sticky bottom-0 z-10 mt-6 -mx-4 border-t border-slate-200 bg-white px-4 pb-4 pt-4 sm:-mx-5 sm:px-5">
               <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <button type="button" onClick={() => updateStep(step - 1)} disabled={step === 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</button>
-                <button type="button" onClick={advanceStep} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{step === 3 ? 'Review campaign' : 'Continue'}<ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
+                <button type="button" onClick={() => updateStep(step - 1)} disabled={step === 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</button>
+                <button type="button" onClick={advanceStep} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{step === 3 ? 'Review campaign' : 'Continue'}<ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
               </div>
             </div>
           </div>
-          {step === 3 && <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-hidden"><AdPreview draft={draft} /></aside>}
+          {step === 3 && <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-hidden"><AdPreview draft={draft} /></aside>}
           {step === 1 && (
-            <aside className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-hidden">
+            <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-hidden">
               <div className="flex h-full flex-col gap-3">
                 <div>
                   <h2 className="text-base font-semibold text-navy-900">Map preview</h2>
@@ -564,17 +564,17 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
         </section>
       ) : (
         <section className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)] lg:min-h-0">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h1 className="text-2xl font-bold text-navy-900">Review your campaign</h1>
                 <p className="mt-2 text-sm text-slate-600">Select any value to edit it right here.</p>
               </div>
-              <p className="rounded-xl bg-brand-50 px-3 py-2 text-sm font-semibold text-navy-900">₹{draft.dailyBudget.toLocaleString('en-IN')} per day</p>
+              <p className="rounded-lg bg-brand-50 px-3 py-2 text-sm font-semibold text-navy-900">₹{draft.dailyBudget.toLocaleString('en-IN')} per day</p>
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {(['objective', 'location', 'age', 'gender', 'interests', 'budget', 'duration', 'headline', 'text', 'cta', 'url'] as ReviewField[]).map((field) => (
-                <div key={field} className="min-w-0 rounded-xl border border-slate-200 p-3">
+                <div key={field} className="min-w-0 rounded-lg border border-slate-200 p-3">
                   <p className="text-xs font-medium capitalize text-slate-500">{field === 'cta' ? 'Button text' : field === 'url' ? 'Website link' : field === 'text' ? 'Ad text' : field}</p>
                   {editing === field ? (
                     <div className="mt-1 flex gap-2">
@@ -589,16 +589,16 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 </div>
               ))}
             </div>
-            <p className="mt-4 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">
+            <p className="mt-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
               {totalBudget === null ? `Daily cap: ₹${draft.dailyBudget.toLocaleString('en-IN')} · no end date` : `Total budget: ₹${totalBudget.toLocaleString('en-IN')} (${draft.duration} days)`}. Estimated results are a mock range, not a forecast.
             </p>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
             <h2 className="text-lg font-semibold text-navy-900">Ad readiness</h2>
             <p className="mt-1 text-sm text-slate-600">Warnings are optional. Fix any errors before publishing.</p>
             <ul className="mt-4 space-y-3">
               {readiness.map((item) => (
-                <li key={item.key} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-3">
+                <li key={item.key} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-slate-50 px-3 py-3">
                   <span className="flex items-center gap-2 text-sm text-navy-900">
                     <span className={`h-2.5 w-2.5 rounded-full ${item.ready ? 'bg-green-600' : item.warning ? 'bg-amber-500' : 'bg-red-600'}`} aria-hidden="true" />
                     {item.label}{!item.ready && item.warning ? ' · optional' : ''}
@@ -609,10 +609,10 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
             </ul>
             {!canPublish && <p role="alert" className="mt-3 text-sm text-red-700">Fix the required items above before publishing. The image reminder is optional.</p>}
             <div className="mt-5 flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:justify-between">
-              <button type="button" onClick={() => { setReview(false); setStep(3) }} className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Back to ad</button>
+              <button type="button" onClick={() => { setReview(false); setStep(3) }} className="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Back to ad</button>
               <div className="flex flex-col gap-2 sm:flex-row">
-                <button type="button" onClick={saveDraftNow} className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Save draft</button>
-                <button type="button" onClick={() => setConfirming(true)} disabled={!canPublish} className="min-h-11 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50">Publish campaign</button>
+                <button type="button" onClick={saveDraftNow} className="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Save draft</button>
+                <button type="button" onClick={() => setConfirming(true)} disabled={!canPublish} className="min-h-11 rounded-lg bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50">Publish campaign</button>
               </div>
             </div>
           </div>
@@ -621,12 +621,12 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
 
       {confirming && (
         <div className="fixed inset-0 z-[120] flex items-end justify-center bg-navy-950/50 p-0 sm:items-center sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setConfirming(false) }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="confirm-title" className="w-full max-w-md rounded-t-2xl bg-white p-5 shadow-xl sm:rounded-2xl sm:p-6">
+          <section role="dialog" aria-modal="true" aria-labelledby="confirm-title" className="w-full max-w-md rounded-t-xl bg-white p-5 shadow-sm sm:rounded-lg sm:p-6">
             <h2 id="confirm-title" className="text-xl font-bold text-navy-900">Publish this campaign?</h2>
             <p className="mt-2 text-sm leading-6 text-slate-600">This will submit your campaign for review in the demo. No ad will be delivered and no payment will be taken.</p>
             <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <button autoFocus type="button" onClick={() => setConfirming(false)} className="min-h-11 rounded-xl border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Keep editing</button>
-              <button type="button" onClick={() => { setConfirming(false); setPublished(true) }} className="min-h-11 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Confirm publish</button>
+              <button autoFocus type="button" onClick={() => setConfirming(false)} className="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Keep editing</button>
+              <button type="button" onClick={() => { setConfirming(false); setPublished(true) }} className="min-h-11 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Confirm publish</button>
             </div>
           </section>
         </div>

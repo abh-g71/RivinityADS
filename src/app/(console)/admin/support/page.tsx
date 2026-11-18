@@ -79,7 +79,7 @@ export default function AdminSupportTicketsPage() {
         breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Support Tickets' }]}
         title="Support Tickets"
         description="Review mock support conversations and add local replies."
-        action={<Link href="/admin/users" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Manage users</Link>}
+        action={<Link href="/admin/users" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Manage users</Link>}
       />
       <div className="mt-6 max-w-md">
         <Input id="ticket-search" label="Search tickets" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search subject, requester, or ID" />
@@ -100,7 +100,7 @@ export default function AdminSupportTicketsPage() {
             <div className="space-y-5 p-4 sm:p-6">
               <div className="space-y-3">
                 {selectedTicket.messages.map((message, index) => (
-                  <article key={`${message.author}-${index}`} className="rounded-xl border border-slate-200 p-4">
+                  <article key={`${message.author}-${index}`} className="rounded-lg border border-slate-200 p-4">
                     <div className="flex flex-wrap justify-between gap-2">
                       <h3 className="text-sm font-semibold text-navy-900">{message.author}</h3>
                       <span className="text-xs text-slate-500">{message.createdAt}</span>

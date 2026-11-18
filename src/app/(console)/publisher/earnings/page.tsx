@@ -45,7 +45,7 @@ export default function PublisherEarningsPage() {
         breadcrumbs={[{ label: 'Publisher workspace', href: '/publisher' }, { label: 'Earnings' }]}
         title="Earnings"
         description="Mock reporting; no actual earnings are shown."
-        action={<Link href="/publisher/statistics" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View statistics</Link>}
+        action={<Link href="/publisher/statistics" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View statistics</Link>}
       />
       <div className="mt-6 flex justify-end">
         <div className="w-full sm:w-56">

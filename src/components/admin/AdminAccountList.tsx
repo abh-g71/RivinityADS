@@ -31,7 +31,7 @@ export function AdminAccountList({ role }: { role: Extract<AdminRole, 'Advertise
         breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: title }]}
         title={title}
         description={`Review ${title.toLowerCase()} from anonymized mock fixtures only.`}
-        action={<Link href="/admin/users" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">All users</Link>}
+        action={<Link href="/admin/users" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">All users</Link>}
       />
       <div className="mt-6 max-w-md">
         <Input

@@ -119,43 +119,28 @@ html {
 }
 
 .animate-fade-up {
-  animation: fade-up 240ms ease-out both;
+  animation: fade-in 180ms ease-out both;
 }
 
 .animate-toast-in {
-  animation: toast-in 200ms ease-out both;
+  animation: fade-in 180ms ease-out both;
 }
 
 .scroll-reveal {
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 240ms ease-out, transform 240ms ease-out;
+  transition: opacity 180ms ease-out;
 }
 
 .scroll-reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
 }
 
-@keyframes toast-in {
+@keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateX(12px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -175,7 +160,6 @@ html {
 
   .scroll-reveal {
     opacity: 1;
-    transform: none;
   }
 }
 

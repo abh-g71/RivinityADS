@@ -38,7 +38,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <section
             key={entry.id}
             role={entry.variant === 'error' ? 'alert' : 'status'}
-            className="pointer-events-auto animate-toast-in rounded-xl border border-slate-200 bg-white p-4 text-navy-900 shadow-lg"
+            className="pointer-events-auto animate-toast-in rounded-lg border border-slate-200 bg-white p-4 text-navy-900 shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>

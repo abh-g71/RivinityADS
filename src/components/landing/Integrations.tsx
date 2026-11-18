@@ -9,8 +9,8 @@ export function Integrations() {
         Advertisers can explore campaign workflows while publishers can review website and placement tools. The prototype uses mock data and does not connect to external ad platforms.
       </p>
       <div className="mt-7 flex flex-wrap justify-center gap-3">
-        <Link href="/advertisers" className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">For advertisers</Link>
-        <Link href="/publishers" className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">For publishers</Link>
+        <Link href="/advertisers" className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">For advertisers</Link>
+        <Link href="/publishers" className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 shadow-sm transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">For publishers</Link>
       </div>
     </section>
   )

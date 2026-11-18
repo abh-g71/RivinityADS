@@ -31,18 +31,18 @@ const themes = {
     '--fg': '#ffffff',
     '--muted': 'var(--color-slate-400)',
     '--line': 'rgb(255 255 255 / 0.1)',
-    '--card': 'rgb(255 255 255 / 0.04)',
+    '--card': 'var(--color-navy-900)',
     '--accent': 'var(--color-brand-500)',
-    '--navbg': 'color-mix(in srgb, var(--color-navy-950) 80%, transparent)',
+    '--navbg': 'var(--color-navy-950)',
   },
   light: {
     '--bg': '#ffffff',
     '--fg': 'var(--color-navy-900)',
     '--muted': 'var(--color-slate-600)',
     '--line': 'var(--color-slate-200)',
-    '--card': 'var(--color-slate-50)',
+    '--card': '#ffffff',
     '--accent': 'var(--color-brand-600)',
-    '--navbg': 'color-mix(in srgb, white 80%, transparent)',
+    '--navbg': '#ffffff',
   },
 }
 
@@ -51,8 +51,8 @@ const accent = 'text-[color:var(--accent)]'
 const line = 'border-[color:var(--line)]'
 const card = 'bg-[color:var(--card)]'
 const primaryBtn =
-  'inline-flex items-center justify-center gap-2 rounded-xl bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2'
-const outlineBtn = `inline-flex items-center justify-center gap-2 rounded-xl border ${line} ${card} px-5 py-3 text-sm font-semibold transition hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`
+  'inline-flex items-center justify-center gap-2 rounded-lg bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2'
+const outlineBtn = `inline-flex items-center justify-center gap-2 rounded-lg border ${line} ${card} px-5 py-3 text-sm font-semibold transition-colors duration-150 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`
 
 /* ---------- Content ---------- */
 const navLinks = [
@@ -120,9 +120,7 @@ function Nav({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
 
   return (
     <header
-      className={`sticky top-0 z-40 border-b transition-colors ${
-        scrolled ? `${line} bg-[color:var(--navbg)] backdrop-blur-md` : 'border-transparent'
-      }`}
+      className={`sticky top-0 z-40 border-b ${line} bg-[color:var(--navbg)]`}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <div className="flex items-center gap-8">
@@ -148,7 +146,7 @@ function Nav({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
             {dark ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
           </button>
           <Link href="/login" className="hidden text-sm font-medium sm:inline">Sign in</Link>
-          <Link href="/signup" className="hidden rounded-xl bg-[color:var(--accent)] px-4 py-2 text-sm font-semibold text-white sm:inline-flex">
+          <Link href="/signup" className="hidden rounded-lg bg-[color:var(--accent)] px-4 py-2 text-sm font-semibold text-white sm:inline-flex">
             Get started
           </Link>
           <button
@@ -179,30 +177,20 @@ function Nav({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
 
 /* ---------- Product mock (drawn with HTML only) ---------- */
 function ProductMock() {
-  const [step, setStep] = useState(0)
-  const [paused, setPaused] = useState(false)
   const [size, setSize] = useState<'Feed' | 'Story' | 'Banner'>('Feed')
-
-  useEffect(() => {
-    if (paused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = setInterval(() => setStep((s) => (s + 1) % steps.length), 3500)
-    return () => clearInterval(id)
-  }, [paused])
 
   const shape = { Feed: 'h-24 w-44', Story: 'h-36 w-24', Banner: 'h-12 w-full max-w-xs' }[size]
 
   return (
     <div
-      className={`overflow-hidden rounded-xl border ${line} bg-[color:var(--bg)] shadow-xl shadow-black/10`}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      className={`overflow-hidden rounded-lg border ${line} bg-[color:var(--bg)]`}
     >
       <div className={`flex flex-wrap items-center justify-between gap-3 border-b ${line} px-4 py-3 sm:px-5`}>
         <div>
           <p className="text-sm font-semibold">North &amp; Co. - Spring campaign</p>
           <p className={`mt-1 text-xs ${muted}`}>Apr 08 - Apr 14, 2025 <span className="mx-1.5">/</span> Delhi, India</p>
         </div>
-        <span className={`text-[10px] font-semibold uppercase tracking-wider ${muted}`}>Simulated data</span>
+        <span className={`rounded-md border ${line} px-2 py-1 text-[10px] font-medium ${muted}`}>Sample data</span>
       </div>
 
       <div className="p-4 sm:p-5">
@@ -274,13 +262,27 @@ function ProductMock() {
           </section>
         </div>
 
+        <div className={`overflow-x-auto border-t ${line} pt-4`}>
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <h3 className="text-xs font-semibold">Recent campaigns</h3>
+            <span className={`text-[10px] ${muted}`}>Sample data</span>
+          </div>
+          <table className="w-full min-w-[360px] text-left text-[10px]">
+            <thead className={muted}><tr><th className="py-2 font-medium">Campaign</th><th className="py-2 font-medium">Status</th><th className="py-2 font-medium">Spend</th><th className="py-2 font-medium">Clicks</th></tr></thead>
+            <tbody className={`divide-y ${line}`}>
+              <tr><td className="py-2 font-medium">Spring collection</td><td className="py-2">Active</td><td className="py-2">INR 3,240</td><td className="py-2">1,284</td></tr>
+              <tr><td className="py-2 font-medium">Weekend offers</td><td className="py-2">Paused</td><td className="py-2">INR 1,860</td><td className="py-2">742</td></tr>
+            </tbody>
+          </table>
+        </div>
+
         <div className={`grid gap-4 border-t ${line} pt-4 sm:grid-cols-[1fr_1.2fr] sm:items-center`}>
           <div>
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-xs font-semibold">Campaign setup</h3>
-              <span className={`text-[10px] ${muted}`}>Step {step + 1} of {steps.length}: {steps[step].name}</span>
+              <span className={`text-[10px] ${muted}`}>Step 1 of {steps.length}: {steps[0].name}</span>
             </div>
-            <p className={`mt-1.5 text-[10px] leading-4 ${muted}`} aria-live="polite">{steps[step].ai}</p>
+            <p className={`mt-1.5 text-[10px] leading-4 ${muted}`}>{steps[0].ai}</p>
           </div>
 
           <div>
@@ -302,7 +304,7 @@ function ProductMock() {
               </div>
             </div>
             <div className="flex min-h-24 items-center justify-center overflow-hidden rounded-md bg-slate-100 p-2">
-              <div className={`${shape} flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded border border-slate-200 bg-white p-2 text-left text-navy-900 transition-all duration-300 ${size === 'Story' ? 'flex-col text-center' : 'flex-row'}`}>
+              <div className={`${shape} flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded border border-slate-200 bg-white p-2 text-left text-navy-900 ${size === 'Story' ? 'flex-col text-center' : 'flex-row'}`}>
                 <div className={`flex shrink-0 items-center justify-center bg-slate-100 text-[9px] font-semibold text-slate-600 ${size === 'Story' ? 'h-8 w-8' : 'h-8 w-10'}`}>N&amp;C</div>
                 <div className="min-w-0">
                   <p className="text-[9px] font-bold uppercase tracking-wide text-slate-500">North &amp; Co.</p>
@@ -346,12 +348,15 @@ export function HomePage() {
   const visible = cards[tab].slice(page * 3, page * 3 + 3)
 
   return (
-    <div style={vars} className="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)] transition-colors duration-300">
+    <div style={vars} className="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)] transition-colors duration-150">
       <Nav dark={dark} onToggle={toggleTheme} />
 
       <main>
         {/* Hero and product preview */}
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:min-h-[calc(100vh-4rem)] lg:grid-cols-[0.78fr_1.22fr] lg:gap-12 lg:py-14">
+        <section
+          className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:min-h-[calc(100vh-4rem)] lg:grid-cols-[0.78fr_1.22fr] lg:gap-12 lg:py-14"
+          style={{ backgroundImage: 'linear-gradient(to right, #3b82f60a 1px, transparent 1px), linear-gradient(to bottom, #3b82f60a 1px, transparent 1px)', backgroundSize: '32px 32px' }}
+        >
           <div className="max-w-lg">
             <p className={`mb-5 text-xs font-semibold uppercase tracking-[0.16em] ${accent}`}>Digital advertising, in one place</p>
             <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.5rem]">
@@ -409,7 +414,7 @@ export function HomePage() {
             <p className={`mt-4 text-lg ${muted}`}>Create an ad from one sentence, or add your website and start earning.</p>
 
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-              <div className={`inline-flex rounded-xl border ${line} ${card} p-1`} role="tablist" aria-label="Choose your side">
+              <div className={`inline-flex rounded-lg border ${line} ${card} p-1`} role="tablist" aria-label="Choose your side">
                 {([['advertiser', "I'm an advertiser"], ['publisher', "I'm a publisher"]] as const).map(([key, label]) => (
                   <button
                     key={key}
@@ -449,18 +454,20 @@ export function HomePage() {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <div className="mt-8 grid gap-x-8 md:grid-cols-3">
               {visible.map(({ icon: Icon, title, text }) => (
                 <Link
                   key={title}
                   href={tab === 'advertiser' ? '/advertisers' : '/publishers'}
-                  className={`group rounded-2xl border ${line} ${card} p-6 transition hover:-translate-y-1`}
+                  className={`flex items-start gap-3 border-t ${line} ${card} py-4 transition-colors duration-150`}
                 >
-                  <span className={`flex h-12 w-12 items-center justify-center rounded-xl border ${line} ${accent}`}>
-                    <Icon className="h-6 w-6" aria-hidden="true" />
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                    <Icon className="h-4 w-4" aria-hidden="true" />
                   </span>
-                  <h3 className="mt-5 text-lg font-semibold">{title}</h3>
-                  <p className={`mt-1 ${muted}`}>{text}</p>
+                  <span>
+                    <h3 className="text-sm font-semibold">{title}</h3>
+                    <p className={`mt-1 text-sm ${muted}`}>{text}</p>
+                  </span>
                 </Link>
               ))}
             </div>
@@ -487,7 +494,7 @@ export function HomePage() {
                     className="flex w-full items-center justify-between gap-4 py-5 text-left font-semibold"
                   >
                     {f.q}
-                    <Plus className={`h-5 w-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-45' : ''}`} aria-hidden="true" />
+                    <Plus className="h-5 w-5 shrink-0" aria-hidden="true" />
                   </button>
                   {openFaq === i && <p className={`pb-5 ${muted}`}>{f.a}</p>}
                 </div>

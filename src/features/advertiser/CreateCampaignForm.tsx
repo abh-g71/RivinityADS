@@ -186,7 +186,7 @@ function CampaignChoiceCards({
         {options.map((option) => (
           <label
             key={option.value}
-            className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm transition-colors focus-within:ring-2 focus-within:ring-blue-600 ${
+            className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border p-3 text-sm transition-colors focus-within:ring-2 focus-within:ring-blue-600 ${
               value === option.value ? 'border-blue-600 bg-blue-50 text-navy-900' : 'border-slate-200 bg-white text-slate-700'
             }`}
           >
@@ -229,7 +229,7 @@ function SelectableChips({
               type="button"
               aria-pressed={isSelected}
               onClick={() => onToggle(option)}
-              className={`rounded-xl border px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 ${
+              className={`rounded-lg border px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 ${
                 isSelected ? 'border-blue-600 bg-blue-50 text-navy-900' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
               }`}
             >
@@ -288,7 +288,7 @@ function TextField({
 function AdPreview({ draft, mobile }: { draft: CampaignDraft; mobile: boolean }) {
   return (
     <div
-      className={`mx-auto overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm ${mobile ? 'max-w-60' : 'max-w-md'}`}
+      className={`mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm ${mobile ? 'max-w-60' : 'max-w-md'}`}
       aria-label={`${mobile ? 'Mobile' : 'Desktop'} ad preview`}
     >
       {draft.imageDataUrl ? (
@@ -326,7 +326,7 @@ function LivePreview({ draft }: { draft: CampaignDraft }) {
       </CardHeader>
       <CardContent className="space-y-4">
         <AdPreview draft={draft} mobile={false} />
-        <div className="space-y-2 rounded-xl bg-slate-50 p-4 text-sm">
+        <div className="space-y-2 rounded-lg bg-slate-50 p-4 text-sm">
           <p className="font-medium text-navy-900">{displayValue(draft.campaignName)}</p>
           <p className="text-slate-600">{displayValue(draft.objective)} · {displayValue(draft.adUnit)}</p>
           <p className="text-slate-600">
@@ -350,7 +350,7 @@ function SummarySection({
   onEdit: () => void
 }) {
   return (
-    <section className="rounded-xl border border-slate-200 p-4">
+    <section className="rounded-lg border border-slate-200 p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
         <h3 className="font-semibold text-navy-900">{title}</h3>
         <Button type="button" variant="outline" size="sm" onClick={onEdit}>Edit</Button>
@@ -665,7 +665,7 @@ export function CreateCampaignForm({
           }}
         />
         {fieldError('buyingType') && <p role="alert" className="-mt-4 text-sm text-red-700">{fieldError('buyingType')}</p>}
-        <div className="space-y-4 rounded-xl border border-slate-200 p-4">
+        <div className="space-y-4 rounded-lg border border-slate-200 p-4">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <Label htmlFor="special-category">Special ad category</Label>
@@ -766,7 +766,7 @@ export function CreateCampaignForm({
             <ul aria-label="Selected PIN codes" className="flex flex-wrap gap-2">
               {draft.pins.map((pin) => (
                 <li key={pin}>
-                  <button type="button" onClick={() => updateDraft('pins', draft.pins.filter((item) => item !== pin))} className="rounded-xl bg-blue-50 px-3 py-1.5 text-sm text-navy-900">
+                  <button type="button" onClick={() => updateDraft('pins', draft.pins.filter((item) => item !== pin))} className="rounded-lg bg-blue-50 px-3 py-1.5 text-sm text-navy-900">
                     {pin}<span className="ml-2" aria-label={`Remove ${pin}`}>×</span>
                   </button>
                 </li>
@@ -796,7 +796,7 @@ export function CreateCampaignForm({
         <SelectableChips label="Devices" options={advertiserDevices} selected={draft.devices} onToggle={(value) => toggle('devices', value)} />
         <SelectableChips label="Operating systems" options={[...campaignOperatingSystems]} selected={draft.operatingSystems} onToggle={(value) => toggle('operatingSystems', value)} />
         <SelectableChips label="Placements" options={[...campaignPlacementOptions]} selected={draft.placements} onToggle={(value) => toggle('placements', value)} />
-        <div className="space-y-4 rounded-xl border border-slate-200 p-4">
+        <div className="space-y-4 rounded-lg border border-slate-200 p-4">
           <h3 className="font-semibold text-navy-900">Budget</h3>
           <CampaignChoiceCards
             label="Budget type"
@@ -825,7 +825,7 @@ export function CreateCampaignForm({
           <TextField id="end-date" label="End date" type="date" value={draft.endDate} onChange={(value) => updateDraft('endDate', value)} onBlur={() => markTouched('endDate')} error={fieldError('endDate')} />
         </div>
         <TextField id="frequency-cap" label="Frequency cap (impressions per person)" type="number" min={1} value={draft.frequencyCap} onChange={(value) => updateDraft('frequencyCap', value)} />
-        <section aria-label="Mock audience meter" className="space-y-3 rounded-xl bg-blue-50 p-4">
+        <section aria-label="Mock audience meter" className="space-y-3 rounded-lg bg-blue-50 p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="font-semibold text-navy-900">Audience setup</h3>
             <span className="text-sm text-navy-900">
@@ -887,7 +887,7 @@ export function CreateCampaignForm({
           <p className="text-xs text-slate-500">PNG, JPEG, or WebP up to 2 MB. Stored locally in this browser.</p>
           {imageError && <p id="creative-image-error" role="alert" className="text-sm text-red-700">{imageError}</p>}
           {draft.imageDataUrl && (
-            <div className="flex items-center gap-3 rounded-xl border border-slate-200 p-3">
+            <div className="flex items-center gap-3 rounded-lg border border-slate-200 p-3">
               <Image src={draft.imageDataUrl} alt="Campaign creative thumbnail" width={80} height={56} unoptimized className="h-14 w-20 rounded-lg object-cover" />
               <p className="min-w-0 flex-1 truncate text-sm text-navy-900">{draft.imageName}</p>
               <Button
@@ -1017,7 +1017,7 @@ export function CreateCampaignForm({
         action={<Button type="button" variant="outline" onClick={saveDraft}>Save draft</Button>}
       />
       {!isHydrated && (
-        <div role="status" className="h-1 w-full animate-pulse rounded-xl bg-slate-200">
+        <div role="status" className="h-1 w-full rounded-lg bg-slate-200">
           <span className="sr-only">Restoring saved campaign draft</span>
         </div>
       )}
@@ -1034,18 +1034,18 @@ export function CreateCampaignForm({
                 <p className="text-sm text-slate-600">Review the values you entered before the mock publish action.</p>
               </CardHeader>
               <CardContent className="space-y-5">
-                <p className="rounded-xl bg-blue-50 p-3 text-sm text-navy-900">
+                <p className="rounded-lg bg-blue-50 p-3 text-sm text-navy-900">
                   Nothing has been filled in automatically. “Not set” means you have not entered a value.
                 </p>
                 {missingRequired.length > 0 && (
-                  <section aria-labelledby="missing-required-title" className="rounded-xl border border-amber-300 bg-amber-50 p-4">
+                  <section aria-labelledby="missing-required-title" className="rounded-lg border border-amber-300 bg-amber-50 p-4">
                     <h3 id="missing-required-title" className="font-semibold text-amber-950">Missing required information</h3>
                     <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-amber-900">
                       {missingRequired.map((field) => <li key={field}>{validationErrors[field]}</li>)}
                     </ul>
                   </section>
                 )}
-                <section aria-labelledby="optional-missing-title" className="rounded-xl border border-slate-200 p-4">
+                <section aria-labelledby="optional-missing-title" className="rounded-lg border border-slate-200 p-4">
                   <h3 id="optional-missing-title" className="font-semibold text-navy-900">Optional information not provided</h3>
                   <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-600">
                     {!draft.country && <li>No country targeting is selected; no location is assumed.</li>}

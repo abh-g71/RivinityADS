@@ -18,7 +18,7 @@ export function Step4Promotion({ data, update }: StepProps) {
               type="button"
               aria-pressed={selected}
               onClick={() => update({ promotionId: p.id, skipPromo: false })}
-              className={`rounded-xl border-2 p-4 text-left transition-colors ${
+              className={`rounded-lg border-2 p-4 text-left transition-colors ${
                 selected ? 'border-brand-600 bg-brand-50' : 'border-slate-200 bg-white hover:border-slate-300'
               }`}
             >

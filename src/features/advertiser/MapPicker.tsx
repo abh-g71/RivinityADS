@@ -5,7 +5,7 @@ import type { CampaignLocation } from '@/types/campaign'
 
 const LeafletMap = dynamic(() => import('./LeafletMap'), {
   ssr: false,
-  loading: () => <div className="h-64 animate-pulse rounded-xl bg-slate-100" aria-label="Loading map" />,
+  loading: () => <div className="h-64 rounded-lg border border-slate-200 bg-slate-100" aria-label="Loading map" />,
 })
 
 export function MapPicker({

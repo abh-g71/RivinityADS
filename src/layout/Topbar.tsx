@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Bell, CircleUserRound, LifeBuoy, Settings } from 'lucide-react'
+import { Bell, CircleUserRound, LifeBuoy, Menu, Settings } from 'lucide-react'
 import { Button, ButtonLink } from '../components/ui/Button'
 import {
   DropdownMenu,
@@ -52,17 +52,16 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-20 flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 border-b border-slate-200/70 bg-white/80 px-3 backdrop-blur-md py-2 sm:px-6 md:h-16 md:flex-nowrap md:py-0">
+    <header className="sticky top-0 z-20 flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 border-b border-slate-200 bg-white px-3 py-2 sm:px-6 md:h-16 md:flex-nowrap md:py-0">
       <Button
         variant="ghost"
         className="h-10 w-10 shrink-0 px-0"
         onClick={onMenuClick}
         aria-label="Open menu"
       >
-        ☰
+        <Menu className="h-5 w-5" aria-hidden="true" />
       </Button>
-            <p className="flex min-w-0 flex-1 items-center gap-2 truncate text-sm font-semibold text-navy-900">
-        <span aria-hidden="true" className="h-2 w-2 shrink-0 rounded-full bg-brand-500 shadow-[0_0_0_4px] shadow-brand-100" />
+      <p className="flex min-w-0 flex-1 items-center gap-2 truncate text-sm font-semibold text-navy-900">
         {role === 'publisher' ? 'Publisher Console' : role === 'admin' ? 'Admin Console' : 'Advertiser Console'}
       </p>
 
@@ -75,7 +74,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
             </ButtonLink>
             <Link
               href="/add-funds"
-              className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-slate-200 px-2 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:px-3"
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-slate-200 px-2 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:px-3"
               aria-label={`Mock advertiser balance ${balance}. Add funds`}
             >
               <span className="hidden lg:inline">{balance}</span>
@@ -86,7 +85,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
 
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             aria-label={`Notifications, ${unreadCount} unread`}
           >
             <Bell className="h-5 w-5" aria-hidden="true" />
@@ -130,7 +129,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
 
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl px-2 text-sm font-semibold text-navy-900 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-navy-900 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             aria-label={`Open user menu for ${mockConsoleUser.name}`}
           >
             <CircleUserRound className="h-5 w-5 shrink-0" aria-hidden="true" />

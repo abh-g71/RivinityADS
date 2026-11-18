@@ -15,7 +15,7 @@ export const Stepper = ({ steps, current }: StepperProps) => {
 
         <div className="mt-2 h-2 rounded-full bg-slate-100">
           <div
-            className="h-2 rounded-full bg-brand-600 transition-all"
+            className="h-2 rounded-full bg-brand-600"
             style={{
               width: `${((current + 1) / steps.length) * 100}%`,
             }}

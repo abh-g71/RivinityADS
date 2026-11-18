@@ -76,7 +76,7 @@ export default function PublisherPlacementsPage() {
         breadcrumbs={[{ label: 'Publisher', href: '/publisher' }, { label: 'Ad Placements' }]}
         title="Ad Placements"
         description="Create a mock placement and preview a placeholder ad snippet."
-        action={<Link href="#create-placement" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create placement</Link>}
+        action={<Link href="#create-placement" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create placement</Link>}
       />
 
       <Card id="create-placement" className="mt-6 p-5 sm:p-6">

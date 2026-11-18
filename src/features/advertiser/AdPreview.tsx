@@ -30,7 +30,7 @@ export function AdPreview({ draft }: { draft: CampaignDraft }) {
       </div>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Preview placement">
         {(['feed', 'story', 'banner'] as const).map((value) => (
-          <button key={value} type="button" onClick={() => setPlacement(value)} aria-pressed={placement === value} className={`min-h-10 rounded-xl px-3 text-sm font-medium capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${placement === value ? 'bg-brand-600 text-white' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}>
+          <button key={value} type="button" onClick={() => setPlacement(value)} aria-pressed={placement === value} className={`min-h-10 rounded-lg px-3 text-sm font-medium capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${placement === value ? 'bg-brand-600 text-white' : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}>
             {value}
           </button>
         ))}
@@ -46,16 +46,16 @@ export function AdPreview({ draft }: { draft: CampaignDraft }) {
       )}
       <div className="flex items-center justify-between gap-3">
         <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{frameSize} px</span>
-        <div className="flex rounded-xl bg-slate-100 p-1" role="group" aria-label="Preview device">
+        <div className="flex rounded-lg bg-slate-100 p-1" role="group" aria-label="Preview device">
           {(['mobile', 'desktop'] as const).map((value) => (
             <button key={value} type="button" onClick={() => setDevice(value)} aria-pressed={device === value} className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${device === value ? 'bg-white text-navy-900 shadow-sm' : 'text-slate-600'}`}>{value}</button>
           ))}
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100 p-3 sm:p-5">
+      <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-100 p-3 sm:p-5">
         <div
-          className={`mx-auto flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-[max-width] ${placement === 'banner' && bannerSize === '728x90' ? 'flex-row' : ''} ${device === 'mobile' ? 'max-w-[280px]' : 'max-w-[560px]'}`}
+          className={`mx-auto flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition-[max-width] ${placement === 'banner' && bannerSize === '728x90' ? 'flex-row' : ''} ${device === 'mobile' ? 'max-w-[280px]' : 'max-w-[560px]'}`}
           style={{ aspectRatio: ratio }}
           aria-label={`${placement} ad preview, ${frameSize} pixels, ${device} view`}
         >

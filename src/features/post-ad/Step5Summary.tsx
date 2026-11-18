@@ -33,7 +33,7 @@ export function Step5Summary({ data }: StepProps) {
 
       <div className="mt-5">
         {tab === 'cart' ? (
-          <div className="overflow-x-auto rounded-xl border border-slate-200">
+          <div className="overflow-x-auto rounded-lg border border-slate-200">
             <table className="w-full min-w-[420px] text-left text-sm">
               <thead className="bg-slate-50 text-slate-500">
                 <tr>
@@ -62,7 +62,7 @@ export function Step5Summary({ data }: StepProps) {
             </table>
           </div>
         ) : (
-          <p className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">
+          <p className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">
             This section will be connected to the real invoice and payment flow.
           </p>
         )}

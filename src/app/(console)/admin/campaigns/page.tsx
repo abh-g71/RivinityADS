@@ -79,7 +79,7 @@ export default function AdminCampaignReviewPage() {
         breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Campaign Review' }]}
         title="Campaign Review"
         description="Review mock campaigns and record an approval or rejection reason."
-        action={<Link href="/admin/websites" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Review websites</Link>}
+        action={<Link href="/admin/websites" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Review websites</Link>}
       />
       <div className="mt-6 max-w-md">
         <Input id="campaign-review-search" label="Search campaigns" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search campaign or advertiser" />

@@ -235,7 +235,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                     onChange={() => setRole(option.id)}
                     aria-describedby={fieldError('role') ? 'auth-role-error' : undefined}
                   />
-                  <span className={`block h-full rounded-xl border p-3 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 ${role === option.id ? 'border-brand-600 bg-brand-50' : 'border-slate-200 hover:border-brand-500'}`}>
+                  <span className={`block h-full rounded-lg border p-3 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 ${role === option.id ? 'border-brand-600 bg-brand-50' : 'border-slate-200 hover:border-brand-500'}`}>
                     <span className="block text-sm font-semibold capitalize text-navy-900">{option.title}</span>
                     <span className="mt-1 block text-xs leading-5 text-slate-600">{option.description}</span>
                   </span>

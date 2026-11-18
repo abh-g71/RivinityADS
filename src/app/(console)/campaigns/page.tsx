@@ -511,7 +511,7 @@ export default function CampaignsPage() {
               value={search}
               onChange={(event) => { setSearch(event.target.value); setPage(1) }}
               placeholder="Search by name or ID"
-              className="h-11 w-full rounded-xl border border-slate-300 bg-white pl-9 pr-3 text-sm text-navy-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="h-11 w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 text-sm text-navy-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
             />
           </label>
           <div className="w-full sm:w-48">
@@ -528,7 +528,7 @@ export default function CampaignsPage() {
             />
           </div>
           <DropdownMenu>
-            <DropdownMenuTrigger className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+            <DropdownMenuTrigger className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
               Columns
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="max-h-80">
@@ -681,7 +681,7 @@ export default function CampaignsPage() {
                               <td className="px-4 py-3">
                                 <DropdownMenu>
                                   <DropdownMenuTrigger
-                                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                                     aria-label={`Actions for ${item.name}`}
                                   >
                                     <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
@@ -757,7 +757,7 @@ export default function CampaignsPage() {
                   onBlur={() => setEditNameTouched(true)}
                   aria-invalid={editNameTouched && !editName.trim()}
                   aria-describedby={editNameTouched && !editName.trim() ? 'edit-name-error' : undefined}
-                  className="h-11 rounded-xl border border-slate-300 px-3 text-sm text-navy-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  className="h-11 rounded-lg border border-slate-300 px-3 text-sm text-navy-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
                 />
                 {editNameTouched && !editName.trim() && <span id="edit-name-error" role="alert" className="text-xs text-danger-600">Enter a name.</span>}
               </label>
@@ -783,7 +783,7 @@ export default function CampaignsPage() {
       </Sheet>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="rounded-xl">
+        <DialogContent className="rounded-lg">
           <DialogHeader>
             <DialogTitle>Delete selected items?</DialogTitle>
             <DialogDescription>

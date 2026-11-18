@@ -20,7 +20,7 @@ export default function FinancePage() {
         breadcrumbs={[{ label: 'Advertiser' }, { label: 'Finance' }]}
         title="Finance"
         description="Mock account overview. No payments or transactions are processed."
-        action={<Link href="/add-funds" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Add funds</Link>}
+        action={<Link href="/add-funds" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Add funds</Link>}
       />
 
       <Card className="mt-6 max-w-md p-6">

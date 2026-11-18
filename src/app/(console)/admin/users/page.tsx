@@ -62,7 +62,7 @@ export default function AdminUsersPage() {
         breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Users' }]}
         title="Users"
         description="Search anonymized mock accounts and preview role and status controls."
-        action={<Link href="/admin/advertisers" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Advertisers</Link>}
+        action={<Link href="/admin/advertisers" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Advertisers</Link>}
       />
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <Input

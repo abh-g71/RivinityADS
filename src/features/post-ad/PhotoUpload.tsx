@@ -50,7 +50,7 @@ export function PhotoUpload() {
           setDragging(false)
           addFiles(e.dataTransfer.files)
         }}
-        className={`rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
+        className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
           dragging ? 'border-brand-500 bg-brand-50' : 'border-slate-300'
         }`}
       >

@@ -80,7 +80,7 @@ export default function TrafficChartPage() {
         breadcrumbs={[{ label: 'Advertiser' }, { label: 'Traffic Chart' }]}
         title="Traffic Chart"
         description="Mock sample view only. It does not represent live traffic or pricing."
-        action={<Link href="/campaigns/new" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create campaign</Link>}
+        action={<Link href="/campaigns/new" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create campaign</Link>}
       />
 
       <Card className="mt-6 p-4 sm:p-5">

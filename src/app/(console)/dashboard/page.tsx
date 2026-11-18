@@ -33,7 +33,7 @@ type AdvertiserMetricCardProps = {
 
 function AdvertiserMetricCard({ title, value, detail, icon: Icon }: AdvertiserMetricCardProps) {
   return (
-    <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
+    <div className="min-w-0 rounded-lg border border-slate-200 bg-white p-4">
       <div className="flex min-w-0 items-center gap-2 text-navy-800">
         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
         <span className="block text-sm text-slate-500">{title}</span>
@@ -303,7 +303,7 @@ export default function AdvertiserDashboardPage() {
             <div><h2 className="font-semibold text-navy-900">Continue where you left off</h2><p className="mt-1 text-xs text-slate-500">Drafts are saved in this browser.</p></div>
             <CircleHelp className="h-5 w-5 text-slate-400" aria-hidden="true" />
           </div>
-          <div className="mt-4 rounded-xl bg-slate-50 p-4">
+          <div className="mt-4 rounded-lg bg-slate-50 p-4">
             {hasDraft ? (
               <>
                 <p className="text-sm font-semibold text-navy-900">{draftSummary.headline || draftSummary.objective || 'Campaign draft'}</p>
@@ -315,7 +315,7 @@ export default function AdvertiserDashboardPage() {
                 <p className="mt-1 text-sm text-slate-600">Your progress will appear here when you start a campaign.</p>
               </>
             )}
-            <Link href="/campaigns/new/manual" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-brand-700 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+            <Link href="/campaigns/new/manual" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-brand-700 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
               {hasDraft ? 'Continue draft' : 'Start a campaign'} <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
@@ -325,7 +325,7 @@ export default function AdvertiserDashboardPage() {
           <TrafficInsights />
         </div>
 
-      <section className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 lg:col-span-7" aria-labelledby="recent-campaigns-title">
+      <section className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 lg:col-span-7" aria-labelledby="recent-campaigns-title">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 id="recent-campaigns-title" className="font-semibold text-navy-900">Recent campaigns</h2>

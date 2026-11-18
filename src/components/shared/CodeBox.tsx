@@ -22,7 +22,7 @@ export function CodeBox({ title, code, note }: CodeBoxProps) {
   }
 
   return (
-    <section aria-label={title} className="rounded-2xl border border-slate-200 bg-white p-5">
+    <section aria-label={title} className="rounded-lg border border-slate-200 bg-white p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-semibold text-navy-900">{title}</h2>
         <Button type="button" variant="outline" onClick={copyCode}>Copy</Button>

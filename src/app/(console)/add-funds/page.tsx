@@ -43,7 +43,7 @@ export default function AddFundsPage() {
         breadcrumbs={[{ label: 'Advertiser' }, { label: 'Add Funds' }]}
         title="Add Funds"
         description="This demo does not connect to payment providers or move money."
-        action={<Link href="/finance" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View finance</Link>}
+        action={<Link href="/finance" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View finance</Link>}
       />
 
       <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
@@ -64,7 +64,7 @@ export default function AddFundsPage() {
                         checked={method === item}
                         onChange={() => { setMethod(item); setSuccess('') }}
                       />
-                      <span className={`flex min-h-16 items-center justify-center rounded-xl border p-4 text-center text-sm font-semibold peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 ${
+                      <span className={`flex min-h-16 items-center justify-center rounded-lg border p-4 text-center text-sm font-semibold peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 ${
                         method === item ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-200 text-slate-700 hover:border-brand-500'
                       }`}>
                         {item}
@@ -75,7 +75,7 @@ export default function AddFundsPage() {
               </fieldset>
             ))}
             {touched && !method && <p className="mt-3 text-xs text-danger-600" role="alert">Choose a payment method.</p>}
-            <div className="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
+            <div className="mt-5 rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
               <p>Deposit limits: <span className="font-medium">set by platform</span></p>
               <p className="mt-1">Fees: <span className="font-medium">set by platform</span></p>
             </div>

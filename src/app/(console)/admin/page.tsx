@@ -29,7 +29,7 @@ export default function AdminDashboardPage() {
         breadcrumbs={[{ label: 'Admin' }, { label: 'Dashboard' }]}
         title="Admin dashboard"
         description="Review mock platform queues and activity. No production operations are available here."
-        action={<Link href="/admin/campaigns" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Review campaigns</Link>}
+        action={<Link href="/admin/campaigns" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Review campaigns</Link>}
       />
 
       <StaggerGrid aria-label="Mock platform statistics" className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -39,7 +39,7 @@ export default function AdminDashboardPage() {
       <section aria-labelledby="admin-activity" className="mt-8">
         <h2 id="admin-activity" className="mb-4 text-lg font-semibold text-navy-900">Recent activity</h2>
         {mockAdminActivity.length ? (
-          <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+          <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200 bg-white">
             {mockAdminActivity.map((activity) => (
               <li key={activity.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
                 <span className="text-sm text-navy-900">{activity.description}</span>

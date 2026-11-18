@@ -10,10 +10,10 @@ export function PageTransition({ pageKey, children }: { pageKey: string; childre
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={pageKey}
-        initial={reduceMotion ? false : { opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 4 }}
-        transition={{ duration: reduceMotion ? 0 : 0.22, ease: 'easeOut' }}
+        initial={reduceMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={reduceMotion ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: reduceMotion ? 0 : 0.18, ease: 'easeOut' }}
       >
         {children}
       </motion.div>

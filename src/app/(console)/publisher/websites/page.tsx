@@ -99,7 +99,7 @@ export default function PublisherWebsitesPage() {
         breadcrumbs={[{ label: 'Publisher', href: '/publisher' }, { label: 'Websites' }]}
         title="Websites"
         description="Add a site and preview mock ownership verification and ad unit code."
-        action={<Link href="#add-website" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Add website</Link>}
+        action={<Link href="#add-website" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Add website</Link>}
       />
 
       {tipsVisible && (
@@ -157,7 +157,7 @@ export default function PublisherWebsitesPage() {
                 </Button>
               </div>
             </div>
-            <details className="mt-5 rounded-xl border border-slate-200 p-4">
+            <details className="mt-5 rounded-lg border border-slate-200 p-4">
               <summary className="cursor-pointer font-medium text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                 Ad units for {website.domain}
               </summary>
@@ -167,7 +167,7 @@ export default function PublisherWebsitesPage() {
                   const code = createMockAdCode(key)
                   const codeIsActive = activeCode?.key === key
                   return (
-                    <section key={format} className="min-w-0 rounded-xl bg-slate-50 p-4">
+                    <section key={format} className="min-w-0 rounded-lg bg-slate-50 p-4">
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <h3 className="font-medium text-navy-900">{format}</h3>
                         <div className="flex gap-2">
@@ -195,7 +195,7 @@ export default function PublisherWebsitesPage() {
                       </div>
                       {codeIsActive && (
                         <div className="mt-3">
-                          <pre className="overflow-x-auto rounded-xl bg-navy-950 p-3 text-xs text-slate-100"><code>{activeCode.code}</code></pre>
+                          <pre className="overflow-x-auto rounded-lg bg-navy-950 p-3 text-xs text-slate-100"><code>{activeCode.code}</code></pre>
                           {copyMessages[key] && <p role="status" className="mt-2 text-xs text-slate-600">{copyMessages[key]}</p>}
                           <p className="mt-2 text-xs text-slate-500">Preview only; no ads are delivered.</p>
                         </div>
@@ -253,7 +253,7 @@ export default function PublisherWebsitesPage() {
               <p className="mt-2 text-sm text-slate-600">
                 Add this mock verification tag to <span className="font-medium text-navy-900">{selectedWebsite.domain}</span>:
               </p>
-              <pre className="mt-4 overflow-x-auto rounded-xl bg-navy-950 p-4 text-xs text-slate-100">
+              <pre className="mt-4 overflow-x-auto rounded-lg bg-navy-950 p-4 text-xs text-slate-100">
                 <code>{mockVerificationCode}</code>
               </pre>
               <div className="mt-4 flex flex-wrap items-center gap-3">
