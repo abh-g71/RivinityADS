@@ -182,21 +182,29 @@ function Donut({ parts, centerLabel, total, format }: { parts: { name: string; v
   const on = useMounted()
   const r = 70
   const C = 2 * Math.PI * r
-  let acc = 0
+  const segments = parts.map((p, i) => {
+    const before = parts.slice(0, i).reduce((s, q) => s + (q.value / total) * C, 0)
+    return { ...p, len: Math.max(0, (p.value / total) * C - 2), offset: -before }
+  })
   return (
     <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
       <div className="relative h-44 w-44 shrink-0">
         <svg viewBox="0 0 180 180" className="h-full w-full -rotate-90" role="img" aria-label="Share by campaign">
           <circle cx="90" cy="90" r={r} fill="none" stroke="#F2F4F7" strokeWidth="22" />
-          {parts.map((p) => {
-            const len = Math.max(0, (p.value / total) * C - 2)
-            const off = -acc
-            acc += (p.value / total) * C
-            return (
-              <circle key={p.name} cx="90" cy="90" r={r} fill="none" stroke={p.color} strokeWidth="22"
-                strokeDasharray={`${on ? len : 0} ${C}`} strokeDashoffset={off} style={{ transition: 'stroke-dasharray 900ms ease-out' }} />
-            )
-          })}
+          {segments.map((s) => (
+            <circle
+              key={s.name}
+              cx="90"
+              cy="90"
+              r={r}
+              fill="none"
+              stroke={s.color}
+              strokeWidth="22"
+              strokeDasharray={`${on ? s.len : 0} ${C}`}
+              strokeDashoffset={s.offset}
+              style={{ transition: 'stroke-dasharray 900ms ease-out' }}
+            />
+          ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <p className="text-xs text-slate-500">{centerLabel}</p>
