@@ -8,18 +8,23 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
-  CircleDollarSign,
-  CreditCard,
   FileCheck,
   FileText,
   Globe2,
+  Landmark,
   LayoutDashboard,
   LifeBuoy,
+  List,
   Mail,
   Megaphone,
+  PanelTop,
+  Plus,
+  Receipt,
   Settings,
   ShieldCheck,
+  Target,
   Users,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react'
 import { getNavGroups, type ConsoleRole, type NavItem } from '@/data/navigation'
@@ -46,35 +51,35 @@ const navIcons: Record<string, LucideIcon> = {
   dashboard: LayoutDashboard,
   'publisher-dashboard': LayoutDashboard,
   'admin-dashboard': LayoutDashboard,
-  campaigns: Megaphone,
-  'create-campaign': Megaphone,
-  billing: CircleDollarSign,
+  campaigns: List,
+  'create-campaign': Plus,
+  billing: Receipt,
   'admin-campaigns': FileCheck,
   'traffic-chart': BarChart3,
-  'conversion-tracking': Activity,
-  'add-funds': CircleDollarSign,
-  finance: CreditCard,
+  'conversion-tracking': Target,
+  'add-funds': Wallet,
+  finance: Landmark,
   domains: Globe2,
-  'post-ad': FileText,
+  'post-ad': Megaphone,
   'email-marketing': Mail,
   notifications: Bell,
   'ad-tester': ShieldCheck,
   'system-health': Activity,
-  reports: BarChart3,
+  reports: FileText,
   support: LifeBuoy,
   settings: Settings,
   'publisher-websites': Globe2,
-  'publisher-placements': FileText,
+  'publisher-placements': PanelTop,
   'publisher-statistics': BarChart3,
-  'publisher-earnings': CircleDollarSign,
-  'publisher-payments': CreditCard,
+  'publisher-earnings': Wallet,
+  'publisher-payments': Landmark,
   'admin-users': Users,
   'admin-advertisers': Megaphone,
   'admin-publishers': Users,
   'admin-websites': Globe2,
   'admin-support': LifeBuoy,
   'admin-settings': Settings,
-  'admin-billing': CreditCard,
+  'admin-billing': Receipt,
 }
 
 function roleLabel(role: ConsoleRole) {
@@ -92,7 +97,7 @@ function NavigationContent({
   showCollapseControl: boolean
 }) {
   const pathname = usePathname()
-  const navGroups = getNavGroups(role)
+  const groups = getNavGroups(role)
 
   return (
     <div className="flex min-h-[calc(100vh-3rem)] flex-col">
@@ -109,7 +114,7 @@ function NavigationContent({
           {!isCollapsed && <span className="truncate text-lg font-bold tracking-tight">RivinityADS</span>}
         </Link>
         {showCollapseControl && (
-                    <button
+          <button
             type="button"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             onClick={onToggleCollapse}
@@ -121,27 +126,15 @@ function NavigationContent({
         )}
       </div>
 
-      <nav className="mt-8 flex flex-col gap-6" aria-label={`${role} navigation`}>
-        {navGroups.map((group, index) => (
+      <nav className="mt-6 flex flex-col gap-4" aria-label={`${role} navigation`}>
+        {groups.map((group, index) => (
           <div key={group.title ?? index}>
-            {group.title && !isCollapsed ? (
-              <details open={group.items.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))} className="group/tools">
-                <summary className="mb-2 flex min-h-9 cursor-pointer list-none items-center justify-between rounded-lg px-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
-                  {group.title}
-                  <ChevronRight className="h-3.5 w-3.5 group-open/tools:rotate-90" aria-hidden="true" />
-                </summary>
-                <ul className="flex flex-col gap-1">
-                  {group.items.map((item) => <li key={item.id}>{renderNavigationLink(item)}</li>)}
-                </ul>
-              </details>
-            ) : (
-              <>
-                {group.title && isCollapsed && <p className="sr-only">{group.title}</p>}
-                <ul className="flex flex-col gap-1">
-                  {group.items.map((item) => <li key={item.id}>{renderNavigationLink(item)}</li>)}
-                </ul>
-              </>
-            )}
+            {group.title && (isCollapsed
+              ? <div className="mx-3 mb-2 border-t border-white/10" aria-hidden="true" />
+              : <p className="mb-1 px-3 text-[11px] font-medium uppercase tracking-wider text-slate-500">{group.title}</p>)}
+            <ul className="flex flex-col gap-0.5">
+              {group.items.map((item) => <li key={item.id}>{renderNavigationLink(item)}</li>)}
+            </ul>
           </div>
         ))}
       </nav>
@@ -178,16 +171,17 @@ function NavigationContent({
         href={item.href}
         onClick={onClose}
         aria-current={isActive ? 'page' : undefined}
-        className={`group relative flex items-center rounded-lg border-l-2 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+        className={`group relative flex items-center rounded-md border-l-2 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
           isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'
         } ${
           isActive
-            ? 'border-brand-500 bg-navy-800 text-white'
-            : 'border-transparent text-slate-300 hover:bg-white/10 hover:text-white'
+            ? 'border-brand-500 bg-white/5 font-medium text-white'
+            : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'
         }`}
       >
         <Icon
-          className="h-5 w-5 shrink-0"
+          className="h-[18px] w-[18px] shrink-0"
+          strokeWidth={1.5}
           aria-hidden="true"
         />
         <span className={isCollapsed ? 'sr-only' : 'min-w-0 truncate'}>{item.label}</span>

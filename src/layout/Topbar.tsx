@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Bell, CircleUserRound, LifeBuoy, Menu, Settings } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Bell, CircleUserRound, LifeBuoy, Menu, Search, Settings } from 'lucide-react'
 import { Button, ButtonLink } from '../components/ui/Button'
 import {
   DropdownMenu,
@@ -19,7 +20,7 @@ import {
   mockConsoleUser,
   type ConsoleNotification,
 } from '@/data/console'
-import type { ConsoleRole } from '@/data/navigation'
+import { getNavGroups, type ConsoleRole } from '@/data/navigation'
 
 type TopBarProps = {
   role: ConsoleRole
@@ -35,9 +36,35 @@ const currency = new Intl.NumberFormat('en-IN', {
 
 export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
   const [notifications, setNotifications] = useState(mockConsoleNotifications)
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
   const toast = useToast()
   const unreadCount = notifications.filter((notification) => !notification.read).length
   const balance = currency.format(mockAdvertiserBalance)
+
+  // Every page in this role's menu, with its section name, is searchable.
+  const pages = useMemo(
+    () => getNavGroups(role).flatMap((group) => group.items.map((item) => ({ ...item, section: group.title ?? 'Main' }))),
+    [role],
+  )
+  const q = query.trim().toLowerCase()
+  const results = (q ? pages.filter((p) => `${p.label} ${p.section}`.toLowerCase().includes(q)) : pages).slice(0, 7)
+
+  useEffect(() => {
+    function onDown(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [])
+
+  function go(href: string) {
+    router.push(href)
+    setOpen(false)
+    setQuery('')
+  }
 
   function markAllAsRead() {
     if (!unreadCount) return
@@ -61,11 +88,47 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
       >
         <Menu className="h-5 w-5" aria-hidden="true" />
       </Button>
-      <p className="flex min-w-0 flex-1 items-center gap-2 truncate text-sm font-semibold text-navy-900">
+      <p className="min-w-0 flex-1 truncate text-sm font-semibold text-navy-900 md:hidden xl:block xl:flex-none">
         {role === 'publisher' ? 'Publisher Console' : role === 'admin' ? 'Admin Console' : 'Advertiser Console'}
       </p>
 
-      <div className="flex w-full min-w-0 items-center justify-between gap-2 md:w-auto md:shrink-0 md:justify-start md:gap-1 lg:gap-3">
+      {/* Search: own row on phones, centred on wider screens */}
+      <div ref={searchRef} className="relative order-last w-full md:order-none md:mx-auto md:w-auto md:max-w-xl md:flex-1">
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setOpen(false)
+            if (e.key === 'Enter' && results[0]) go(results[0].href)
+          }}
+          placeholder="Search pages, e.g. reports, add funds"
+          aria-label="Search pages"
+          autoComplete="off"
+          className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm text-navy-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        />
+        {open && (
+          <div className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-lg border border-slate-200 bg-white p-1" role="listbox" aria-label="Search results">
+            {results.length ? results.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                role="option"
+                aria-selected="false"
+                onClick={() => go(p.href)}
+                className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              >
+                <span>{p.label}</span>
+                <span className="text-xs text-slate-500">{p.section}</span>
+              </button>
+            )) : <p className="px-3 py-3 text-sm text-slate-500">No pages match &ldquo;{query}&rdquo;.</p>}
+          </div>
+        )}
+      </div>
+
+      <div className="flex min-w-0 shrink-0 items-center gap-1 lg:gap-3">
         {role === 'advertiser' && (
           <>
             <ButtonLink href="/campaigns/new" aria-label="Create Campaign" className="shrink-0 px-2 py-2 text-xs sm:px-3 sm:text-sm">

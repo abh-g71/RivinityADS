@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import L from 'leaflet'
 import { Circle, MapContainer, Marker, TileLayer, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import { X } from 'lucide-react'
@@ -25,18 +25,40 @@ function MapCamera({ locations }: { locations: CampaignTargetLocation[] }) {
   return null
 }
 
-function MapClick({ enabled, onPlace }: { enabled: boolean; onPlace: (lat: number, lng: number) => void }) {
-  useMapEvents({ click: (event) => { if (enabled) onPlace(event.latlng.lat, event.latlng.lng) } })
+// Two-finger swipe pans, pinch (Ctrl + wheel) zooms
+function MapGestures() {
+  const map = useMap()
+  useEffect(() => {
+    const el = map.getContainer()
+    let last = 0
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault()
+      if (e.ctrlKey) {
+        const now = Date.now()
+        if (now - last < 120) return
+        last = now
+        const z = map.getZoom() + (e.deltaY < 0 ? 1 : -1)
+        map.setZoomAround(map.mouseEventToContainerPoint(e), z)
+      } else {
+        map.panBy([e.deltaX, e.deltaY], { animate: false })
+      }
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [map])
+  return null
+}
+
+function MapClick({ onPlace }: { onPlace: (lat: number, lng: number) => void }) {
+  useMapEvents({ click: (event) => onPlace(event.latlng.lat, event.latlng.lng) })
   return null
 }
 
 export default function LeafletMap({ locations, onChange }: { locations: CampaignTargetLocation[]; onChange: (locations: CampaignTargetLocation[]) => void }) {
   const [query, setQuery] = useState('')
-  const [radiusMode, setRadiusMode] = useState(false)
   const [activeRadiusId, setActiveRadiusId] = useState('')
   const [pinInput, setPinInput] = useState('')
   const [pinError, setPinError] = useState('')
-  const sequence = useRef(0)
   const center = useMemo<[number, number]>(() => locations.length ? [locations[0].lat, locations[0].lng] : [20.5937, 78.9629], [locations])
   const pinIcon = useMemo(() => L.divIcon({
     className: 'campaign-map-pin',
@@ -52,12 +74,17 @@ export default function LeafletMap({ locations, onChange }: { locations: Campaig
     : []
   const activeRadius = locations.find((item) => item.id === activeRadiusId && item.type === 'radius') ?? [...locations].reverse().find((item) => item.type === 'radius')
 
+  // Unique id without Date.now(): add -1, -2, ... until it is not already used.
+  function uniqueId(base: string) {
+    let n = 1
+    while (locations.some((item) => item.id === `${base}-${n}`)) n += 1
+    return `${base}-${n}`
+  }
+
   function addLocation(location: CampaignTargetLocation) {
-    sequence.current += 1
-    const added = { ...location, id: `${location.id}-${Date.now()}-${sequence.current}` }
+    const added = { ...location, id: uniqueId(location.id) }
     onChange([...locations, added])
     setQuery('')
-    setRadiusMode(false)
     if (added.type === 'radius') setActiveRadiusId(added.id)
   }
 
@@ -67,8 +94,7 @@ export default function LeafletMap({ locations, onChange }: { locations: Campaig
   }
 
   function addRadiusPoint(lat: number, lng: number) {
-    sequence.current += 1
-    const id = `radius-${Date.now()}-${sequence.current}`
+    const id = uniqueId('radius')
     const radius = 10
     const location: CampaignTargetLocation = { id, type: 'radius', name: 'Pinned location', label: `${radius} km around Pinned location, India`, country: 'India', lat, lng, zoom: 11, radiusKm: radius }
     onChange([...locations, location])
@@ -96,19 +122,16 @@ export default function LeafletMap({ locations, onChange }: { locations: Campaig
   }
 
   return <div className="min-w-0 space-y-4">
-    <div className="flex flex-wrap items-end gap-2">
-      <div className="relative min-w-0 flex-1">
-        <label htmlFor="location-search" className="mb-1 block text-sm font-medium text-navy-900">Add a location</label>
-        <input id="location-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a city, country or PIN code" autoComplete="off" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
-        {query && <div className="absolute z-[1000] mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-sm" role="listbox" aria-label="Location suggestions">
-          {suggestions.map((item) => <button key={item.id} type="button" role="option" aria-selected="false" onClick={() => addLocation(item)} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><span className="block font-medium">{item.label}</span><span className="mt-0.5 block text-xs capitalize text-slate-500">{item.type === 'postal' ? 'PIN code' : item.type}</span></button>)}
-          {!suggestions.length && /^\d{6}$/.test(query.trim()) && <button type="button" onClick={() => { addLocation(makePostalLocation(query.trim())) }} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm hover:bg-slate-50">Add PIN code {query.trim()}, India</button>}
-          {!suggestions.length && !/^\d{6}$/.test(query.trim()) && <p className="p-3 text-sm text-slate-500">No matches in the sample list. Try a city, country or six-digit PIN.</p>}
-        </div>}
-      </div>
-      <button type="button" aria-pressed={radiusMode} onClick={() => setRadiusMode((active) => !active)} className={`min-h-11 rounded-lg border px-3 text-sm font-medium ${radiusMode ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700 hover:bg-slate-50'}`}>Around a point</button>
+    <div className="relative min-w-0">
+      <label htmlFor="location-search" className="mb-1 block text-sm font-medium text-navy-900">Add a location</label>
+      <input id="location-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a city, country or PIN code" autoComplete="off" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+      {query && <div className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-sm" role="listbox" aria-label="Location suggestions">
+        {suggestions.map((item) => <button key={item.id} type="button" role="option" aria-selected="false" onClick={() => addLocation(item)} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><span className="block font-medium">{item.label}</span><span className="mt-0.5 block text-xs capitalize text-slate-500">{item.type === 'postal' ? 'PIN code' : item.type}</span></button>)}
+        {!suggestions.length && /^\d{6}$/.test(query.trim()) && <button type="button" onClick={() => { addLocation(makePostalLocation(query.trim())) }} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm hover:bg-slate-50">Add PIN code {query.trim()}, India</button>}
+        {!suggestions.length && !/^\d{6}$/.test(query.trim()) && <p className="p-3 text-sm text-slate-500">No matches in the sample list. Try a city, country or six-digit PIN.</p>}
+      </div>}
     </div>
-    <p className="text-xs text-slate-500">Choose a suggestion to add it. Select Around a point, then click the map to place a radius.</p>
+    <p className="text-xs text-slate-500">Search a place, or click anywhere on the map to pick that point.</p>
 
     <section aria-label="Selected locations">
       <h3 className="text-sm font-semibold text-navy-900">Locations ({locations.length})</h3>
@@ -117,11 +140,17 @@ export default function LeafletMap({ locations, onChange }: { locations: Campaig
       </ul> : <p className="mt-2 text-sm text-slate-500">No locations added yet.</p>}
     </section>
 
-    <div className="overflow-hidden rounded-lg border border-slate-200">
-      <MapContainer center={center} zoom={locations.length ? locations[0].zoom : 4} scrollWheelZoom={false} className="h-72 w-full sm:h-80 lg:h-[28rem]">
-        <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    {/* "isolate" keeps the map's internal layers from drawing over the top bar */}
+    <div className="relative isolate z-0 overflow-hidden rounded-lg border border-slate-200">
+      <MapContainer center={center} zoom={locations.length ? locations[0].zoom : 4} scrollWheelZoom={false} touchZoom={true} doubleClickZoom={false} className="h-72 w-full sm:h-80 lg:h-[28rem]">
+        <TileLayer
+          attribution='Tiles &copy; Esri'
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+          maxZoom={19}
+        />
         <MapCamera locations={locations} />
-        <MapClick enabled={radiusMode} onPlace={addRadiusPoint} />
+        <MapClick onPlace={addRadiusPoint} />
+        <MapGestures />
         {locations.map((item) => <Fragment key={`marker-${item.id}`}>
           <Marker position={[item.lat, item.lng]} icon={pinIcon} eventHandlers={{ click: () => item.type === 'radius' && setActiveRadiusId(item.id) }}>
             <Tooltip direction="top" offset={[0, -8]}>{item.label}</Tooltip>

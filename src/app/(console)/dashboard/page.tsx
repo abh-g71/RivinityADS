@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
 import Link from 'next/link'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowDownRight, ArrowUpRight, Clock, Eye, MousePointerClick, Pencil, Plus, Wallet } from 'lucide-react'
@@ -36,18 +35,25 @@ const DELTAS: Record<7 | 30, { spend: number; impressions: number; clicks: numbe
 }
 const PERIODS = { Today: 0.04, Week: 0.26, Month: 1 } as const
 type Period = keyof typeof PERIODS
+type Metric = 'Impressions' | 'Clicks' | 'Spend'
+const METRICS: Record<Metric, { base: number; money: boolean }> = {
+  Impressions: { base: 21000, money: false },
+  Clicks: { base: 600, money: false },
+  Spend: { base: 2400, money: true },
+}
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`
 const num = (n: number) => Math.round(n).toLocaleString('en-IN')
 const compact = (n: number) => new Intl.NumberFormat('en-IN', { notation: 'compact', maximumFractionDigits: 1 }).format(n)
 
-function makeSeries(base: number, n: number, seed: number) {
+// Gentle series: small daily noise on top of a slow trend (drift)
+function makeSeries(base: number, n: number, seed: number, drift = 0.18) {
   let s = seed
   const rand = () => {
     s = (s * 1664525 + 1013904223) % 4294967296
     return s / 4294967296
   }
-  return Array.from({ length: n }, (_, i) => Math.round(base * (0.7 + rand() * 0.35 + (i / n) * 0.3)))
+  return Array.from({ length: n }, (_, i) => Math.round(base * (0.9 + drift * (i / Math.max(1, n - 1)) + (rand() - 0.5) * 0.08)))
 }
 
 function dayLabels(n: number) {
@@ -82,17 +88,12 @@ function Trend({ value }: { value: number }) {
   )
 }
 
-function MetricCard({ icon: Icon, label, value, delta }: { icon: LucideIcon; label: string; value: string; delta: number }) {
+function MetricCard({ label, value, delta }: { icon?: LucideIcon; label: string; value: string; delta: number }) {
   return (
-    <div className={CARD}>
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
-        <Icon className="h-6 w-6" aria-hidden="true" />
-      </div>
-      <div className="mt-5 flex items-end justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-sm text-slate-500">{label}</p>
-          <p className="mt-2 truncate text-2xl font-bold tabular-nums text-slate-900">{value}</p>
-        </div>
+    <div className="rounded-lg border border-slate-200 bg-white p-5">
+      <p className="text-sm text-slate-500">{label}</p>
+      <div className="mt-2 flex items-center justify-between gap-2">
+        <p className="truncate text-2xl font-semibold tabular-nums text-slate-900">{value}</p>
         <Trend value={delta} />
       </div>
     </div>
@@ -137,19 +138,18 @@ function Spark({ values, stroke }: { values: number[]; stroke: string }) {
   )
 }
 
-/* ---------- Two-series area chart ---------- */
-function AreaChart({ a, b, labels }: { a: number[]; b: number[]; labels: string[] }) {
+/* ---------- One-metric line chart with previous period ---------- */
+function LineChart({ cur, prev, labels, name, money }: { cur: number[]; prev: number[]; labels: string[]; name: string; money: boolean }) {
   const ref = useRef<SVGSVGElement>(null)
   const [hover, setHover] = useState<number | null>(null)
-  const W = 760, H = 280, L = 44, R = 44, T = 16, B = 30
-  const n = a.length
-  const maxA = Math.max(...a) * 1.15
-  const maxB = Math.max(...b) * 1.15
+  const W = 760, H = 280, L = 48, R = 16, T = 16, B = 30
+  const n = cur.length
+  const max = Math.max(...cur, ...prev) * 1.1
+  const fmt = (v: number) => (money ? inr(v) : num(v))
   const x = (i: number) => L + (i / (n - 1)) * (W - L - R)
-  const yA = (v: number) => T + (1 - v / maxA) * (H - T - B)
-  const yB = (v: number) => T + (1 - v / maxB) * (H - T - B)
-  const ptsA = a.map((v, i) => [x(i), yA(v)] as [number, number])
-  const ptsB = b.map((v, i) => [x(i), yB(v)] as [number, number])
+  const y = (v: number) => T + (1 - v / max) * (H - T - B)
+  const ptsC = cur.map((v, i) => [x(i), y(v)] as [number, number])
+  const ptsP = prev.map((v, i) => [x(i), y(v)] as [number, number])
   const step = n > 10 ? 5 : 1
   const idx = hover ?? n - 1
   const bx = Math.min(Math.max(x(idx) - 80, L), W - R - 160)
@@ -167,7 +167,7 @@ function AreaChart({ a, b, labels }: { a: number[]; b: number[]; labels: string[
       viewBox={`0 0 ${W} ${H}`}
       className="h-auto w-full"
       role="img"
-      aria-label={`Impressions and clicks over the last ${n} days. Latest: ${num(a[n - 1])} impressions and ${num(b[n - 1])} clicks.`}
+      aria-label={`${name} over the last ${n} days. Latest: ${fmt(cur[n - 1])}.`}
       onMouseMove={onMove}
       onMouseLeave={() => setHover(null)}
     >
@@ -176,23 +176,21 @@ function AreaChart({ a, b, labels }: { a: number[]; b: number[]; labels: string[
         return (
           <g key={t}>
             <line x1={L} x2={W - R} y1={gy} y2={gy} stroke="#E4E7EC" strokeDasharray="3 4" />
-            <text x={L - 8} y={gy + 4} textAnchor="end" fontSize="11" fill="#465FFF">{compact((maxA * t) / 1.15)}</text>
-            <text x={W - R + 8} y={gy + 4} fontSize="11" fill="#475467">{compact((maxB * t) / 1.15)}</text>
+            <text x={L - 8} y={gy + 4} textAnchor="end" fontSize="11" fill="#667085">{money ? `₹${compact((max * t) / 1.0)}` : compact(max * t)}</text>
           </g>
         )
       })}
-      <path d={`${smooth(ptsA)} L${x(n - 1)},${H - B} L${x(0)},${H - B} Z`} fill="#465FFF" fillOpacity="0.08" />
-      <path d={smooth(ptsA)} fill="none" stroke="#465FFF" strokeWidth="2.5" strokeLinecap="round" />
-      <path d={smooth(ptsB)} fill="none" stroke="#101828" strokeWidth="2.5" strokeLinecap="round" />
+      <path d={`${smooth(ptsC)} L${x(n - 1)},${H - B} L${x(0)},${H - B} Z`} fill="#465FFF" fillOpacity="0.06" />
+      <path d={smooth(ptsP)} fill="none" stroke="#98A2B3" strokeWidth="1.5" strokeDasharray="4 4" strokeLinecap="round" />
+      <path d={smooth(ptsC)} fill="none" stroke="#465FFF" strokeWidth="2.5" strokeLinecap="round" />
       {labels.map((l, i) => (i % step === 0 ? <text key={l + i} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="#667085">{l}</text> : null))}
       <line x1={x(idx)} x2={x(idx)} y1={T} y2={H - B} stroke="#98A2B3" strokeOpacity="0.5" />
-      <circle cx={x(idx)} cy={yA(a[idx])} r="4.5" fill="white" stroke="#465FFF" strokeWidth="2.5" />
-      <circle cx={x(idx)} cy={yB(b[idx])} r="4.5" fill="white" stroke="#101828" strokeWidth="2.5" />
+      <circle cx={x(idx)} cy={y(cur[idx])} r="4.5" fill="white" stroke="#465FFF" strokeWidth="2.5" />
       <g>
         <rect x={bx} y={T - 2} width="160" height="54" rx="8" fill="#101828" />
         <text x={bx + 12} y={T + 14} fontSize="10" fill="#98A2B3">{labels[idx]}</text>
-        <text x={bx + 12} y={T + 30} fontSize="12" fill="white">Impressions {num(a[idx])}</text>
-        <text x={bx + 12} y={T + 46} fontSize="12" fill="white">Clicks {num(b[idx])}</text>
+        <text x={bx + 12} y={T + 30} fontSize="12" fill="white">This period {fmt(cur[idx])}</text>
+        <text x={bx + 12} y={T + 46} fontSize="12" fill="#98A2B3">Previous {fmt(prev[idx])}</text>
       </g>
     </svg>
   )
@@ -203,28 +201,32 @@ export default function AdvertiserHome() {
   const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL)
   const [range, setRange] = useState<7 | 30>(30)
   const [period, setPeriod] = useState<Period>('Week')
+  const [metric, setMetric] = useState<Metric>('Impressions')
 
   const scale = range === 7 ? 0.26 : 1
   const sum = (key: 'spend' | 'impressions' | 'clicks' | 'results') => campaigns.reduce((t, c) => t + c[key], 0)
   const spendAll = sum('spend')
   const usedPct = Math.round((spendAll / MONTHLY_BUDGET) * 100)
 
-  const impressionsSeries = useMemo(() => makeSeries(21000, range, 7 + range), [range])
-  const clicksSeries = useMemo(() => makeSeries(600, range, 11 + range), [range])
+  const m = METRICS[metric]
+  const cur = useMemo(() => makeSeries(m.base, range, 7 + range, 0.18), [m.base, range])
+  const prev = useMemo(() => makeSeries(m.base * 0.88, range, 31 + range, 0.04), [m.base, range])
   const labels = useMemo(() => dayLabels(range), [range])
+  const total = cur.reduce((t, v) => t + v, 0)
+  const metricDelta = DELTAS[range][metric.toLowerCase() as 'spend' | 'impressions' | 'clicks']
 
   const draft = campaigns.find((c) => c.status === 'Draft')
   const pending = campaigns.find((c) => c.status === 'Pending')
 
   function toggle(id: string) {
-    setCampaigns((cur) => cur.map((c) => (c.id === id && (c.status === 'Active' || c.status === 'Paused') ? { ...c, status: c.status === 'Active' ? 'Paused' : 'Active' } : c)))
+    setCampaigns((list) => list.map((c) => (c.id === id && (c.status === 'Active' || c.status === 'Paused') ? { ...c, status: c.status === 'Active' ? 'Paused' : 'Active' } : c)))
   }
 
   const p = PERIODS[period]
   const stats = [
     { label: 'Clicks', value: num(sum('clicks') * p), delta: 9.1, series: makeSeries(40, 12, 3), stroke: '#12B76A' },
     { label: 'Results', value: num(sum('results') * p), delta: 6.7, series: makeSeries(30, 12, 5), stroke: '#465FFF' },
-    { label: 'Cost per result', value: inr(sum('results') ? spendAll / sum('results') : 0), delta: -3.2, series: makeSeries(50, 12, 9), stroke: '#F04438' },
+    { label: 'Cost per result', value: inr(sum('results') ? spendAll / sum('results') : 0), delta: -3.2, series: makeSeries(50, 12, 9, -0.1), stroke: '#F04438' },
   ]
 
   const tasks: { icon: LucideIcon; title: string; meta: string; href: string; cta: string }[] = []
@@ -238,14 +240,14 @@ export default function AdvertiserHome() {
         <div>
           <p className="text-xs text-slate-500">Advertiser / Home</p>
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Home</h1>
-          <p className="mt-1 text-sm text-slate-500">Sample data · updated 17 Nov 2026</p>
+          
         </div>
         <Link href="/campaigns/new" className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
           <Plus className="h-4 w-4" aria-hidden="true" /> Create campaign
         </Link>
       </div>
 
-      <div className="grid grid-cols-12 gap-4 md:gap-6">
+      <div className="grid grid-cols-12 items-start gap-4 md:gap-6">
         {/* Left: metrics + chart */}
         <div className="col-span-12 space-y-4 md:space-y-6 xl:col-span-8">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 md:gap-6">
@@ -254,138 +256,136 @@ export default function AdvertiserHome() {
             <MetricCard icon={MousePointerClick} label="Clicks" value={num(sum('clicks') * scale)} delta={DELTAS[range].clicks} />
           </div>
 
-          <section className={CARD} aria-label="Impressions and clicks">
+          <section className={CARD} aria-label={metric}>
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900">Impressions and clicks</h2>
-                <p className="mt-1 flex items-center gap-2 text-sm text-slate-500">
-                  <span className="text-2xl font-bold tabular-nums text-slate-900">{num(sum('impressions') * scale)}</span>
-                  <Trend value={DELTAS[range].impressions} />
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-4">
-                <span className="inline-flex items-center gap-2 text-xs text-slate-600"><span className="h-2.5 w-2.5 rounded-full bg-[#465FFF]" aria-hidden="true" />Impressions (left)</span>
-                <span className="inline-flex items-center gap-2 text-xs text-slate-600"><span className="h-2.5 w-2.5 rounded-full bg-[#101828]" aria-hidden="true" />Clicks (right)</span>
-                <PillTabs label="Date range" items={[7, 30] as (7 | 30)[]} value={range} onChange={setRange} />
-              </div>
+              <PillTabs label="Metric" items={['Impressions', 'Clicks', 'Spend'] as Metric[]} value={metric} onChange={setMetric} />
+              <PillTabs label="Date range" items={[7, 30] as (7 | 30)[]} value={range} onChange={setRange} />
             </div>
-            <div className="mt-4">
-              <AreaChart a={impressionsSeries} b={clicksSeries} labels={labels} />
+            <div className="mt-4 flex items-center gap-2">
+              <span className="text-2xl font-bold tabular-nums text-slate-900">{m.money ? inr(total) : num(total)}</span>
+              <Trend value={metricDelta} />
+              <span className="text-xs text-slate-500">vs previous {range} days</span>
+            </div>
+            <div className="mt-2 flex items-center gap-4 text-xs text-slate-600">
+              <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#465FFF]" aria-hidden="true" />This period</span>
+              <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 border-t-2 border-dashed border-slate-400" aria-hidden="true" />Previous period</span>
+            </div>
+            <div className="mt-3">
+              <LineChart cur={cur} prev={prev} labels={labels} name={metric} money={m.money} />
             </div>
           </section>
         </div>
 
-        {/* Right: traffic stats */}
-        <section className={`${CARD} col-span-12 xl:col-span-4`} aria-label="Traffic stats">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold text-slate-900">Traffic stats</h2>
-            <PillTabs label="Period" items={Object.keys(PERIODS) as Period[]} value={period} onChange={setPeriod} />
-          </div>
-          <ul className="mt-5 divide-y divide-slate-100">
-            {stats.map((s) => (
-              <li key={s.label} className="flex items-center justify-between gap-3 py-4">
-                <div className="min-w-0">
-                  <p className="text-sm text-slate-500">{s.label}</p>
-                  <p className="mt-1 text-xl font-bold tabular-nums text-slate-900">{s.value}</p>
-                </div>
-                <Spark values={s.series} stroke={s.stroke} />
-                <Trend value={s.delta} />
-              </li>
-            ))}
-          </ul>
-          <div className="mt-2 border-t border-slate-100 pt-5">
-            <div className="flex items-baseline justify-between">
-              <p className="text-sm text-slate-500">Monthly budget</p>
-              <p className="text-sm font-medium tabular-nums text-slate-900">{inr(spendAll)} / {inr(MONTHLY_BUDGET)}</p>
+        {/* Right: traffic stats + tasks */}
+        <div className="col-span-12 space-y-4 md:space-y-6 xl:col-span-4">
+          <section className={CARD} aria-label="Traffic stats">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold text-slate-900">Traffic stats</h2>
+              <PillTabs label="Period" items={Object.keys(PERIODS) as Period[]} value={period} onChange={setPeriod} />
             </div>
-            <div className="mt-2"><Bar value={spendAll} max={MONTHLY_BUDGET} /></div>
-          </div>
-        </section>
-      </div>
-
-      <div className="grid grid-cols-12 gap-4 md:gap-6">
-        {/* Campaigns table */}
-        <section className="col-span-12 overflow-hidden rounded-2xl border border-slate-200 bg-white xl:col-span-8" aria-label="Campaigns">
-          <div className="flex items-center justify-between gap-3 px-5 py-4 md:px-6">
-            <h2 className="text-lg font-semibold text-slate-900">Campaigns</h2>
-            <Link href="/campaigns" className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">See all</Link>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[680px] text-left text-sm">
-              <thead>
-                <tr className="border-y border-slate-100 text-xs text-slate-500">
-                  <th className="px-5 py-3 font-medium md:px-6">Campaign</th>
-                  <th className="px-3 py-3 font-medium">Status</th>
-                  <th className="px-3 py-3 font-medium">Delivery</th>
-                  <th className="px-3 py-3 font-medium">Spend</th>
-                  <th className="px-3 py-3 text-right font-medium">Results</th>
-                  <th className="px-5 py-3 text-right font-medium md:px-6">CTR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {campaigns.map((c) => {
-                  const canToggle = c.status === 'Active' || c.status === 'Paused'
-                  const ctr = c.impressions ? `${((c.clicks / c.impressions) * 100).toFixed(2)}%` : '—'
-                  return (
-                    <tr key={c.id} className="border-b border-slate-100 last:border-0">
-                      <td className="px-5 py-3.5 md:px-6">
-                        <Link href="/campaigns" className="font-medium text-slate-900 hover:underline">{c.name}</Link>
-                        <p className="text-xs text-slate-500">{c.objective}</p>
-                      </td>
-                      <td className="px-3 py-3.5">
-                        <span className="inline-flex items-center gap-2 text-slate-700"><span className={`h-2 w-2 rounded-full ${DOT[c.status]}`} aria-hidden="true" />{c.status}</span>
-                      </td>
-                      <td className="px-3 py-3.5">
-                        <button
-                          type="button"
-                          role="switch"
-                          aria-checked={c.status === 'Active'}
-                          aria-label={`Delivery for ${c.name}`}
-                          disabled={!canToggle}
-                          title={canToggle ? undefined : `${c.status} campaigns cannot be switched on`}
-                          onClick={() => toggle(c.id)}
-                          className={`relative h-5 w-9 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${c.status === 'Active' ? 'bg-brand-600' : 'bg-slate-300'}`}
-                        >
-                          <span className={`absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${c.status === 'Active' ? 'translate-x-4' : ''}`} />
-                        </button>
-                      </td>
-                      <td className="w-40 px-3 py-3.5">
-                        <p className="text-xs tabular-nums text-slate-700">{inr(c.spend)} <span className="text-slate-400">/ {inr(c.budget)}</span></p>
-                        <div className="mt-1.5"><Bar value={c.spend} max={c.budget} /></div>
-                      </td>
-                      <td className="px-3 py-3.5 text-right tabular-nums">{c.results ? num(c.results) : '—'}</td>
-                      <td className="px-5 py-3.5 text-right tabular-nums md:px-6">{ctr}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Tasks */}
-        <section className={`${CARD} col-span-12 xl:col-span-4`} aria-label="Tasks to complete">
-          <h2 className="text-lg font-semibold text-slate-900">Tasks to complete</h2>
-          {tasks.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-500">Nothing needs your attention right now.</p>
-          ) : (
-            <ul className="mt-4 divide-y divide-slate-100">
-              {tasks.map((t) => (
-                <li key={t.title} className="flex items-center gap-3 py-3.5">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600">
-                    <t.icon className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900">{t.title}</p>
-                    <p className="text-xs text-slate-500">{t.meta}</p>
+            <ul className="mt-5 divide-y divide-slate-100">
+              {stats.map((s) => (
+                <li key={s.label} className="flex items-center justify-between gap-3 py-4">
+                  <div className="min-w-0">
+                    <p className="text-sm text-slate-500">{s.label}</p>
+                    <p className="mt-1 text-xl font-bold tabular-nums text-slate-900">{s.value}</p>
                   </div>
-                  <Link href={t.href} className="shrink-0 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">{t.cta}</Link>
+                  <Spark values={s.series} stroke={s.stroke} />
+                  <Trend value={s.delta} />
                 </li>
               ))}
             </ul>
-          )}
-        </section>
+            <div className="mt-2 border-t border-slate-100 pt-5">
+              <div className="flex items-baseline justify-between">
+                <p className="text-sm text-slate-500">Monthly budget</p>
+                <p className="text-sm font-medium tabular-nums text-slate-900">{inr(spendAll)} / {inr(MONTHLY_BUDGET)}</p>
+              </div>
+              <div className="mt-2"><Bar value={spendAll} max={MONTHLY_BUDGET} /></div>
+            </div>
+          </section>
+
+          <section className={CARD} aria-label="Tasks to complete">
+            <h2 className="text-lg font-semibold text-slate-900">Tasks to complete</h2>
+            {tasks.length === 0 ? (
+              <p className="mt-4 text-sm text-slate-500">Nothing needs your attention right now.</p>
+            ) : (
+              <ul className="mt-4 divide-y divide-slate-100">
+                {tasks.map((t) => (
+                  <li key={t.title} className="flex items-center gap-3 py-3.5">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600">
+                      <t.icon className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-slate-900">{t.title}</p>
+                      <p className="text-xs text-slate-500">{t.meta}</p>
+                    </div>
+                    <Link href={t.href} className="shrink-0 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">{t.cta}</Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
       </div>
+
+      {/* Campaigns table */}
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white" aria-label="Campaigns">
+        <div className="flex items-center justify-between gap-3 px-5 py-4 md:px-6">
+          <h2 className="text-lg font-semibold text-slate-900">Campaigns</h2>
+          <Link href="/campaigns" className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">See all</Link>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[680px] text-left text-sm">
+            <thead>
+              <tr className="border-y border-slate-100 text-xs text-slate-500">
+                <th className="px-5 py-3 font-medium md:px-6">Campaign</th>
+                <th className="px-3 py-3 font-medium">Status</th>
+                <th className="px-3 py-3 font-medium">Delivery</th>
+                <th className="px-3 py-3 font-medium">Spend</th>
+                <th className="px-3 py-3 text-right font-medium">Results</th>
+                <th className="px-5 py-3 text-right font-medium md:px-6">CTR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {campaigns.map((c) => {
+                const canToggle = c.status === 'Active' || c.status === 'Paused'
+                const ctr = c.impressions ? `${((c.clicks / c.impressions) * 100).toFixed(2)}%` : '—'
+                return (
+                  <tr key={c.id} className="border-b border-slate-100 last:border-0">
+                    <td className="px-5 py-3.5 md:px-6">
+                      <Link href="/campaigns" className="font-medium text-slate-900 hover:underline">{c.name}</Link>
+                      <p className="text-xs text-slate-500">{c.objective}</p>
+                    </td>
+                    <td className="px-3 py-3.5">
+                      <span className="inline-flex items-center gap-2 text-slate-700"><span className={`h-2 w-2 rounded-full ${DOT[c.status]}`} aria-hidden="true" />{c.status}</span>
+                    </td>
+                    <td className="px-3 py-3.5">
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={c.status === 'Active'}
+                        aria-label={`Delivery for ${c.name}`}
+                        disabled={!canToggle}
+                        title={canToggle ? undefined : `${c.status} campaigns cannot be switched on`}
+                        onClick={() => toggle(c.id)}
+                        className={`relative h-5 w-9 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${c.status === 'Active' ? 'bg-brand-600' : 'bg-slate-300'}`}
+                      >
+                        <span className={`absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${c.status === 'Active' ? 'translate-x-4' : ''}`} />
+                      </button>
+                    </td>
+                    <td className="w-40 px-3 py-3.5">
+                      <p className="text-xs tabular-nums text-slate-700">{inr(c.spend)} <span className="text-slate-400">/ {inr(c.budget)}</span></p>
+                      <div className="mt-1.5"><Bar value={c.spend} max={c.budget} /></div>
+                    </td>
+                    <td className="px-3 py-3.5 text-right tabular-nums">{c.results ? num(c.results) : '—'}</td>
+                    <td className="px-5 py-3.5 text-right tabular-nums md:px-6">{ctr}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   )
 }

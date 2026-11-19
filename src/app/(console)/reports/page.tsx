@@ -1,317 +1,409 @@
 'use client'
 
-import { useEffect, useMemo, useState, type MouseEvent } from 'react'
-import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
-import { DataTable } from '@/components/shared/DataTable'
-import type { DataTableColumn } from '@/components/shared/DataTable'
-import { EmptyState } from '@/components/shared/EmptyState'
-import { PageHeader } from '@/components/shared/PageHeader'
-import { Input } from '@/components/ui/Input'
-import { Select } from '@/components/ui/Select'
-import { Switch } from '@/components/primitives/switch'
-import { useConsoleRole } from '@/components/shared/ConsoleRoleContext'
-import { useToast } from '@/components/shared/Toast'
-import { useLocalStorageJson } from '@/components/shared/useLocalStorageJson'
-import { ReportBarChart, ReportLineChart, type ReportMetric } from '@/components/reports/ReportCharts'
-import {
-  mockReportDatePresets,
-  mockReportRows,
-  mockReportStorageKey,
-  mockReportTemplates,
-  reportKpisByRole,
-  type ReportKpiKey,
-  type ReportRow,
-  type SavedReport,
-} from '@/data/reports'
-import styles from './print.module.css'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ArrowDownRight, ArrowUpRight, Download } from 'lucide-react'
 
-const EMPTY_SAVED_REPORTS: SavedReport[] = []
+/* ---------- Sample data ---------- */
+type Campaign = { name: string; objective: string; status: string; spend: number; impressions: number; clicks: number; results: number }
+const CAMPAIGNS: Campaign[] = [
+  { name: 'Diwali sale · Delhi', objective: 'Website visits', status: 'Active', spend: 14200, impressions: 182400, clicks: 5110, results: 5110 },
+  { name: 'Salon bookings · Pune', objective: 'Leads', status: 'Active', spend: 9800, impressions: 96300, clicks: 2140, results: 312 },
+  { name: 'Winter collection · Online', objective: 'Sales', status: 'Active', spend: 21400, impressions: 143800, clicks: 3920, results: 188 },
+  { name: 'Event tickets · Mumbai', objective: 'Awareness', status: 'Paused', spend: 4600, impressions: 211500, clicks: 1650, results: 1650 },
+]
+const COLORS = ['#465FFF', '#12B76A', '#F79009', '#101828']
+const DELTAS: Record<7 | 30, number[]> = { 7: [12.4, 9.1, -2.1, 8.2], 30: [18.9, 11.2, -1.4, 14.6] }
+const TEMPLATES = {
+  Performance: { key: 'impressions', label: 'Impressions', base: 21000, money: false },
+  Spend: { key: 'spend', label: 'Spend', base: 2400, money: true },
+  Conversions: { key: 'results', label: 'Results', base: 300, money: false },
+} as const
+type Template = keyof typeof TEMPLATES
+type MetricKey = 'impressions' | 'spend' | 'results'
 
-function isSavedReports(value: unknown): value is SavedReport[] {
-  return Array.isArray(value) && value.every((item) =>
-    Boolean(item)
-    && typeof item === 'object'
-    && typeof item.id === 'string'
-    && typeof item.name === 'string'
-    && typeof item.template === 'string'
-    && typeof item.dateRange === 'string'
-    && typeof item.compare === 'boolean',
+const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`
+const num = (n: number) => Math.round(n).toLocaleString('en-IN')
+const compact = (n: number) => new Intl.NumberFormat('en-IN', { notation: 'compact', maximumFractionDigits: 1 }).format(n)
+
+function makeSeries(base: number, n: number, seed: number, drift = 0.18) {
+  let s = seed
+  const rand = () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296 }
+  return Array.from({ length: n }, (_, i) => Math.round(base * (0.9 + drift * (i / Math.max(1, n - 1)) + (rand() - 0.5) * 0.08)))
+}
+function dayLabels(n: number) {
+  const end = new Date(2026, 10, 17)
+  return Array.from({ length: n }, (_, i) => {
+    const d = new Date(end)
+    d.setDate(end.getDate() - (n - 1 - i))
+    return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+  })
+}
+function smooth(points: [number, number][]) {
+  return points.reduce((d, [x, y], i) => {
+    if (i === 0) return `M${x},${y}`
+    const [px, py] = points[i - 1]
+    const cx = (px + x) / 2
+    return `${d} C${cx},${py} ${cx},${y} ${x},${y}`
+  }, '')
+}
+
+/* ---------- Animation helpers ---------- */
+function useMounted() {
+  const [on, setOn] = useState(false)
+  useEffect(() => {
+    const r = requestAnimationFrame(() => setOn(true))
+    return () => cancelAnimationFrame(r)
+  }, [])
+  return on
+}
+function useCountUp(target: number) {
+  const [v, setV] = useState(0)
+  const from = useRef(0)
+  useEffect(() => {
+    const dur = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 900
+    const start = performance.now()
+    const a = from.current
+    let raf = 0
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / dur)
+      const val = a + (target - a) * (1 - Math.pow(1 - p, 3))
+      from.current = val
+      setV(val)
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target])
+  return v
+}
+function Count({ value, format }: { value: number; format: (n: number) => string }) {
+  return <>{format(useCountUp(value))}</>
+}
+function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const on = useMounted()
+  return (
+    <div className={`transition-all duration-500 ease-out motion-reduce:transition-none ${on ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+      {children}
+    </div>
   )
 }
 
-function getRangeBounds(range: string, previous: boolean) {
-  const end = new Date()
-  end.setHours(23, 59, 59, 999)
-  const start = new Date(end)
-  let length = 7
-  if (range === '30-days') length = 30
-  if (range === 'this-month') {
-    start.setDate(1)
-    length = end.getDate()
-  } else {
-    start.setDate(end.getDate() - length + 1)
+/* ---------- Small parts ---------- */
+const CARD = 'rounded-lg border border-slate-200 bg-white p-4'
+
+function Trend({ value }: { value: number }) {
+  const up = value >= 0
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${up ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+      {up ? <ArrowUpRight className="h-3 w-3" aria-hidden="true" /> : <ArrowDownRight className="h-3 w-3" aria-hidden="true" />}
+      {Math.abs(value).toFixed(1)}%
+    </span>
+  )
+}
+function Tabs<T extends string | number>({ items, value, onChange, label }: { items: T[]; value: T; onChange: (v: T) => void; label: string }) {
+  return (
+    <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-slate-100 p-0.5">
+      {items.map((it) => (
+        <button key={String(it)} type="button" role="tab" aria-selected={value === it} onClick={() => onChange(it)}
+          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-white text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}>
+          {typeof it === 'number' ? `${it} days` : it}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function Kpi({ label, value, format, delta, delay }: { label: string; value: number; format: (n: number) => string; delta: number; delay: number }) {
+  return (
+    <Reveal delay={delay}>
+      <div className={CARD}>
+        <p className="text-sm text-slate-500">{label}</p>
+        <div className="mt-1.5 flex items-center justify-between gap-2">
+          <p className="truncate text-2xl font-semibold tabular-nums text-slate-900"><Count value={value} format={format} /></p>
+          <Trend value={delta} />
+        </div>
+      </div>
+    </Reveal>
+  )
+}
+
+/* ---------- Line chart (draws itself) ---------- */
+function LineChart({ cur, prev, labels, money }: { cur: number[]; prev: number[] | null; labels: string[]; money: boolean }) {
+  const on = useMounted()
+  const ref = useRef<SVGSVGElement>(null)
+  const [hover, setHover] = useState<number | null>(null)
+  const W = 1100, H = 240, L = 48, R = 16, T = 16, B = 28
+  const n = cur.length
+  const max = Math.max(...cur, ...(prev ?? [0])) * 1.1
+  const fmt = (v: number) => (money ? inr(v) : num(v))
+  const x = (i: number) => L + (i / (n - 1)) * (W - L - R)
+  const y = (v: number) => T + (1 - v / max) * (H - T - B)
+  const pc = cur.map((v, i) => [x(i), y(v)] as [number, number])
+  const pp = prev ? prev.map((v, i) => [x(i), y(v)] as [number, number]) : null
+  const step = n > 10 ? 5 : 1
+  const idx = hover ?? n - 1
+  const bx = Math.min(Math.max(x(idx) - 80, L), W - R - 160)
+
+  function onMove(e: React.MouseEvent<SVGSVGElement>) {
+    const rect = ref.current?.getBoundingClientRect()
+    if (!rect) return
+    const px = ((e.clientX - rect.left) / rect.width) * W
+    setHover(Math.max(0, Math.min(n - 1, Math.round(((px - L) / (W - L - R)) * (n - 1)))))
   }
-  start.setHours(0, 0, 0, 0)
-  if (!previous) return { start, end }
-  const previousEnd = new Date(start)
-  previousEnd.setDate(previousEnd.getDate() - 1)
-  previousEnd.setHours(23, 59, 59, 999)
-  const previousStart = new Date(previousEnd)
-  previousStart.setHours(0, 0, 0, 0)
-  previousStart.setDate(previousStart.getDate() - length + 1)
-  return { start: previousStart, end: previousEnd }
-}
-
-function rowsForPeriod(rows: ReportRow[], range: string, previous = false) {
-  const bounds = getRangeBounds(range, previous)
-  return rows.filter((row) => {
-    const date = new Date(`${row.date}T00:00:00`)
-    return date >= bounds.start && date <= bounds.end
-  })
-}
-
-function getKpiValue(rows: ReportRow[], key: ReportKpiKey): number | null {
-  if (!rows.length) return null
-  if (key === 'rowCount') return rows.length
-  if (key === 'ctr') {
-    const impressions = rows.reduce((total, row) => total + row.impressions, 0)
-    return impressions ? rows.reduce((total, row) => total + row.clicks, 0) / impressions * 100 : null
-  }
-  return rows.reduce((total, row) => total + row[key], 0)
-}
-
-function formatKpi(value: number | null, key: ReportKpiKey) {
-  if (value === null) return '—'
-  if (key === 'ctr') return `${value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}%`
-  if (key === 'spend' || key === 'earnings') return `₹${value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
-  return value.toLocaleString('en-IN')
-}
-
-function formatChange(current: number | null, previous: number | null) {
-  if (current === null || previous === null) return 'Comparison unavailable'
-  if (current === previous) return '→ No change'
-  if (previous === 0) return current > 0 ? '↑ New activity' : '↓ No activity'
-  const change = ((current - previous) / Math.abs(previous)) * 100
-  return `${change > 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(1)}% vs previous`
-}
-
-function csvEscape(value: string | number) {
-  return `"${String(value).replaceAll('"', '""')}"`
-}
-
-export default function ReportsPage() {
-  const role = useConsoleRole()
-  const toast = useToast()
-  const [range, setRange] = useState('7-days')
-  const [compare, setCompare] = useState(false)
-  const [template, setTemplate] = useState('performance')
-  const [reportName, setReportName] = useState('')
-  const [nameTouched, setNameTouched] = useState(false)
-  const savedReportsState = useLocalStorageJson(mockReportStorageKey, EMPTY_SAVED_REPORTS, isSavedReports)
-  const savedReports = savedReportsState.value
-
-  const currentRows = useMemo(() => rowsForPeriod(mockReportRows, range), [range])
-  const previousRows = useMemo(() => compare ? rowsForPeriod(mockReportRows, range, true) : [], [compare, range])
-  const templateInfo = mockReportTemplates.find((item) => item.id === template) ?? mockReportTemplates[0]
-  const metrics = reportKpisByRole[role]
-  const lineMetric: ReportMetric = role === 'publisher' ? 'earnings' : role === 'advertiser' ? 'spend' : 'impressions'
-  const barMetric: ReportMetric = role === 'publisher' ? 'clicks' : 'spend'
-  const nameError = nameTouched && !reportName.trim() ? 'Enter a report name.' : ''
-
-  const columns: DataTableColumn<ReportRow>[] = [
-    { key: 'date', header: 'Date', render: (row) => row.date },
-    { key: 'dimension', header: templateInfo.dimension, render: (row) => row.dimensionValue },
-    { key: 'impressions', header: 'Impressions', render: (row) => row.impressions.toLocaleString('en-IN') },
-    { key: 'clicks', header: 'Clicks', render: (row) => row.clicks.toLocaleString('en-IN') },
-    { key: 'ctr', header: 'CTR', render: (row) => row.impressions ? `${(row.clicks / row.impressions * 100).toFixed(2)}%` : '—' },
-    { key: 'spend', header: 'Spend', render: (row) => `₹${row.spend.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` },
-    { key: 'earnings', header: 'Earnings', render: (row) => `₹${row.earnings.toLocaleString('en-IN', { maximumFractionDigits: 2 })}` },
-  ]
-
-  useEffect(() => {
-    if (savedReportsState.error) {
-      console.error('Unable to restore saved reports', savedReportsState.error)
-      toast({ title: 'Saved reports could not be restored', description: savedReportsState.error.message, variant: 'error' })
-    }
-  }, [savedReportsState.error, toast])
-
-  function exportCsv() {
-    const headers = ['date', 'dimension', 'dimensionValue', 'impressions', 'clicks', 'ctr', 'spend', 'earnings']
-    const content = [
-      headers.map(csvEscape).join(','),
-      ...currentRows.map((row) => [
-        row.date,
-        row.dimension,
-        row.dimensionValue,
-        row.impressions,
-        row.clicks,
-        row.impressions ? `${(row.clicks / row.impressions * 100).toFixed(2)}%` : '',
-        row.spend,
-        row.earnings,
-      ].map(csvEscape).join(',')),
-    ].join('\r\n')
-    const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }))
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = `rivinityads-${role}-report.csv`
-    anchor.click()
-    URL.revokeObjectURL(url)
-    toast({
-      title: 'CSV exported',
-      description: currentRows.length ? 'The current mock report rows were exported.' : 'The CSV contains headers only; no mock data rows are configured.',
-      variant: 'success',
-    })
-  }
-
-  function saveReport(event: MouseEvent<HTMLButtonElement>) {
-    setNameTouched(true)
-    if (!reportName.trim()) return
-    const nextReports = [...savedReports, {
-      id: `saved-${event.timeStamp.toString(36)}`,
-      name: reportName.trim(),
-      template,
-      dateRange: range,
-      compare,
-    }]
-    try {
-      savedReportsState.setValue(nextReports)
-      setReportName('')
-      setNameTouched(false)
-      toast({ title: 'Report saved', description: 'This report configuration is stored in this browser only.', variant: 'success' })
-    } catch (error) {
-      console.error('Unable to save report', error)
-      toast({ title: 'Report could not be saved', description: 'Browser storage is unavailable or full.', variant: 'error' })
-    }
-  }
-
-  function removeReport(id: string) {
-    const nextReports = savedReports.filter((item) => item.id !== id)
-    try {
-      savedReportsState.setValue(nextReports)
-      toast({ title: 'Saved report removed', description: 'The local report configuration was deleted.', variant: 'success' })
-    } catch (error) {
-      console.error('Unable to remove saved report', error)
-      toast({ title: 'Report could not be removed', description: 'Browser storage could not be updated.', variant: 'error' })
-    }
-  }
-
-  const roleDescription = role === 'advertiser'
-    ? 'Campaign performance and spend reporting from mock data.'
-    : role === 'publisher'
-      ? 'Publisher delivery and earnings reporting from mock data.'
-      : 'Platform reporting for anonymized mock records.'
 
   return (
-    <div className={`mx-auto max-w-7xl space-y-6 ${styles.printPage}`}>
-      <div className={styles.printHidden}>
-        <PageHeader
-          breadcrumbs={[{ label: role[0].toUpperCase() + role.slice(1) }, { label: 'Reports' }]}
-          title="Reports"
-          description={roleDescription}
-          action={<Button type="button" variant="outline" onClick={exportCsv}>Export CSV</Button>}
-        />
-      </div>
+    <svg ref={ref} viewBox={`0 0 ${W} ${H}`} className="h-auto max-h-[260px] w-full" role="img" aria-label={`Trend over the last ${n} days`} onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
+      {[0, 1 / 3, 2 / 3, 1].map((t) => {
+        const gy = T + (1 - t) * (H - T - B)
+        return (
+          <g key={t}>
+            <line x1={L} x2={W - R} y1={gy} y2={gy} stroke="#E4E7EC" strokeDasharray="3 4" />
+            <text x={L - 8} y={gy + 4} textAnchor="end" fontSize="11" fill="#667085">{money ? `₹${compact(max * t)}` : compact(max * t)}</text>
+          </g>
+        )
+      })}
+      <path d={`${smooth(pc)} L${x(n - 1)},${H - B} L${x(0)},${H - B} Z`} fill="#465FFF" fillOpacity={on ? 0.06 : 0} style={{ transition: 'fill-opacity 900ms ease-out 400ms' }} />
+      {pp && <path d={smooth(pp)} fill="none" stroke="#98A2B3" strokeWidth="1.5" strokeDasharray="4 4" strokeLinecap="round" />}
+      <path d={smooth(pc)} pathLength={1} fill="none" stroke="#465FFF" strokeWidth="2.5" strokeLinecap="round"
+        strokeDasharray={1} strokeDashoffset={on ? 0 : 1} style={{ transition: 'stroke-dashoffset 1100ms ease-out' }} />
+      {labels.map((l, i) => (i % step === 0 ? <text key={l + i} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="#667085">{l}</text> : null))}
+      <line x1={x(idx)} x2={x(idx)} y1={T} y2={H - B} stroke="#98A2B3" strokeOpacity="0.5" />
+      <circle cx={x(idx)} cy={y(cur[idx])} r="4.5" fill="white" stroke="#465FFF" strokeWidth="2.5" />
+      <rect x={bx} y={T - 2} width="160" height={prev ? 54 : 40} rx="6" fill="#101828" />
+      <text x={bx + 12} y={T + 14} fontSize="10" fill="#98A2B3">{labels[idx]}</text>
+      <text x={bx + 12} y={T + 30} fontSize="12" fill="white">This period {fmt(cur[idx])}</text>
+      {prev && <text x={bx + 12} y={T + 46} fontSize="12" fill="#98A2B3">Previous {fmt(prev[idx])}</text>}
+    </svg>
+  )
+}
 
-      <Card className={`grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] sm:p-5 ${styles.printCard}`}>
-        <Select
-          label="Date range"
-          value={range}
-          onChange={(event) => setRange(event.target.value)}
-          options={mockReportDatePresets.map(({ value, label }) => ({ value, label }))}
-        />
-        <Select
-          label="Report template"
-          value={template}
-          onChange={(event) => setTemplate(event.target.value)}
-          options={mockReportTemplates.map(({ id, label }) => ({ value: id, label }))}
-        />
-        <div className="flex items-center gap-3 pt-1">
-          <Switch id="compare-periods" checked={compare} onCheckedChange={setCompare} />
-          <label htmlFor="compare-periods" className="text-sm font-medium text-navy-900">Compare previous period</label>
+/* ---------- Donut (segments grow in) ---------- */
+function Donut({ parts, centerLabel, total, format }: { parts: { name: string; value: number; color: string }[]; centerLabel: string; total: number; format: (n: number) => string }) {
+  const on = useMounted()
+  const r = 70
+  const C = 2 * Math.PI * r
+  let acc = 0
+  return (
+    <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
+      <div className="relative h-44 w-44 shrink-0">
+        <svg viewBox="0 0 180 180" className="h-full w-full -rotate-90" role="img" aria-label="Share by campaign">
+          <circle cx="90" cy="90" r={r} fill="none" stroke="#F2F4F7" strokeWidth="22" />
+          {parts.map((p) => {
+            const len = Math.max(0, (p.value / total) * C - 2)
+            const off = -acc
+            acc += (p.value / total) * C
+            return (
+              <circle key={p.name} cx="90" cy="90" r={r} fill="none" stroke={p.color} strokeWidth="22"
+                strokeDasharray={`${on ? len : 0} ${C}`} strokeDashoffset={off} style={{ transition: 'stroke-dasharray 900ms ease-out' }} />
+            )
+          })}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <p className="text-xs text-slate-500">{centerLabel}</p>
+          <p className="text-lg font-semibold tabular-nums text-slate-900"><Count value={total} format={format} /></p>
         </div>
-      </Card>
-
-      <section aria-label="Report key performance indicators" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {metrics.map((metric) => {
-          const current = getKpiValue(currentRows, metric.key)
-          const previous = compare ? getKpiValue(previousRows, metric.key) : null
-          return (
-            <Card key={metric.key} className={`p-5 ${styles.printCard}`}>
-              <p className="text-sm font-medium text-slate-500">{metric.label}</p>
-              <p className="mt-2 text-2xl font-bold text-navy-900">{formatKpi(current, metric.key)}</p>
-              <p className={`mt-2 text-xs ${compare ? 'text-slate-600' : 'text-slate-500'}`}>
-                {compare ? formatChange(current, previous) : 'Mock data only'}
-              </p>
-            </Card>
-          )
-        })}
-      </section>
-
-      <div className="grid gap-5 lg:grid-cols-2">
-        <Card className={`min-w-0 p-4 sm:p-5 ${styles.printCard}`}>
-          <h2 className="mb-3 text-lg font-semibold text-navy-900">{role === 'publisher' ? 'Earnings' : role === 'admin' ? 'Platform activity' : 'Spend'} over time</h2>
-          <ReportLineChart rows={currentRows} metric={lineMetric} title={`${role} report trend`} />
-          {!currentRows.length && <p className="mt-2 text-sm text-slate-600">No mock time-series data is configured.</p>}
-        </Card>
-        <Card className={`min-w-0 p-4 sm:p-5 ${styles.printCard}`}>
-          <h2 className="mb-3 text-lg font-semibold text-navy-900">{templateInfo.dimension} breakdown</h2>
-          <ReportBarChart rows={currentRows} metric={barMetric} title={`${templateInfo.dimension} report breakdown`} />
-          {!currentRows.length && <p className="mt-2 text-sm text-slate-600">No breakdown data is configured for this template.</p>}
-        </Card>
       </div>
+      <ul className="w-full min-w-0 space-y-2.5 text-sm">
+        {parts.map((p) => (
+          <li key={p.name} className="flex items-center justify-between gap-3">
+            <span className="flex min-w-0 items-center gap-2 text-slate-700"><span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: p.color }} aria-hidden="true" /><span className="truncate">{p.name}</span></span>
+            <span className="tabular-nums text-slate-900">{Math.round((p.value / total) * 100)}%</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
-      <section aria-label="Report breakdown">
-        {currentRows.length
-          ? <DataTable label={`${role} report breakdown`} columns={columns} rows={currentRows} />
-          : <EmptyState title="No report rows available" description="No mock reporting data is configured. The report does not generate or infer statistics." />}
-      </section>
-
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <Card className={`space-y-4 p-5 sm:p-6 ${styles.printHidden}`}>
-          <div>
-            <h2 className="text-lg font-semibold text-navy-900">Save report</h2>
-            <p className="mt-1 text-sm text-slate-600">Save the current template and filters to local browser storage.</p>
+/* ---------- Horizontal bars (grow in) ---------- */
+function HBars({ rows, format }: { rows: { name: string; value: number; color: string }[]; format: (n: number) => string }) {
+  const on = useMounted()
+  const max = Math.max(...rows.map((r) => r.value), 1)
+  return (
+    <ul className="space-y-4">
+      {rows.map((r, i) => (
+        <li key={r.name}>
+          <div className="flex items-baseline justify-between text-sm">
+            <span className="text-slate-700">{r.name}</span>
+            <span className="tabular-nums text-slate-900">{format(r.value)}</span>
           </div>
-          <Input
-            id="saved-report-name"
-            label="Report name"
-            value={reportName}
-            onChange={(event) => setReportName(event.target.value)}
-            onBlur={() => setNameTouched(true)}
-            error={nameError}
-            placeholder="Name this report"
-          />
-          <Button type="button" onClick={saveReport}>Save to this browser</Button>
-        </Card>
-
-        <Card className={`space-y-4 p-5 sm:p-6 ${styles.printHidden}`}>
-          <div>
-            <h2 className="text-lg font-semibold text-navy-900">Saved reports</h2>
-            <p className="mt-1 text-sm text-slate-600">Configurations are stored locally; they contain no report data.</p>
+          <div className="mt-1.5 h-2 w-full rounded-full bg-slate-100">
+            <div className="h-2 rounded-full" style={{ width: on ? `${(r.value / max) * 100}%` : '0%', background: r.color, transition: `width 800ms ease-out ${i * 80}ms` }} />
           </div>
-          {savedReports.length ? (
-            <ul className="divide-y divide-slate-100">
-              {savedReports.map((saved) => (
-                <li key={saved.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                  <div className="min-w-0">
-                    <p className="break-words font-medium text-navy-900">{saved.name}</p>
-                    <p className="text-xs text-slate-500">
-                      {mockReportTemplates.find((item) => item.id === saved.template)?.label ?? saved.template} · {saved.dateRange} · {saved.compare ? 'Compare on' : 'Compare off'}
-                    </p>
-                  </div>
-                  <Button type="button" variant="ghost" className="px-3 py-2" onClick={() => removeReport(saved.id)}>Remove</Button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <EmptyState title="No saved reports" description="Save a report configuration to see it listed here." />
-          )}
-        </Card>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+/* ---------- Weekday columns (grow up) ---------- */
+function Columns({ values }: { values: number[] }) {
+  const on = useMounted()
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  const max = Math.max(...values)
+  const best = values.indexOf(max)
+  return (
+    <div className="flex h-44 items-end justify-between gap-2" role="img" aria-label="Results by day of week">
+      {values.map((v, i) => (
+        <div key={days[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
+          <span className="text-xs tabular-nums text-slate-500">{v}</span>
+          <div className="w-full rounded-t" style={{ height: on ? `${(v / max) * 100}%` : '0%', background: i === best ? '#465FFF' : '#D0D5DD', transition: `height 700ms ease-out ${i * 60}ms`, minHeight: 2 }} />
+          <span className="text-xs text-slate-500">{days[i]}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/* ---------- Page ---------- */
+export default function ReportsPage() {
+  const [range, setRange] = useState<7 | 30>(7)
+  const [template, setTemplate] = useState<Template>('Performance')
+  const [compare, setCompare] = useState(true)
+
+  const scale = range === 7 ? 0.26 : 1
+  const t = TEMPLATES[template]
+  const mk = t.key as MetricKey
+  const fmt = t.money ? inr : num
+
+  const rows = useMemo(() => CAMPAIGNS.map((c) => ({ ...c, spend: c.spend * scale, impressions: c.impressions * scale, clicks: c.clicks * scale, results: c.results * scale })), [scale])
+  const sum = (k: 'spend' | 'impressions' | 'clicks' | 'results') => rows.reduce((a, c) => a + c[k], 0)
+  const imp = sum('impressions'), clk = sum('clicks'), spd = sum('spend')
+  const ctr = imp ? (clk / imp) * 100 : 0
+
+  const cur = useMemo(() => makeSeries(t.base, range, 7 + range), [t.base, range])
+  const prev = useMemo(() => makeSeries(t.base * 0.88, range, 31 + range, 0.04), [t.base, range])
+  const labels = useMemo(() => dayLabels(range), [range])
+  const delta = DELTAS[range]
+
+  const total = rows.reduce((a, c) => a + c[mk], 0)
+  const parts = rows.map((c, i) => ({ name: c.name, value: c[mk], color: COLORS[i % COLORS.length] }))
+  const byObjective = Object.entries(rows.reduce<Record<string, number>>((a, c) => ({ ...a, [c.objective]: (a[c.objective] ?? 0) + c[mk] }), {}))
+    .map(([name, value], i) => ({ name, value, color: COLORS[i % COLORS.length] }))
+  const devices = [
+    { name: 'Mobile', value: total * 0.64, color: '#465FFF' },
+    { name: 'Desktop', value: total * 0.28, color: '#12B76A' },
+    { name: 'Tablet', value: total * 0.08, color: '#F79009' },
+  ]
+  const weekday = [62, 71, 68, 80, 94, 118, 105]
+  const sorted = [...rows].sort((a, b) => b[mk] - a[mk])
+
+  function exportCsv() {
+    const q = (s: string) => `"${s.replace(/"/g, '""')}"`
+    const lines = ['Campaign,Objective,Status,Impressions,Clicks,CTR %,Spend (INR),Results']
+    rows.forEach((c) => lines.push([q(c.name), q(c.objective), c.status, Math.round(c.impressions), Math.round(c.clicks), c.impressions ? ((c.clicks / c.impressions) * 100).toFixed(2) : '0', Math.round(c.spend), Math.round(c.results)].join(',')))
+    const url = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `rivinityads-report-${range}-days.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs text-slate-500">Advertiser / Reports</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Reports</h1>
+        </div>
+        <button type="button" onClick={exportCsv} className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+          <Download className="h-4 w-4" aria-hidden="true" /> Export CSV
+        </button>
       </div>
-      <div className={`flex justify-end ${styles.printHidden}`}>
-        <Button type="button" variant="outline" onClick={() => window.print()}>Print / Save PDF</Button>
+
+      <div className="flex flex-wrap items-center gap-3 md:gap-5">
+        <Tabs label="Date range" items={[7, 30] as (7 | 30)[]} value={range} onChange={setRange} />
+        <Tabs label="Report template" items={Object.keys(TEMPLATES) as Template[]} value={template} onChange={setTemplate} />
+        <label className="ml-auto inline-flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+          <button type="button" role="switch" aria-checked={compare} aria-label="Compare previous period" onClick={() => setCompare((c) => !c)}
+            className={`relative h-5 w-9 rounded-full transition-colors ${compare ? 'bg-brand-600' : 'bg-slate-300'}`}>
+            <span className={`absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${compare ? 'translate-x-4' : ''}`} />
+          </button>
+          Compare previous period
+        </label>
       </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Kpi label="Impressions" value={imp} format={num} delta={delta[0]} delay={0} />
+        <Kpi label="Clicks" value={clk} format={num} delta={delta[1]} delay={80} />
+        <Kpi label="CTR" value={ctr} format={(n) => `${n.toFixed(2)}%`} delta={delta[2]} delay={160} />
+        <Kpi label="Spend" value={spd} format={inr} delta={delta[3]} delay={240} />
+      </div>
+
+      <Reveal delay={300}>
+        <section className={CARD} aria-label={`${t.label} over time`}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-base font-semibold text-slate-900">{t.label} over time</h2>
+            <div className="flex items-center gap-4 text-xs text-slate-600">
+              <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#465FFF]" aria-hidden="true" />This period</span>
+              {compare && <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-slate-400" aria-hidden="true" />Previous period</span>}
+            </div>
+          </div>
+          <div className="mt-2">
+            <LineChart key={`${template}-${range}`} cur={cur} prev={compare ? prev : null} labels={labels} money={t.money} />
+          </div>
+        </section>
+      </Reveal>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Reveal delay={380}>
+          <section className={`${CARD} h-full`} aria-label="Share by campaign">
+            <h2 className="mb-4 text-base font-semibold text-slate-900">{t.label} by campaign</h2>
+            <Donut key={`d-${template}-${range}`} parts={parts} centerLabel="Total" total={total} format={fmt} />
+          </section>
+        </Reveal>
+        <Reveal delay={460}>
+          <section className={`${CARD} h-full`} aria-label="By objective">
+            <h2 className="mb-4 text-base font-semibold text-slate-900">{t.label} by goal</h2>
+            <HBars key={`o-${template}-${range}`} rows={byObjective} format={fmt} />
+          </section>
+        </Reveal>
+        <Reveal delay={540}>
+          <section className={`${CARD} h-full`} aria-label="By device">
+            <h2 className="mb-4 text-base font-semibold text-slate-900">{t.label} by device</h2>
+            <HBars key={`v-${template}-${range}`} rows={devices} format={fmt} />
+          </section>
+        </Reveal>
+        <Reveal delay={620}>
+          <section className={`${CARD} h-full`} aria-label="By day of week">
+            <h2 className="mb-4 text-base font-semibold text-slate-900">Best days to run ads</h2>
+            <Columns values={weekday} />
+          </section>
+        </Reveal>
+      </div>
+
+      <Reveal delay={700}>
+        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white" aria-label="Campaign breakdown">
+          <h2 className="px-4 py-3 text-base font-semibold text-slate-900">Campaign breakdown</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead>
+                <tr className="border-y border-slate-100 text-xs text-slate-500">
+                  <th className="px-4 py-3 font-medium">Campaign</th>
+                  <th className="px-3 py-3 text-right font-medium">Impressions</th>
+                  <th className="px-3 py-3 text-right font-medium">Clicks</th>
+                  <th className="px-3 py-3 text-right font-medium">CTR</th>
+                  <th className="px-3 py-3 text-right font-medium">Results</th>
+                  <th className="px-4 py-3 text-right font-medium">Spend</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sorted.map((c) => (
+                  <tr key={c.name} className="border-b border-slate-100 last:border-0">
+                    <td className="px-4 py-3"><p className="font-medium text-slate-900">{c.name}</p><p className="text-xs text-slate-500">{c.objective}</p></td>
+                    <td className="px-3 py-3 text-right tabular-nums">{num(c.impressions)}</td>
+                    <td className="px-3 py-3 text-right tabular-nums">{num(c.clicks)}</td>
+                    <td className="px-3 py-3 text-right tabular-nums">{((c.clicks / c.impressions) * 100).toFixed(2)}%</td>
+                    <td className="px-3 py-3 text-right tabular-nums">{num(c.results)}</td>
+                    <td className="px-4 py-3 text-right tabular-nums">{inr(c.spend)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </Reveal>
     </div>
   )
 }

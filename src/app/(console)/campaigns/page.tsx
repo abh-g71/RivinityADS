@@ -21,7 +21,7 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/
 import { Switch } from '@/components/primitives/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/primitives/tabs'
 import { Badge } from '@/components/ui/Badge'
-import { Button, ButtonLink } from '@/components/ui/Button'
+import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { PageHeader } from '@/components/shared/PageHeader'
@@ -499,7 +499,6 @@ export default function CampaignsPage() {
         breadcrumbs={[{ label: 'Advertiser workspace', href: '/dashboard' }, { label: 'Campaign manager' }]}
         title="Campaign manager"
         description="Manage campaign delivery and review mock performance across campaigns, ad sets, and ads."
-        action={<ButtonLink href="/campaigns/new">Create campaign</ButtonLink>}
       />
 
       <Card className="mt-6 space-y-4 p-4 sm:p-5">

@@ -24,13 +24,11 @@ export function NewCampaignStart() {
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:min-h-[calc(100vh-9rem)] lg:py-5">
-      <Link href="/campaigns" className="text-sm font-medium text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
-        ← Back to campaigns
-      </Link>
+      
       <div className="mt-5 max-w-2xl lg:mt-4">
         <p className="text-sm font-semibold text-brand-700">A simple way to get started</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl">How would you like to create your campaign?</h1>
-        <p className="mt-2 text-base leading-7 text-slate-600">Start with a few guided choices. Your draft is saved here, and nothing goes live without your approval.</p>
+        
       </div>
 
       <section aria-label="Campaign creation methods" className="mt-6 grid gap-4 md:grid-cols-2 lg:mt-5">
