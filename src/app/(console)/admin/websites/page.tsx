@@ -28,7 +28,7 @@ export default function AdminWebsitesPage() {
   }
 
   const columns: DataTableColumn<AdminWebsite>[] = [
-    { key: 'domain', header: 'Website', render: (website) => <span className="font-medium text-navy-900">{website.domain}</span> },
+    { key: 'domain', header: 'Website', render: (website) => <span className="font-medium text-foreground">{website.domain}</span> },
     { key: 'owner', header: 'Publisher', render: (website) => website.owner },
     { key: 'category', header: 'Category', render: (website) => website.category },
     { key: 'submitted', header: 'Submitted', render: (website) => website.submittedAt },
@@ -51,7 +51,7 @@ export default function AdminWebsitesPage() {
         breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Websites' }]}
         title="Website review"
         description="Approve or reject anonymized mock publisher websites."
-        action={<Link href="/admin/publishers" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Publishers</Link>}
+        action={<Link href="/admin/publishers" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Publishers</Link>}
       />
       <div className="mt-6 max-w-md">
         <Input id="website-review-search" label="Search websites" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search domain or publisher" />

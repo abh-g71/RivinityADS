@@ -161,22 +161,22 @@ export default function SettingsPage() {
         title={role === 'admin' ? 'Account settings' : 'Settings'}
         description="Manage prototype account preferences. All values are mock and browser-local."
         action={role === 'admin'
-          ? <Link href="/admin/settings" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Platform settings</Link>
-          : <a href="#profile-settings" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Edit profile</a>}
+          ? <Link href="/admin/settings" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Platform settings</Link>
+          : <a href="#profile-settings" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Edit profile</a>}
       />
 
       {role === 'admin' ? (
         <div className="space-y-4">
           <EmptyState title="Platform settings" description="Admin platform configuration is available in the dedicated settings workspace." />
-          <Link href="/admin/settings" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Open platform settings</Link>
+          <Link href="/admin/settings" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Open platform settings</Link>
         </div>
       ) : (
         <>
           <Card id="profile-settings" className="p-5 sm:p-6">
             <form className="grid gap-4 sm:grid-cols-2" onSubmit={saveProfile} noValidate>
               <div className="sm:col-span-2">
-                <h2 className="text-lg font-semibold text-navy-900">Profile</h2>
-                <p className="mt-1 text-sm text-slate-600">Update the demo name and email shown in this prototype.</p>
+                <h2 className="text-lg font-semibold text-foreground">Profile</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Update the demo name and email shown in this prototype.</p>
               </div>
               <Input
                 id="settings-name"
@@ -206,8 +206,8 @@ export default function SettingsPage() {
           <Card className="p-5 sm:p-6">
             <form className="grid gap-4 sm:grid-cols-3" onSubmit={savePassword} noValidate>
               <div className="sm:col-span-3">
-                <h2 className="text-lg font-semibold text-navy-900">Password</h2>
-                <p className="mt-1 text-sm text-slate-600">This form demonstrates validation only; credentials are never stored.</p>
+                <h2 className="text-lg font-semibold text-foreground">Password</h2>
+                <p className="mt-1 text-sm text-muted-foreground">This form demonstrates validation only; credentials are never stored.</p>
               </div>
               <Input
                 id="settings-current-password"
@@ -247,8 +247,8 @@ export default function SettingsPage() {
 
           <Card className="space-y-5 p-5 sm:p-6">
             <div>
-              <h2 className="text-lg font-semibold text-navy-900">Notifications</h2>
-              <p className="mt-1 text-sm text-slate-600">Choose which mock account notifications you want to see.</p>
+              <h2 className="text-lg font-semibold text-foreground">Notifications</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Choose which mock account notifications you want to see.</p>
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               {([
@@ -271,8 +271,8 @@ export default function SettingsPage() {
 
           <Card className="space-y-4 p-5 sm:p-6">
             <div>
-              <h2 className="text-lg font-semibold text-navy-900">API key</h2>
-              <p className="mt-1 text-sm text-slate-600">The displayed key is a fake demo string. It cannot authorize API requests.</p>
+              <h2 className="text-lg font-semibold text-foreground">API key</h2>
+              <p className="mt-1 text-sm text-muted-foreground">The displayed key is a fake demo string. It cannot authorize API requests.</p>
             </div>
             <Label htmlFor="settings-api-key" className="sr-only">Fake demo API key</Label>
             <div className="flex min-w-0 flex-col gap-3 sm:flex-row">
@@ -280,12 +280,12 @@ export default function SettingsPage() {
                 id="settings-api-key"
                 readOnly
                 value={apiKey}
-                className="h-11 min-w-0 flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 font-mono text-sm text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="h-11 min-w-0 flex-1 rounded-lg border border-border bg-secondary px-3 font-mono text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
               <Button type="button" variant="outline" onClick={copyApiKey} className="shrink-0"><Copy className="h-4 w-4" aria-hidden="true" />Copy</Button>
               <Button type="button" variant="outline" onClick={regenerateApiKey} className="shrink-0"><RefreshCw className="h-4 w-4" aria-hidden="true" />Regenerate demo key</Button>
             </div>
-            <p className="flex items-start gap-2 text-xs text-slate-500"><Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />Never paste a real secret into this prototype.</p>
+            <p className="flex items-start gap-2 text-xs text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />Never paste a real secret into this prototype.</p>
           </Card>
         </>
       )}

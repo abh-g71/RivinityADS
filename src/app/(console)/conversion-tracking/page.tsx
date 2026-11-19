@@ -41,8 +41,8 @@ export default function ConversionTrackingPage() {
         <Card className="p-5 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-navy-900">Postback URL</h2>
-              <p className="mt-1 text-sm text-slate-600">Generate a placeholder URL for interface preview.</p>
+              <h2 className="text-lg font-semibold text-foreground">Postback URL</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Generate a placeholder URL for interface preview.</p>
             </div>
           </div>
           {postbackUrl && (
@@ -54,12 +54,12 @@ export default function ConversionTrackingPage() {
         </Card>
 
         <Card className="p-5 sm:p-6">
-          <h2 className="text-lg font-semibold text-navy-900">Optional multi-event tracking</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">Select placeholder event labels for the interface preview. They have no configured meaning and are not tracked.</p>
+          <h2 className="text-lg font-semibold text-foreground">Optional multi-event tracking</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">Select placeholder event labels for the interface preview. They have no configured meaning and are not tracked.</p>
           <fieldset className="mt-4 space-y-3">
             <legend className="sr-only">Mock conversion events</legend>
             {mockConversionEvents.map((event) => (
-              <label key={event} className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-200 p-3 text-sm text-navy-900 focus-within:ring-2 focus-within:ring-brand-500">
+              <label key={event} className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3 text-sm text-foreground focus-within:ring-2 focus-within:ring-ring">
                 <input
                   type="checkbox"
                   checked={selectedEvents.includes(event)}
@@ -67,22 +67,22 @@ export default function ConversionTrackingPage() {
                     setSelectedEvents((current) => current.includes(event) ? current.filter((value) => value !== event) : [...current, event])
                     setTestResult('')
                   }}
-                  className="h-4 w-4 accent-brand-600"
+                  className="h-4 w-4 accent-primary"
                 />
                 <span className="flex-1">{event}</span>
                 <Badge tone="brand">Mock label</Badge>
               </label>
             ))}
           </fieldset>
-          <p className="mt-3 text-xs text-slate-500">{selectedEvents.length} placeholder event label{selectedEvents.length === 1 ? '' : 's'} selected.</p>
+          <p className="mt-3 text-xs text-muted-foreground">{selectedEvents.length} placeholder event label{selectedEvents.length === 1 ? '' : 's'} selected.</p>
         </Card>
       </div>
 
       <Card className="mt-5 flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6">
         <div>
-          <h2 className="text-lg font-semibold text-navy-900">Test conversion</h2>
-          <p className="mt-1 text-sm text-slate-600">The local preview does not send or validate a conversion.</p>
-          {testResult && <p role="status" className="mt-3 text-sm text-slate-700">{testResult}</p>}
+          <h2 className="text-lg font-semibold text-foreground">Test conversion</h2>
+          <p className="mt-1 text-sm text-muted-foreground">The local preview does not send or validate a conversion.</p>
+          {testResult && <p role="status" className="mt-3 text-sm text-foreground">{testResult}</p>}
         </div>
         <div className="flex items-center gap-3">
           <Badge tone={testResult ? 'brand' : 'warning'}>{testResult ? 'Preview complete' : 'Waiting'}</Badge>

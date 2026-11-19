@@ -46,7 +46,7 @@ function ImpressionsLineChart({ rows }: { rows: PublisherStatisticsRow[] }) {
             strokeWidth="3"
             strokeLinejoin="round"
             strokeLinecap="round"
-            className="text-brand-600"
+            className="text-foreground"
           />
         )}
         {points.map(({ x, y, row }) => (
@@ -102,7 +102,7 @@ export default function PublisherStatisticsPage() {
         breadcrumbs={[{ label: 'Publisher', href: '/publisher' }, { label: 'Statistics' }]}
         title="Statistics"
         description="Review mock delivery and earnings breakdowns. No real tracking data is shown."
-        action={<Link href="/publisher/earnings" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View earnings</Link>}
+        action={<Link href="/publisher/earnings" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">View earnings</Link>}
       />
 
       <Card className="grid gap-4 p-4 sm:grid-cols-3 sm:p-5">
@@ -137,10 +137,10 @@ export default function PublisherStatisticsPage() {
       </Card>
 
       <Card className="p-4 sm:p-5">
-        <h2 className="mb-3 text-lg font-semibold text-navy-900">Impressions over time</h2>
+        <h2 className="mb-3 text-lg font-semibold text-foreground">Impressions over time</h2>
         <ImpressionsLineChart rows={rows} />
         {!rows.length && (
-          <p role="status" className="mt-2 text-sm text-slate-600">
+          <p role="status" className="mt-2 text-sm text-muted-foreground">
             No mock time-series data is configured. The chart does not infer or invent data points.
           </p>
         )}

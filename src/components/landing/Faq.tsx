@@ -11,14 +11,14 @@ export function Faq() {
   return (
     <section id="faq" className="scroll-mt-24 mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 md:grid-cols-2">
       <div>
-        <p className="text-sm font-semibold text-brand-700">FAQ</p>
-        <h2 className="mt-2 text-3xl font-bold tracking-tight text-navy-900">A few quick answers.</h2>
+        <p className="text-sm font-semibold text-foreground">FAQ</p>
+        <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground">A few quick answers.</h2>
       </div>
       <Accordion type="single" collapsible className="space-y-3">
         {faqs.map(([question, answer], index) => (
-          <AccordionItem key={question} value={`faq-${index}`} className="rounded-lg border border-slate-200 bg-white px-4 shadow-sm">
-            <AccordionTrigger className="py-4 text-left text-navy-900 hover:no-underline">{question}</AccordionTrigger>
-            <AccordionContent className="pb-4 text-sm leading-6 text-slate-600">{answer}</AccordionContent>
+          <AccordionItem key={question} value={`faq-${index}`} className="rounded-lg border border-border bg-white px-4 shadow-sm">
+            <AccordionTrigger className="py-4 text-left text-foreground hover:no-underline">{question}</AccordionTrigger>
+            <AccordionContent className="pb-4 text-sm leading-6 text-muted-foreground">{answer}</AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>

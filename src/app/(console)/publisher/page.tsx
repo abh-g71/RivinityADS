@@ -15,16 +15,16 @@ const SITES: { name: string; status: SiteStatus; impressions: number; clicks: nu
   { name: 'gadgetreviews.example', status: 'In review', impressions: 0, clicks: 0, earnings: 0 },
 ]
 const FORMATS = [
-  { name: 'Native Banner', value: 4180, color: '#4F5BD5' },
-  { name: 'Interstitial', value: 2650, color: '#12B76A' },
-  { name: 'Social Bar', value: 1920, color: '#F79009' },
-  { name: 'In-Page Push', value: 1110, color: '#111827' },
+  { name: 'Native Banner', value: 4180, color: '#ACBCFF' },
+  { name: 'Interstitial', value: 2650, color: '#6EE0A9' },
+  { name: 'Social Bar', value: 1920, color: '#6B6B75' },
+  { name: 'In-Page Push', value: 1110, color: '#101012' },
 ]
 const COUNTRIES = [
-  { name: 'India', value: 5240, color: '#4F5BD5' },
-  { name: 'United States', value: 2310, color: '#4F5BD5' },
-  { name: 'United Kingdom', value: 1280, color: '#4F5BD5' },
-  { name: 'Canada', value: 1030, color: '#4F5BD5' },
+  { name: 'India', value: 5240, color: '#ACBCFF' },
+  { name: 'United States', value: 2310, color: '#ACBCFF' },
+  { name: 'United Kingdom', value: 1280, color: '#ACBCFF' },
+  { name: 'Canada', value: 1030, color: '#ACBCFF' },
 ]
 const PAYOUT_MIN = 10000
 const DELTAS: Record<7 | 30, Record<string, number>> = {
@@ -98,7 +98,7 @@ function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }
 }
 
 /* ---------- Small parts ---------- */
-const CARD = 'rounded-lg border border-slate-200 bg-white p-4'
+const CARD = 'rounded-lg border border-border bg-white p-4'
 
 function Trend({ value }: { value: number }) {
   const up = value >= 0
@@ -111,10 +111,10 @@ function Trend({ value }: { value: number }) {
 }
 function Tabs<T extends string | number>({ items, value, onChange, label }: { items: T[]; value: T; onChange: (v: T) => void; label: string }) {
   return (
-    <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-slate-100 p-0.5">
+    <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-muted p-0.5">
       {items.map((it) => (
         <button key={String(it)} type="button" role="tab" aria-selected={value === it} onClick={() => onChange(it)}
-          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-white text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}>
+          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>
           {typeof it === 'number' ? `${it} days` : it}
         </button>
       ))}
@@ -129,10 +129,10 @@ function HBars({ rows }: { rows: { name: string; value: number; color: string }[
       {rows.map((r, i) => (
         <li key={r.name}>
           <div className="flex items-baseline justify-between text-sm">
-            <span className="text-slate-700">{r.name}</span>
-            <span className="tabular-nums text-slate-900">{inr(r.value)}</span>
+            <span className="text-foreground">{r.name}</span>
+            <span className="tabular-nums text-foreground">{inr(r.value)}</span>
           </div>
-          <div className="mt-1.5 h-2 w-full rounded-full bg-slate-100">
+          <div className="mt-1.5 h-2 w-full rounded-full bg-muted">
             <div className="h-2 rounded-full" style={{ width: on ? `${(r.value / max) * 100}%` : '0%', background: r.color, transition: `width 800ms ease-out ${i * 80}ms` }} />
           </div>
         </li>
@@ -153,7 +153,7 @@ function Donut({ parts }: { parts: { name: string; value: number; color: string 
     <div className="flex flex-col items-center gap-5 sm:flex-row">
       <div className="relative h-40 w-40 shrink-0">
         <svg viewBox="0 0 180 180" className="h-full w-full -rotate-90" role="img" aria-label="Earnings by ad format">
-          <circle cx="90" cy="90" r={r} fill="none" stroke="#F2F4F7" strokeWidth="22" />
+          <circle cx="90" cy="90" r={r} fill="none" stroke="#F6F8FC" strokeWidth="22" />
           {segments.map((s) => (
             <circle
               key={s.name}
@@ -170,15 +170,15 @@ function Donut({ parts }: { parts: { name: string; value: number; color: string 
           ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-xs text-slate-500">Total</p>
-          <p className="text-lg font-semibold tabular-nums text-slate-900"><Count value={total} format={inr} /></p>
+          <p className="text-xs text-muted-foreground">Total</p>
+          <p className="text-lg font-semibold tabular-nums text-foreground"><Count value={total} format={inr} /></p>
         </div>
       </div>
       <ul className="w-full min-w-0 space-y-2.5 text-sm">
         {parts.map((p) => (
           <li key={p.name} className="flex items-center justify-between gap-3">
-            <span className="flex min-w-0 items-center gap-2 text-slate-700"><span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: p.color }} aria-hidden="true" /><span className="truncate">{p.name}</span></span>
-            <span className="tabular-nums text-slate-900">{Math.round((p.value / total) * 100)}%</span>
+            <span className="flex min-w-0 items-center gap-2 text-foreground"><span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: p.color }} aria-hidden="true" /><span className="truncate">{p.name}</span></span>
+            <span className="tabular-nums text-foreground">{Math.round((p.value / total) * 100)}%</span>
           </li>
         ))}
       </ul>
@@ -212,21 +212,21 @@ function LineChart({ cur, prev, labels, money }: { cur: number[]; prev: number[]
         const gy = T + (1 - t) * (H - T - B)
         return (
           <g key={t}>
-            <line x1={L} x2={W - Rt} y1={gy} y2={gy} stroke="#E4E7EC" strokeDasharray="3 4" />
-            <text x={L - 8} y={gy + 4} textAnchor="end" fontSize="11" fill="#667085">{money ? `${R}${compact(max * t)}` : compact(max * t)}</text>
+            <line x1={L} x2={W - Rt} y1={gy} y2={gy} stroke="#D9D9E2" strokeDasharray="3 4" />
+            <text x={L - 8} y={gy + 4} textAnchor="end" fontSize="11" fill="#6B6B75">{money ? `${R}${compact(max * t)}` : compact(max * t)}</text>
           </g>
         )
       })}
-      <path d={`${smooth(pc)} L${x(n - 1)},${H - B} L${x(0)},${H - B} Z`} fill="#4F5BD5" fillOpacity={on ? 0.06 : 0} style={{ transition: 'fill-opacity 900ms ease-out 400ms' }} />
-      <path d={smooth(pp)} fill="none" stroke="#98A2B3" strokeWidth="1.5" strokeDasharray="4 4" strokeLinecap="round" />
-      <path d={smooth(pc)} pathLength={1} fill="none" stroke="#4F5BD5" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={1} strokeDashoffset={on ? 0 : 1} style={{ transition: 'stroke-dashoffset 1100ms ease-out' }} />
-      {labels.map((l, i) => (i % step === 0 ? <text key={l + i} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="#667085">{l}</text> : null))}
-      <line x1={x(idx)} x2={x(idx)} y1={T} y2={H - B} stroke="#98A2B3" strokeOpacity="0.5" />
-      <circle cx={x(idx)} cy={y(cur[idx])} r="4.5" fill="white" stroke="#4F5BD5" strokeWidth="2.5" />
-      <rect x={bx} y={T - 2} width="160" height="54" rx="6" fill="#111827" />
-      <text x={bx + 12} y={T + 14} fontSize="10" fill="#98A2B3">{labels[idx]}</text>
+      <path d={`${smooth(pc)} L${x(n - 1)},${H - B} L${x(0)},${H - B} Z`} fill="#ACBCFF" fillOpacity={on ? 0.06 : 0} style={{ transition: 'fill-opacity 900ms ease-out 400ms' }} />
+      <path d={smooth(pp)} fill="none" stroke="#6B6B75" strokeWidth="1.5" strokeDasharray="4 4" strokeLinecap="round" />
+      <path d={smooth(pc)} pathLength={1} fill="none" stroke="#ACBCFF" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={1} strokeDashoffset={on ? 0 : 1} style={{ transition: 'stroke-dashoffset 1100ms ease-out' }} />
+      {labels.map((l, i) => (i % step === 0 ? <text key={l + i} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="#6B6B75">{l}</text> : null))}
+      <line x1={x(idx)} x2={x(idx)} y1={T} y2={H - B} stroke="#6B6B75" strokeOpacity="0.5" />
+      <circle cx={x(idx)} cy={y(cur[idx])} r="4.5" fill="white" stroke="#ACBCFF" strokeWidth="2.5" />
+      <rect x={bx} y={T - 2} width="160" height="54" rx="6" fill="#101012" />
+      <text x={bx + 12} y={T + 14} fontSize="10" fill="#6B6B75">{labels[idx]}</text>
       <text x={bx + 12} y={T + 30} fontSize="12" fill="white">This period {fmt(cur[idx])}</text>
-      <text x={bx + 12} y={T + 46} fontSize="12" fill="#98A2B3">Previous {fmt(prev[idx])}</text>
+      <text x={bx + 12} y={T + 46} fontSize="12" fill="#6B6B75">Previous {fmt(prev[idx])}</text>
     </svg>
   )
 }
@@ -263,12 +263,12 @@ export default function PublisherDashboardPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs text-slate-500">Publisher / Home</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Home</h1>
+          <p className="text-xs text-muted-foreground">Publisher / Home</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Home</h1>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <Tabs label="Date range" items={[7, 30] as (7 | 30)[]} value={range} onChange={setRange} />
-          <Link href="/publisher/websites" className="inline-flex items-center gap-2 rounded-md bg-brand-600 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+          <Link href="/publisher/websites" className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Plus className="h-4 w-4" aria-hidden="true" /> Add website
           </Link>
         </div>
@@ -278,9 +278,9 @@ export default function PublisherDashboardPage() {
         {kpis.map((k, i) => (
           <Reveal key={k.label} delay={i * 80}>
             <div className={CARD}>
-              <p className="text-sm text-slate-500">{k.label}</p>
+              <p className="text-sm text-muted-foreground">{k.label}</p>
               <div className="mt-1.5 flex items-center justify-between gap-2">
-                <p className="truncate text-2xl font-semibold tabular-nums text-slate-900"><Count value={k.value} format={k.format} /></p>
+                <p className="truncate text-2xl font-semibold tabular-nums text-foreground"><Count value={k.value} format={k.format} /></p>
                 <Trend value={DELTAS[range][k.label]} />
               </div>
             </div>
@@ -294,12 +294,12 @@ export default function PublisherDashboardPage() {
             <section className={CARD} aria-label={metric}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Tabs label="Metric" items={['Earnings', 'Impressions', 'Clicks'] as Metric[]} value={metric} onChange={setMetric} />
-                <div className="flex items-center gap-4 text-xs text-slate-600">
-                  <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#4F5BD5]" aria-hidden="true" />This period</span>
-                  <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-slate-400" aria-hidden="true" />Previous</span>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#ACBCFF]" aria-hidden="true" />This period</span>
+                  <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-border" aria-hidden="true" />Previous</span>
                 </div>
               </div>
-              <p className="mt-3 text-xl font-semibold tabular-nums text-slate-900">{money ? inr(total) : num(total)} <span className="text-xs font-normal text-slate-500">in the last {range} days</span></p>
+              <p className="mt-3 text-xl font-semibold tabular-nums text-foreground">{money ? inr(total) : num(total)} <span className="text-xs font-normal text-muted-foreground">in the last {range} days</span></p>
               <div className="mt-2"><LineChart key={`${metric}-${range}`} cur={cur} prev={prev} labels={labels} money={money} /></div>
             </section>
           </Reveal>
@@ -309,30 +309,30 @@ export default function PublisherDashboardPage() {
           <Reveal delay={380}>
             <section className={CARD} aria-label="Next payout">
               <div className="flex items-baseline justify-between">
-                <h2 className="text-base font-semibold text-slate-900">Next payout</h2>
-                <p className="text-sm tabular-nums text-slate-700">{inr(totalEarn)} / {inr(PAYOUT_MIN)}</p>
+                <h2 className="text-base font-semibold text-foreground">Next payout</h2>
+                <p className="text-sm tabular-nums text-foreground">{inr(totalEarn)} / {inr(PAYOUT_MIN)}</p>
               </div>
-              <div className="mt-3 h-1.5 w-full rounded-full bg-slate-100">
-                <div className="h-1.5 rounded-full bg-brand-600" style={{ width: on ? `${payoutPct}%` : '0%', transition: 'width 800ms ease-out' }} />
+              <div className="mt-3 h-1.5 w-full rounded-full bg-muted">
+                <div className="h-1.5 rounded-full bg-progress" style={{ width: on ? `${payoutPct}%` : '0%', transition: 'width 800ms ease-out' }} />
               </div>
-              <p className="mt-2 text-xs text-slate-500">{payoutPct}% of the minimum payout. {inr(PAYOUT_MIN - totalEarn)} to go.</p>
+              <p className="mt-2 text-xs text-muted-foreground">{payoutPct}% of the minimum payout. {inr(PAYOUT_MIN - totalEarn)} to go.</p>
             </section>
           </Reveal>
           <Reveal delay={460}>
             <section className={CARD} aria-label="Tasks to complete">
-              <h2 className="text-base font-semibold text-slate-900">Tasks to complete</h2>
-              <ul className="mt-2 divide-y divide-slate-100">
+              <h2 className="text-base font-semibold text-foreground">Tasks to complete</h2>
+              <ul className="mt-2 divide-y divide-border">
                 {inReview && (
                   <li className="flex items-center gap-3 py-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600"><Clock className="h-4 w-4" aria-hidden="true" /></span>
-                    <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-slate-900">{inReview.name} is in review</p><p className="text-xs text-slate-500">Usually a day or two</p></div>
-                    <Link href="/publisher/websites" className="shrink-0 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">View</Link>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground"><Clock className="h-4 w-4" aria-hidden="true" /></span>
+                    <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-foreground">{inReview.name} is in review</p><p className="text-xs text-muted-foreground">Usually a day or two</p></div>
+                    <Link href="/publisher/websites" className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted">View</Link>
                   </li>
                 )}
                 <li className="flex items-center gap-3 py-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600"><Wallet className="h-4 w-4" aria-hidden="true" /></span>
-                  <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-slate-900">Add a payout method</p><p className="text-xs text-slate-500">Needed to get paid</p></div>
-                  <Link href="/publisher/payments" className="shrink-0 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Add</Link>
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground"><Wallet className="h-4 w-4" aria-hidden="true" /></span>
+                  <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-foreground">Add a payout method</p><p className="text-xs text-muted-foreground">Needed to get paid</p></div>
+                  <Link href="/publisher/payments" className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted">Add</Link>
                 </li>
               </ul>
             </section>
@@ -343,28 +343,28 @@ export default function PublisherDashboardPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Reveal delay={540}>
           <section className={`${CARD} h-full`} aria-label="Earnings by ad format">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">Earnings by ad format</h2>
+            <h2 className="mb-4 text-base font-semibold text-foreground">Earnings by ad format</h2>
             <Donut parts={FORMATS} />
           </section>
         </Reveal>
         <Reveal delay={620}>
           <section className={`${CARD} h-full`} aria-label="Earnings by country">
-            <h2 className="mb-4 text-base font-semibold text-slate-900">Earnings by country</h2>
+            <h2 className="mb-4 text-base font-semibold text-foreground">Earnings by country</h2>
             <HBars rows={COUNTRIES} />
           </section>
         </Reveal>
       </div>
 
       <Reveal delay={700}>
-        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white" aria-label="Websites">
+        <section className="overflow-hidden rounded-lg border border-border bg-white" aria-label="Websites">
           <div className="flex items-center justify-between gap-3 px-4 py-3">
-            <h2 className="text-base font-semibold text-slate-900">Websites</h2>
-            <Link href="/publisher/websites" className="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Manage</Link>
+            <h2 className="text-base font-semibold text-foreground">Websites</h2>
+            <Link href="/publisher/websites" className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted">Manage</Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-sm">
               <thead>
-                <tr className="border-y border-slate-100 text-xs text-slate-500">
+                <tr className="border-y border-border text-xs text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Website</th>
                   <th className="px-3 py-3 font-medium">Status</th>
                   <th className="px-3 py-3 text-right font-medium">Impressions</th>
@@ -374,9 +374,9 @@ export default function PublisherDashboardPage() {
               </thead>
               <tbody>
                 {SITES.map((s) => (
-                  <tr key={s.name} className="border-b border-slate-100 last:border-0">
-                    <td className="px-4 py-3 font-medium text-slate-900">{s.name}</td>
-                    <td className="px-3 py-3"><span className="inline-flex items-center gap-2 text-slate-700"><span className={`h-2 w-2 rounded-full ${s.status === 'Approved' ? 'bg-green-500' : 'bg-brand-600'}`} aria-hidden="true" />{s.status}</span></td>
+                  <tr key={s.name} className="border-b border-border last:border-0">
+                    <td className="px-4 py-3 font-medium text-foreground">{s.name}</td>
+                    <td className="px-3 py-3"><span className="inline-flex items-center gap-2 text-foreground"><span className={`h-2 w-2 rounded-full ${s.status === 'Approved' ? 'bg-green-500' : 'bg-primary'}`} aria-hidden="true" />{s.status}</span></td>
                     <td className="px-3 py-3 text-right tabular-nums">{s.impressions ? num(s.impressions * scale) : '\u2014'}</td>
                     <td className="px-3 py-3 text-right tabular-nums">{s.clicks ? num(s.clicks * scale) : '\u2014'}</td>
                     <td className="px-4 py-3 text-right tabular-nums">{s.earnings ? inr(s.earnings * scale) : '\u2014'}</td>

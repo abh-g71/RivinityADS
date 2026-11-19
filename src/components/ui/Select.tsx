@@ -53,7 +53,7 @@ export function Select({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={selectId} className={cn('text-sm font-medium text-slate-700', labelClassName)}>
+      <label htmlFor={selectId} className={cn('text-sm font-medium text-foreground', labelClassName)}>
         {label}
       </label>
       <PrimitiveSelect
@@ -69,7 +69,7 @@ export function Select({
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
           onBlur={onBlur}
-          className={cn('h-11 w-full rounded-lg border-slate-300 bg-white text-navy-900 focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500', className)}
+          className={cn('h-11 w-full rounded-lg border-border bg-white text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-secondary disabled:text-muted-foreground', className)}
         >
           <SelectValue />
         </SelectTrigger>

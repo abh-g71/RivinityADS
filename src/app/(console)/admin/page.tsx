@@ -19,9 +19,9 @@ const QUEUE: Item[] = [
   { id: 'q4', kind: 'Campaign', name: 'App launch · India', owner: 'Advertiser: Meera J.', submitted: '16 Nov', state: 'Pending' },
 ]
 const SPLIT = [
-  { name: 'Paid to publishers', value: 68, color: '#4F5BD5' },
-  { name: 'Platform revenue', value: 24, color: '#12B76A' },
-  { name: 'Fees and refunds', value: 8, color: '#F79009' },
+  { name: 'Paid to publishers', value: 68, color: '#ACBCFF' },
+  { name: 'Platform revenue', value: 24, color: '#6EE0A9' },
+  { name: 'Fees and refunds', value: 8, color: '#6B6B75' },
 ]
 
 function makeSeries(base: number, n: number, seed: number, drift = 0.18) {
@@ -83,7 +83,7 @@ function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }
   )
 }
 
-const CARD = 'rounded-lg border border-slate-200 bg-white p-4'
+const CARD = 'rounded-lg border border-border bg-white p-4'
 
 function Trend({ value }: { value: number }) {
   const up = value >= 0
@@ -96,10 +96,10 @@ function Trend({ value }: { value: number }) {
 }
 function Tabs<T extends string | number>({ items, value, onChange, label }: { items: T[]; value: T; onChange: (v: T) => void; label: string }) {
   return (
-    <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-slate-100 p-0.5">
+    <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-muted p-0.5">
       {items.map((it) => (
         <button key={String(it)} type="button" role="tab" aria-selected={value === it} onClick={() => onChange(it)}
-          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-white text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}>
+          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>
           {typeof it === 'number' ? `${it} days` : it}
         </button>
       ))}
@@ -133,21 +133,21 @@ function LineChart({ cur, prev, labels }: { cur: number[]; prev: number[]; label
         const gy = T + (1 - t) * (H - T - B)
         return (
           <g key={t}>
-            <line x1={L} x2={W - Rt} y1={gy} y2={gy} stroke="#E4E7EC" strokeDasharray="3 4" />
-            <text x={L - 8} y={gy + 4} textAnchor="end" fontSize="11" fill="#667085">{`${R}${compact(max * t)}`}</text>
+            <line x1={L} x2={W - Rt} y1={gy} y2={gy} stroke="#D9D9E2" strokeDasharray="3 4" />
+            <text x={L - 8} y={gy + 4} textAnchor="end" fontSize="11" fill="#6B6B75">{`${R}${compact(max * t)}`}</text>
           </g>
         )
       })}
-      <path d={`${smooth(pc)} L${x(n - 1)},${H - B} L${x(0)},${H - B} Z`} fill="#4F5BD5" fillOpacity={on ? 0.06 : 0} style={{ transition: 'fill-opacity 900ms ease-out 400ms' }} />
-      <path d={smooth(pp)} fill="none" stroke="#98A2B3" strokeWidth="1.5" strokeDasharray="4 4" strokeLinecap="round" />
-      <path d={smooth(pc)} pathLength={1} fill="none" stroke="#4F5BD5" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={1} strokeDashoffset={on ? 0 : 1} style={{ transition: 'stroke-dashoffset 1100ms ease-out' }} />
-      {labels.map((l, i) => (i % step === 0 ? <text key={l + i} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="#667085">{l}</text> : null))}
-      <line x1={x(idx)} x2={x(idx)} y1={T} y2={H - B} stroke="#98A2B3" strokeOpacity="0.5" />
-      <circle cx={x(idx)} cy={y(cur[idx])} r="4.5" fill="white" stroke="#4F5BD5" strokeWidth="2.5" />
-      <rect x={bx} y={T - 2} width="160" height="54" rx="6" fill="#111827" />
-      <text x={bx + 12} y={T + 14} fontSize="10" fill="#98A2B3">{labels[idx]}</text>
+      <path d={`${smooth(pc)} L${x(n - 1)},${H - B} L${x(0)},${H - B} Z`} fill="#ACBCFF" fillOpacity={on ? 0.06 : 0} style={{ transition: 'fill-opacity 900ms ease-out 400ms' }} />
+      <path d={smooth(pp)} fill="none" stroke="#6B6B75" strokeWidth="1.5" strokeDasharray="4 4" strokeLinecap="round" />
+      <path d={smooth(pc)} pathLength={1} fill="none" stroke="#ACBCFF" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={1} strokeDashoffset={on ? 0 : 1} style={{ transition: 'stroke-dashoffset 1100ms ease-out' }} />
+      {labels.map((l, i) => (i % step === 0 ? <text key={l + i} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="#6B6B75">{l}</text> : null))}
+      <line x1={x(idx)} x2={x(idx)} y1={T} y2={H - B} stroke="#6B6B75" strokeOpacity="0.5" />
+      <circle cx={x(idx)} cy={y(cur[idx])} r="4.5" fill="white" stroke="#ACBCFF" strokeWidth="2.5" />
+      <rect x={bx} y={T - 2} width="160" height="54" rx="6" fill="#101012" />
+      <text x={bx + 12} y={T + 14} fontSize="10" fill="#6B6B75">{labels[idx]}</text>
       <text x={bx + 12} y={T + 30} fontSize="12" fill="white">This period {inr(cur[idx])}</text>
-      <text x={bx + 12} y={T + 46} fontSize="12" fill="#98A2B3">Previous {inr(prev[idx])}</text>
+      <text x={bx + 12} y={T + 46} fontSize="12" fill="#6B6B75">Previous {inr(prev[idx])}</text>
     </svg>
   )
 }
@@ -159,10 +159,10 @@ function SplitBars() {
       {SPLIT.map((r, i) => (
         <li key={r.name}>
           <div className="flex items-baseline justify-between text-sm">
-            <span className="text-slate-700">{r.name}</span>
-            <span className="tabular-nums text-slate-900">{r.value}%</span>
+            <span className="text-foreground">{r.name}</span>
+            <span className="tabular-nums text-foreground">{r.value}%</span>
           </div>
-          <div className="mt-1.5 h-2 w-full rounded-full bg-slate-100">
+          <div className="mt-1.5 h-2 w-full rounded-full bg-muted">
             <div className="h-2 rounded-full" style={{ width: on ? `${r.value}%` : '0%', background: r.color, transition: `width 800ms ease-out ${i * 80}ms` }} />
           </div>
         </li>
@@ -199,8 +199,8 @@ export default function AdminDashboardPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs text-slate-500">Admin / Dashboard</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Dashboard</h1>
+          <p className="text-xs text-muted-foreground">Admin / Dashboard</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
         </div>
         <Tabs label="Date range" items={[7, 30] as (7 | 30)[]} value={range} onChange={setRange} />
       </div>
@@ -209,9 +209,9 @@ export default function AdminDashboardPage() {
         {kpis.map((k, i) => (
           <Reveal key={k.label} delay={i * 80}>
             <div className={CARD}>
-              <p className="text-sm text-slate-500">{k.label}</p>
+              <p className="text-sm text-muted-foreground">{k.label}</p>
               <div className="mt-1.5 flex items-center justify-between gap-2">
-                <p className="truncate text-2xl font-semibold tabular-nums text-slate-900"><Count value={k.value} format={k.format} /></p>
+                <p className="truncate text-2xl font-semibold tabular-nums text-foreground"><Count value={k.value} format={k.format} /></p>
                 {k.delta !== null && <Trend value={k.delta} />}
               </div>
             </div>
@@ -224,13 +224,13 @@ export default function AdminDashboardPage() {
           <Reveal delay={300}>
             <section className={CARD} aria-label="Platform revenue">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-base font-semibold text-slate-900">Platform revenue</h2>
-                <div className="flex items-center gap-4 text-xs text-slate-600">
-                  <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#4F5BD5]" aria-hidden="true" />This period</span>
-                  <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-slate-400" aria-hidden="true" />Previous</span>
+                <h2 className="text-base font-semibold text-foreground">Platform revenue</h2>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#ACBCFF]" aria-hidden="true" />This period</span>
+                  <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-border" aria-hidden="true" />Previous</span>
                 </div>
               </div>
-              <p className="mt-3 text-xl font-semibold tabular-nums text-slate-900">{inr(total)} <span className="text-xs font-normal text-slate-500">in the last {range} days</span></p>
+              <p className="mt-3 text-xl font-semibold tabular-nums text-foreground">{inr(total)} <span className="text-xs font-normal text-muted-foreground">in the last {range} days</span></p>
               <div className="mt-2"><LineChart key={range} cur={cur} prev={prev} labels={labels} /></div>
             </section>
           </Reveal>
@@ -238,7 +238,7 @@ export default function AdminDashboardPage() {
         <div className="col-span-12 xl:col-span-4">
           <Reveal delay={380}>
             <section className={CARD} aria-label="Where the money goes">
-              <h2 className="mb-4 text-base font-semibold text-slate-900">Where the money goes</h2>
+              <h2 className="mb-4 text-base font-semibold text-foreground">Where the money goes</h2>
               <SplitBars />
             </section>
           </Reveal>
@@ -246,18 +246,18 @@ export default function AdminDashboardPage() {
       </div>
 
       <Reveal delay={460}>
-        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white" aria-label="Review queue">
+        <section className="overflow-hidden rounded-lg border border-border bg-white" aria-label="Review queue">
           <div className="flex items-center justify-between gap-3 px-4 py-3">
-            <h2 className="text-base font-semibold text-slate-900">Review queue</h2>
+            <h2 className="text-base font-semibold text-foreground">Review queue</h2>
             <div className="flex gap-2 text-sm">
-              <Link href="/admin/websites" className="rounded-md border border-slate-200 px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50">Websites</Link>
-              <Link href="/admin/campaigns" className="rounded-md border border-slate-200 px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50">Campaigns</Link>
+              <Link href="/admin/websites" className="rounded-md border border-border px-3 py-1.5 font-medium text-foreground hover:bg-muted">Websites</Link>
+              <Link href="/admin/campaigns" className="rounded-md border border-border px-3 py-1.5 font-medium text-foreground hover:bg-muted">Campaigns</Link>
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[620px] text-left text-sm">
               <thead>
-                <tr className="border-y border-slate-100 text-xs text-slate-500">
+                <tr className="border-y border-border text-xs text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Item</th>
                   <th className="px-3 py-3 font-medium">Owner</th>
                   <th className="px-3 py-3 font-medium">Submitted</th>
@@ -266,18 +266,18 @@ export default function AdminDashboardPage() {
               </thead>
               <tbody>
                 {queue.map((q) => (
-                  <tr key={q.id} className="border-b border-slate-100 last:border-0">
-                    <td className="px-4 py-3"><p className="font-medium text-slate-900">{q.name}</p><p className="text-xs text-slate-500">{q.kind}</p></td>
-                    <td className="px-3 py-3 text-slate-700">{q.owner}</td>
-                    <td className="px-3 py-3 text-slate-700">{q.submitted}</td>
+                  <tr key={q.id} className="border-b border-border last:border-0">
+                    <td className="px-4 py-3"><p className="font-medium text-foreground">{q.name}</p><p className="text-xs text-muted-foreground">{q.kind}</p></td>
+                    <td className="px-3 py-3 text-foreground">{q.owner}</td>
+                    <td className="px-3 py-3 text-foreground">{q.submitted}</td>
                     <td className="px-4 py-3">
                       {q.state === 'Pending' ? (
                         <div className="flex justify-end gap-2">
-                          <button type="button" onClick={() => decide(q.id, 'Approved')} className="inline-flex items-center gap-1 rounded-md bg-brand-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-700"><Check className="h-3.5 w-3.5" aria-hidden="true" />Approve</button>
-                          <button type="button" onClick={() => decide(q.id, 'Rejected')} className="inline-flex items-center gap-1 rounded-md border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"><X className="h-3.5 w-3.5" aria-hidden="true" />Reject</button>
+                          <button type="button" onClick={() => decide(q.id, 'Approved')} className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary/90"><Check className="h-3.5 w-3.5" aria-hidden="true" />Approve</button>
+                          <button type="button" onClick={() => decide(q.id, 'Rejected')} className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"><X className="h-3.5 w-3.5" aria-hidden="true" />Reject</button>
                         </div>
                       ) : (
-                        <p className="text-right text-xs font-medium text-slate-600"><span className={`mr-2 inline-block h-2 w-2 rounded-full ${q.state === 'Approved' ? 'bg-green-500' : 'bg-red-500'}`} aria-hidden="true" />{q.state}</p>
+                        <p className="text-right text-xs font-medium text-muted-foreground"><span className={`mr-2 inline-block h-2 w-2 rounded-full ${q.state === 'Approved' ? 'bg-green-500' : 'bg-red-500'}`} aria-hidden="true" />{q.state}</p>
                       )}
                     </td>
                   </tr>
@@ -290,18 +290,18 @@ export default function AdminDashboardPage() {
 
       <Reveal delay={540}>
         <section className={CARD} aria-label="Recent activity">
-          <h2 className="text-base font-semibold text-slate-900">Recent activity</h2>
+          <h2 className="text-base font-semibold text-foreground">Recent activity</h2>
           {mockAdminActivity.length ? (
-            <ul className="mt-2 divide-y divide-slate-100">
+            <ul className="mt-2 divide-y divide-border">
               {mockAdminActivity.map((a) => (
                 <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                  <span className="text-sm text-slate-900">{a.description}</span>
-                  <span className="text-xs text-slate-500">{a.date}</span>
+                  <span className="text-sm text-foreground">{a.description}</span>
+                  <span className="text-xs text-muted-foreground">{a.date}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-slate-500">No recent activity.</p>
+            <p className="mt-3 text-sm text-muted-foreground">No recent activity.</p>
           )}
         </section>
       </Reveal>

@@ -83,14 +83,14 @@ export function PostAdWizard() {
   const isLast = step === stepLabels.length - 1
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 sm:p-6">
+    <div className="rounded-lg border border-border bg-secondary p-3 sm:p-6">
       <Card className="mx-auto max-w-5xl p-5 sm:p-8">
         {finished ? (
              <SuccessScreen data={data} onRestart={restart} />
         ) : (
           <>
-            <p className="text-xs text-slate-500">
-              Home <span aria-hidden>›</span> <span className="text-brand-600">Post Ad</span>
+            <p className="text-xs text-muted-foreground">
+              Home <span aria-hidden>›</span> <span className="text-foreground">Post Ad</span>
             </p>
             <h1 className="mt-1 text-2xl font-bold">Post Ad</h1>
 
@@ -98,7 +98,7 @@ export function PostAdWizard() {
               <Stepper steps={stepLabels} current={step} />
             </div>
 
-            <div className="mt-8 rounded-lg border border-slate-200 p-4 sm:p-6">
+            <div className="mt-8 rounded-lg border border-border p-4 sm:p-6">
               {step === 0 && <Step1Category {...stepProps} />}
               {step === 1 && <Step2Details {...stepProps} />}
               {step === 2 && <Step3Preview {...stepProps} />}

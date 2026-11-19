@@ -42,7 +42,7 @@ export function ReportLineChart({ rows, metric, title }: { rows: ReportRow[]; me
             strokeWidth="3"
             strokeLinejoin="round"
             strokeLinecap="round"
-            className="text-brand-600"
+            className="text-foreground"
           />
         )}
         {points.map(({ x, y, row }) => (

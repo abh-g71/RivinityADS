@@ -420,7 +420,7 @@ export default function CampaignsPage() {
             {item.entity === 'campaign' ? (
               <Link
                 href={`/campaigns/${item.id}`}
-                className="rounded-sm font-semibold text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="rounded-sm font-semibold text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {item.name}
               </Link>
@@ -428,15 +428,15 @@ export default function CampaignsPage() {
               <button
                 type="button"
                 onClick={() => drillInto(item)}
-                className="rounded-sm text-left font-semibold text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="rounded-sm text-left font-semibold text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={`View ads for ${item.name}`}
               >
                 {item.name}
               </button>
             ) : (
-              <span className="font-medium text-navy-900">{item.name}</span>
+              <span className="font-medium text-foreground">{item.name}</span>
             )}
-            <p className="mt-0.5 font-mono text-xs text-slate-500">{item.id}</p>
+            <p className="mt-0.5 font-mono text-xs text-muted-foreground">{item.id}</p>
           </div>
         )
       case 'id': return <span className="font-mono text-xs">{item.id}</span>
@@ -446,7 +446,7 @@ export default function CampaignsPage() {
         return <Badge tone={statusTone(status)}>{status}</Badge>
       }
       case 'delivery':
-        return <span className={delivery === 'Active' ? 'font-medium text-success-600' : 'text-slate-600'}>{delivery}</span>
+        return <span className={delivery === 'Active' ? 'font-medium text-success-600' : 'text-muted-foreground'}>{delivery}</span>
       case 'budget': return item.budget
       case 'impressions': return item.impressions.toLocaleString('en-IN')
       case 'clicks': return item.clicks.toLocaleString('en-IN')
@@ -520,13 +520,13 @@ export default function CampaignsPage() {
       <Card className="mt-4 space-y-4 p-4">
         <div className="flex flex-wrap items-end gap-3">
           <label className="relative min-w-[min(100%,16rem)] flex-1">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">Search</span>
-            <Search className="absolute left-3 top-10 h-4 w-4 text-slate-400" aria-hidden="true" />
+            <span className="mb-1.5 block text-sm font-medium text-foreground">Search</span>
+            <Search className="absolute left-3 top-10 h-4 w-4 text-muted-foreground" aria-hidden="true" />
             <input
               value={search}
               onChange={(event) => { setSearch(event.target.value); setPage(1) }}
               placeholder="Search by name or ID"
-              className="h-11 w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 text-sm text-navy-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="h-11 w-full rounded-lg border border-border bg-white pl-9 pr-3 text-sm text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </label>
           <div className="w-full sm:w-48">
@@ -543,7 +543,7 @@ export default function CampaignsPage() {
             />
           </div>
           <DropdownMenu>
-            <DropdownMenuTrigger className="inline-flex h-11 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+            <DropdownMenuTrigger className="inline-flex h-11 items-center gap-2 rounded-lg border border-border bg-white px-3 text-sm font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               Columns
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="max-h-80">
@@ -567,8 +567,8 @@ export default function CampaignsPage() {
         </div>
 
         {selectedIds.length > 0 && (
-          <div className="flex flex-wrap items-end gap-3 border-t border-slate-200 pt-4">
-            <p className="pb-3 text-sm font-medium text-slate-700">{selectedIds.length} selected</p>
+          <div className="flex flex-wrap items-end gap-3 border-t border-border pt-4">
+            <p className="pb-3 text-sm font-medium text-foreground">{selectedIds.length} selected</p>
             <div className="w-full sm:w-44">
               <Select
                 label="Bulk action"
@@ -589,7 +589,7 @@ export default function CampaignsPage() {
         )}
 
         {moreFiltersOpen && (
-          <div className="grid gap-3 border-t border-slate-200 pt-4 sm:grid-cols-2">
+          <div className="grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
             <Select
               label="Country"
               value={country}
@@ -627,10 +627,10 @@ export default function CampaignsPage() {
       )}
 
       <Tabs value={tab} onValueChange={changeTab} className="mt-4">
-        <TabsList aria-label="Campaign hierarchy" className="w-full justify-start overflow-x-auto rounded-none border-b border-slate-200 bg-transparent p-0">
-          <TabsTrigger value="campaigns" className="rounded-t-md px-4 py-3 data-[state=active]:text-brand-700">Campaigns</TabsTrigger>
-          <TabsTrigger value="ad-sets" className="rounded-t-md px-4 py-3 data-[state=active]:text-brand-700">Ad Sets</TabsTrigger>
-          <TabsTrigger value="ads" className="rounded-t-md px-4 py-3 data-[state=active]:text-brand-700">Ads</TabsTrigger>
+        <TabsList aria-label="Campaign hierarchy" className="w-full justify-start overflow-x-auto rounded-none border-b border-border bg-transparent p-0">
+          <TabsTrigger value="campaigns" className="rounded-t-md px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-white">Campaigns</TabsTrigger>
+          <TabsTrigger value="ad-sets" className="rounded-t-md px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-white">Ad Sets</TabsTrigger>
+          <TabsTrigger value="ads" className="rounded-t-md px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-white">Ads</TabsTrigger>
         </TabsList>
         {(['campaigns', 'ad-sets', 'ads'] as ManagerTab[]).map((currentTab) => (
           <TabsContent key={currentTab} value={currentTab} className="mt-4">
@@ -639,7 +639,7 @@ export default function CampaignsPage() {
                 <Card className="overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[760px] text-left text-sm" aria-label={`${currentTab} manager`}>
-                      <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <thead className="border-b border-border bg-secondary text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         <tr>
                           <th scope="col" className="w-10 px-3 py-3">
                             <input
@@ -647,7 +647,7 @@ export default function CampaignsPage() {
                               aria-label="Select all rows on this page"
                               checked={selectedOnPage}
                               onChange={(event) => handleSelectPage(event.target.checked)}
-                              className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                              className="h-4 w-4 rounded border-border text-foreground focus:ring-ring"
                             />
                           </th>
                           <th scope="col" className="whitespace-nowrap px-3 py-3">On / Off</th>
@@ -658,7 +658,7 @@ export default function CampaignsPage() {
                               aria-sort={sortKey === column.key ? (sortAscending ? 'ascending' : 'descending') : 'none'}
                               className="whitespace-nowrap px-3 py-3"
                             >
-                              <button type="button" onClick={() => handleSort(column.key)} className="inline-flex items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                              <button type="button" onClick={() => handleSort(column.key)} className="inline-flex items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                                 {column.label}
                                 <ArrowUpDown className="h-3.5 w-3.5" aria-hidden="true" />
                               </button>
@@ -667,11 +667,11 @@ export default function CampaignsPage() {
                           <th scope="col" className="w-12 px-3 py-3"><span className="sr-only">Row actions</span></th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 text-slate-700">
+                      <tbody className="divide-y divide-border text-foreground">
                         {pageRows.map((item) => {
                           const delivery = deliveryFor(item, itemsById)
                           return (
-                            <tr key={item.id} className="hover:bg-slate-50">
+                            <tr key={item.id} className="hover:bg-muted">
                               <td className="px-3 py-3">
                                 <input
                                   type="checkbox"
@@ -681,7 +681,7 @@ export default function CampaignsPage() {
                                     ? [...current, item.id]
                                     : current.filter((id) => id !== item.id),
                                   )}
-                                  className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                                  className="h-4 w-4 rounded border-border text-foreground focus:ring-ring"
                                 />
                               </td>
                               <td className="px-3 py-3">
@@ -701,7 +701,7 @@ export default function CampaignsPage() {
                               <td className="px-3 py-3">
                                 <DropdownMenu>
                                   <DropdownMenuTrigger
-                                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                     aria-label={`Actions for ${item.name}`}
                                   >
                                     <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
@@ -733,7 +733,7 @@ export default function CampaignsPage() {
                           )
                         })}
                       </tbody>
-                      <tfoot className="border-t border-slate-200 bg-slate-50 font-semibold text-navy-900">
+                      <tfoot className="border-t border-border bg-secondary font-semibold text-foreground">
                         <tr>
                           <td colSpan={2} className="px-3 py-3">Totals ({filteredRows.length})</td>
                           {activeColumns.map((column) => (
@@ -745,7 +745,7 @@ export default function CampaignsPage() {
                     </table>
                   </div>
                 </Card>
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
                   <p aria-live="polite">
                     Showing {filteredRows.length ? (page - 1) * pageSize + 1 : 0}–{Math.min(page * pageSize, filteredRows.length)} of {filteredRows.length} mock {currentTab}
                   </p>
@@ -773,14 +773,14 @@ export default function CampaignsPage() {
       </Tabs>
 
       <Sheet open={Boolean(editingItem)} onOpenChange={(open) => { if (!open) setEditingItem(null) }}>
-        <SheetContent side="right" className="w-full gap-0 border-l border-slate-200 bg-white p-0 sm:max-w-md">
-          <div className="border-b border-slate-200 p-6">
-            <SheetTitle className="text-lg text-navy-900">Edit {editingItem?.entity ?? 'item'}</SheetTitle>
+        <SheetContent side="right" className="w-full gap-0 border-l border-border bg-white p-0 sm:max-w-md">
+          <div className="border-b border-border p-6">
+            <SheetTitle className="text-lg text-foreground">Edit {editingItem?.entity ?? 'item'}</SheetTitle>
             <SheetDescription className="mt-2">Changes apply to this mock manager view only.</SheetDescription>
           </div>
           {editingItem && (
             <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-6">
-              <label className="flex flex-col gap-1.5 text-sm font-medium text-slate-700">
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-foreground">
                 Name
                 <input
                   value={editName}
@@ -788,7 +788,7 @@ export default function CampaignsPage() {
                   onBlur={() => setEditNameTouched(true)}
                   aria-invalid={editNameTouched && !editName.trim()}
                   aria-describedby={editNameTouched && !editName.trim() ? 'edit-name-error' : undefined}
-                  className="h-11 rounded-lg border border-slate-300 px-3 text-sm text-navy-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  className="h-11 rounded-lg border border-border px-3 text-sm text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
                 {editNameTouched && !editName.trim() && <span id="edit-name-error" role="alert" className="text-xs text-danger-600">Enter a name.</span>}
               </label>
@@ -804,7 +804,7 @@ export default function CampaignsPage() {
                 onChange={(event) => setEditAdUnit(event.target.value)}
                 options={advertiserAdUnits.map((value) => ({ value, label: value }))}
               />
-              <div className="mt-auto flex flex-wrap gap-2 border-t border-slate-200 pt-4">
+              <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-4">
                 <Button type="button" onClick={saveEdit}>Save changes</Button>
                 <Button type="button" variant="outline" onClick={() => setEditingItem(null)}>Cancel</Button>
               </div>

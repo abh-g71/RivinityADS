@@ -22,16 +22,16 @@ export function CodeBox({ title, code, note }: CodeBoxProps) {
   }
 
   return (
-    <section aria-label={title} className="rounded-lg border border-slate-200 bg-white p-5">
+    <section aria-label={title} className="rounded-lg border border-border bg-white p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-semibold text-navy-900">{title}</h2>
+        <h2 className="font-semibold text-foreground">{title}</h2>
         <Button type="button" variant="outline" onClick={copyCode}>Copy</Button>
       </div>
-      {note && <p className="mt-2 text-sm text-slate-600">{note}</p>}
-      <pre className="mt-4 overflow-x-auto rounded-lg bg-navy-950 p-4 text-xs text-slate-100">
+      {note && <p className="mt-2 text-sm text-muted-foreground">{note}</p>}
+      <pre className="mt-4 overflow-x-auto rounded-lg bg-dark-card p-4 text-xs text-white">
         <code>{code}</code>
       </pre>
-      {copyStatus && <p className="mt-2 text-sm text-slate-600" role="status">{copyStatus}</p>}
+      {copyStatus && <p className="mt-2 text-sm text-muted-foreground" role="status">{copyStatus}</p>}
     </section>
   )
 }

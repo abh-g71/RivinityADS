@@ -37,7 +37,7 @@ function TrafficBarChart({ rows }: { rows: TrafficSample[] }) {
             <g key={row.id}>
               <title>{`${row.country}: ${row.dailyImpressions} mock daily impressions`}</title>
               <rect x={x} y={y} width={barWidth} height={height} rx="8" className="fill-brand-600" />
-              <text x={x + barWidth / 2} y={y - 7} textAnchor="middle" className="fill-navy-900 text-xs">{row.dailyImpressions}</text>
+              <text x={x + barWidth / 2} y={y - 7} textAnchor="middle" className="fill-foreground text-xs">{row.dailyImpressions}</text>
               <text x={x + barWidth / 2} y="196" textAnchor="middle" className="fill-slate-600 text-xs">{row.country}</text>
             </g>
           )
@@ -66,7 +66,7 @@ export default function TrafficChartPage() {
       render: (row) => (
         <Link
           href={`/campaigns/new?${new URLSearchParams({ country: row.country, adUnit }).toString()}`}
-          className="font-semibold text-brand-700 hover:underline"
+          className="font-semibold text-foreground hover:underline"
         >
           Create campaign
         </Link>
@@ -80,7 +80,7 @@ export default function TrafficChartPage() {
         breadcrumbs={[{ label: 'Advertiser' }, { label: 'Traffic Chart' }]}
         title="Traffic Chart"
         description="Mock sample view only. It does not represent live traffic or pricing."
-        action={<Link href="/campaigns/new" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create campaign</Link>}
+        action={<Link href="/campaigns/new" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Create campaign</Link>}
       />
 
       <Card className="mt-6 p-4 sm:p-5">
@@ -91,18 +91,18 @@ export default function TrafficChartPage() {
           <Select label="Country" value={country} onChange={(event) => setCountry(event.target.value)} options={[{ value: '', label: 'Any country' }, ...advertiserCountries.map((value) => ({ value, label: value }))]} />
           <Select label="OS" value={os} onChange={(event) => setOs(event.target.value)} options={[{ value: '', label: 'Any OS' }, ...['Android', 'iOS', 'Windows', 'macOS'].map((value) => ({ value, label: value }))]} />
         </div>
-        <p className="mt-3 text-xs text-slate-500">Country narrows this mock sample. Traffic type, device, and OS are illustrative only because those dimensions are not included in the mock data. No live inventory lookup is performed.</p>
+        <p className="mt-3 text-xs text-muted-foreground">Country narrows this mock sample. Traffic type, device, and OS are illustrative only because those dimensions are not included in the mock data. No live inventory lookup is performed.</p>
       </Card>
 
       <section aria-label="Mock traffic samples" className="mt-6">
         {visibleRows.length ? (
           <div className="space-y-5">
             <Card className="p-4 sm:p-5">
-              <h2 className="mb-3 text-lg font-semibold text-navy-900">Daily impressions by country</h2>
+              <h2 className="mb-3 text-lg font-semibold text-foreground">Daily impressions by country</h2>
               <TrafficBarChart rows={visibleRows} />
-              <p className="mt-2 text-xs text-slate-500">Illustrative mock figures only; not a forecast or live delivery estimate.</p>
+              <p className="mt-2 text-xs text-muted-foreground">Illustrative mock figures only; not a forecast or live delivery estimate.</p>
             </Card>
-            {illustrativeFilters && <p className="text-sm text-slate-600">Selected illustrative filter values are not applied to the mock rows.</p>}
+            {illustrativeFilters && <p className="text-sm text-muted-foreground">Selected illustrative filter values are not applied to the mock rows.</p>}
             <DataTable label="Mock traffic chart" columns={columns} rows={visibleRows} />
           </div>
         ) : (

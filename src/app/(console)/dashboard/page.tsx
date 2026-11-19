@@ -21,7 +21,7 @@ const DELTAS: Record<7 | 30, Record<string, number>> = {
   30: { Spend: 14.6, Impressions: 18.9, Clicks: 11.2, Results: 10.3 },
 }
 type Metric = 'Impressions' | 'Clicks' | 'Spend'
-const DOT: Record<CampaignStatus, string> = { Active: 'bg-green-500', Paused: 'bg-amber-500', Pending: 'bg-brand-600', Draft: 'bg-slate-400' }
+const DOT: Record<CampaignStatus, string> = { Active: 'bg-green-500', Paused: 'bg-muted-foreground', Pending: 'bg-amber-500', Draft: 'bg-muted-foreground' }
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`
 const num = (n: number) => Math.round(n).toLocaleString('en-IN')
@@ -88,7 +88,7 @@ function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }
 }
 
 /* ---------- Small parts ---------- */
-const CARD = 'rounded-lg border border-slate-200 bg-white p-4'
+const CARD = 'rounded-lg border border-border bg-card p-4'
 
 function Trend({ value }: { value: number }) {
   const up = value >= 0
@@ -101,10 +101,10 @@ function Trend({ value }: { value: number }) {
 }
 function Tabs<T extends string | number>({ items, value, onChange, label }: { items: T[]; value: T; onChange: (v: T) => void; label: string }) {
   return (
-    <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-slate-100 p-0.5">
+    <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-muted p-0.5">
       {items.map((it) => (
         <button key={String(it)} type="button" role="tab" aria-selected={value === it} onClick={() => onChange(it)}
-          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-white text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}>
+          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
           {typeof it === 'number' ? `${it} days` : it}
         </button>
       ))}
@@ -114,8 +114,8 @@ function Tabs<T extends string | number>({ items, value, onChange, label }: { it
 function Bar({ value, max }: { value: number; max: number }) {
   const on = useMounted()
   return (
-    <div className="h-1.5 w-full rounded-full bg-slate-100">
-      <div className="h-1.5 rounded-full bg-brand-600" style={{ width: on ? `${Math.min(100, max ? (value / max) * 100 : 0)}%` : '0%', transition: 'width 800ms ease-out' }} />
+    <div className="h-1.5 w-full rounded-full bg-muted">
+      <div className="h-1.5 rounded-full bg-progress" style={{ width: on ? `${Math.min(100, max ? (value / max) * 100 : 0)}%` : '0%', transition: 'width 800ms ease-out' }} />
     </div>
   )
 }
@@ -150,21 +150,21 @@ function LineChart({ cur, prev, labels, money }: { cur: number[]; prev: number[]
         const gy = T + (1 - t) * (H - T - B)
         return (
           <g key={t}>
-            <line x1={L} x2={W - R} y1={gy} y2={gy} stroke="#E4E7EC" strokeDasharray="3 4" />
-            <text x={L - 8} y={gy + 4} textAnchor="end" fontSize="11" fill="#667085">{money ? `₹${compact(max * t)}` : compact(max * t)}</text>
+            <line x1={L} x2={W - R} y1={gy} y2={gy} stroke="var(--border)" strokeDasharray="3 4" />
+            <text x={L - 8} y={gy + 4} textAnchor="end" fontSize="11" fill="var(--muted-foreground)">{money ? `₹${compact(max * t)}` : compact(max * t)}</text>
           </g>
         )
       })}
-      <path d={`${smooth(pc)} L${x(n - 1)},${H - B} L${x(0)},${H - B} Z`} fill="#4F5BD5" fillOpacity={on ? 0.06 : 0} style={{ transition: 'fill-opacity 900ms ease-out 400ms' }} />
-      <path d={smooth(pp)} fill="none" stroke="#98A2B3" strokeWidth="1.5" strokeDasharray="4 4" strokeLinecap="round" />
-      <path d={smooth(pc)} pathLength={1} fill="none" stroke="#4F5BD5" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={1} strokeDashoffset={on ? 0 : 1} style={{ transition: 'stroke-dashoffset 1100ms ease-out' }} />
-      {labels.map((l, i) => (i % step === 0 ? <text key={l + i} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="#667085">{l}</text> : null))}
-      <line x1={x(idx)} x2={x(idx)} y1={T} y2={H - B} stroke="#98A2B3" strokeOpacity="0.5" />
-      <circle cx={x(idx)} cy={y(cur[idx])} r="4.5" fill="white" stroke="#4F5BD5" strokeWidth="2.5" />
-      <rect x={bx} y={T - 2} width="160" height="54" rx="6" fill="#111827" />
-      <text x={bx + 12} y={T + 14} fontSize="10" fill="#98A2B3">{labels[idx]}</text>
+      <path d={`${smooth(pc)} L${x(n - 1)},${H - B} L${x(0)},${H - B} Z`} fill="var(--chart-1)" fillOpacity={on ? 0.06 : 0} style={{ transition: 'fill-opacity 900ms ease-out 400ms' }} />
+      <path d={smooth(pp)} fill="none" stroke="var(--muted-foreground)" strokeWidth="1.5" strokeDasharray="4 4" strokeLinecap="round" />
+      <path d={smooth(pc)} pathLength={1} fill="none" stroke="var(--chart-1)" strokeWidth="2.5" strokeLinecap="round" strokeDasharray={1} strokeDashoffset={on ? 0 : 1} style={{ transition: 'stroke-dashoffset 1100ms ease-out' }} />
+      {labels.map((l, i) => (i % step === 0 ? <text key={l + i} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">{l}</text> : null))}
+      <line x1={x(idx)} x2={x(idx)} y1={T} y2={H - B} stroke="var(--muted-foreground)" strokeOpacity="0.5" />
+      <circle cx={x(idx)} cy={y(cur[idx])} r="4.5" fill="white" stroke="var(--chart-1)" strokeWidth="2.5" />
+      <rect x={bx} y={T - 2} width="160" height="54" rx="6" fill="var(--dark-card)" />
+      <text x={bx + 12} y={T + 14} fontSize="10" fill="var(--muted-foreground)">{labels[idx]}</text>
       <text x={bx + 12} y={T + 30} fontSize="12" fill="white">This period {fmt(cur[idx])}</text>
-      <text x={bx + 12} y={T + 46} fontSize="12" fill="#98A2B3">Previous {fmt(prev[idx])}</text>
+      <text x={bx + 12} y={T + 46} fontSize="12" fill="var(--muted-foreground)">Previous {fmt(prev[idx])}</text>
     </svg>
   )
 }
@@ -211,8 +211,8 @@ export default function AdvertiserHome() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs text-slate-500">Advertiser / Home</p>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Home</h1>
+          <p className="text-xs text-muted-foreground">Advertiser / Home</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Home</h1>
         </div>
         <Tabs label="Date range" items={[7, 30] as (7 | 30)[]} value={range} onChange={setRange} />
       </div>
@@ -221,9 +221,9 @@ export default function AdvertiserHome() {
         {kpis.map((k, i) => (
           <Reveal key={k.label} delay={i * 80}>
             <div className={CARD}>
-              <p className="text-sm text-slate-500">{k.label}</p>
+              <p className="text-sm text-muted-foreground">{k.label}</p>
               <div className="mt-1.5 flex items-center justify-between gap-2">
-                <p className="truncate text-2xl font-semibold tabular-nums text-slate-900"><Count value={k.value} format={k.format} /></p>
+                <p className="truncate text-2xl font-semibold tabular-nums text-foreground"><Count value={k.value} format={k.format} /></p>
                 <Trend value={DELTAS[range][k.label]} />
               </div>
             </div>
@@ -237,12 +237,12 @@ export default function AdvertiserHome() {
             <section className={CARD} aria-label={metric}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Tabs label="Metric" items={['Impressions', 'Clicks', 'Spend'] as Metric[]} value={metric} onChange={setMetric} />
-                <div className="flex items-center gap-4 text-xs text-slate-600">
-                  <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#4F5BD5]" aria-hidden="true" />This period</span>
-                  <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-slate-400" aria-hidden="true" />Previous</span>
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-chart-1" aria-hidden="true" />This period</span>
+                  <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-border" aria-hidden="true" />Previous</span>
                 </div>
               </div>
-              <p className="mt-3 text-xl font-semibold tabular-nums text-slate-900">{money ? inr(total) : num(total)} <span className="text-xs font-normal text-slate-500">in the last {range} days</span></p>
+              <p className="mt-3 text-xl font-semibold tabular-nums text-foreground">{money ? inr(total) : num(total)} <span className="text-xs font-normal text-muted-foreground">in the last {range} days</span></p>
               <div className="mt-2">
                 <LineChart key={`${metric}-${range}`} cur={cur} prev={prev} labels={labels} money={money} />
               </div>
@@ -254,28 +254,28 @@ export default function AdvertiserHome() {
           <Reveal delay={380}>
             <section className={CARD} aria-label="Budget">
               <div className="flex items-baseline justify-between">
-                <h2 className="text-base font-semibold text-slate-900">Total budget</h2>
-                <p className="text-sm tabular-nums text-slate-700">{inr(spendAll)} / {inr(budgetAll)}</p>
+                <h2 className="text-base font-semibold text-foreground">Total budget</h2>
+                <p className="text-sm tabular-nums text-foreground">{inr(spendAll)} / {inr(budgetAll)}</p>
               </div>
               <div className="mt-3"><Bar value={spendAll} max={budgetAll} /></div>
-              <p className="mt-2 text-xs text-slate-500">{usedPct}% used across all campaigns</p>
+              <p className="mt-2 text-xs text-muted-foreground">{usedPct}% used across all campaigns</p>
             </section>
           </Reveal>
           <Reveal delay={460}>
             <section className={CARD} aria-label="Tasks to complete">
-              <h2 className="text-base font-semibold text-slate-900">Tasks to complete</h2>
+              <h2 className="text-base font-semibold text-foreground">Tasks to complete</h2>
               {tasks.length === 0 ? (
-                <p className="mt-3 text-sm text-slate-500">Nothing needs your attention.</p>
+                <p className="mt-3 text-sm text-muted-foreground">Nothing needs your attention.</p>
               ) : (
-                <ul className="mt-2 divide-y divide-slate-100">
+                <ul className="mt-2 divide-y divide-border">
                   {tasks.map((t) => (
                     <li key={t.title} className="flex items-center gap-3 py-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600"><t.icon className="h-4 w-4" aria-hidden="true" /></span>
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground"><t.icon className="h-4 w-4" aria-hidden="true" /></span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-slate-900">{t.title}</p>
-                        <p className="text-xs text-slate-500">{t.meta}</p>
+                        <p className="truncate text-sm font-medium text-foreground">{t.title}</p>
+                        <p className="text-xs text-muted-foreground">{t.meta}</p>
                       </div>
-                      <Link href={t.href} className="shrink-0 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">{t.cta}</Link>
+                      <Link href={t.href} className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted">{t.cta}</Link>
                     </li>
                   ))}
                 </ul>
@@ -286,15 +286,15 @@ export default function AdvertiserHome() {
       </div>
 
       <Reveal delay={540}>
-        <section className="overflow-hidden rounded-lg border border-slate-200 bg-white" aria-label="Campaigns">
+        <section className="overflow-hidden rounded-lg border border-border bg-white" aria-label="Campaigns">
           <div className="flex items-center justify-between gap-3 px-4 py-3">
-            <h2 className="text-base font-semibold text-slate-900">Campaigns</h2>
-            <Link href="/campaigns" className="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">See all</Link>
+            <h2 className="text-base font-semibold text-foreground">Campaigns</h2>
+            <Link href="/campaigns" className="rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted">See all</Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead>
-                <tr className="border-y border-slate-100 text-xs text-slate-500">
+                <tr className="border-y border-border text-xs text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Campaign</th>
                   <th className="px-3 py-3 font-medium">Status</th>
                   <th className="px-3 py-3 font-medium">Delivery</th>
@@ -308,21 +308,21 @@ export default function AdvertiserHome() {
                   const canToggle = c.status === 'Active' || c.status === 'Paused'
                   const ctr = c.impressions ? `${((c.clicks / c.impressions) * 100).toFixed(2)}%` : '—'
                   return (
-                    <tr key={c.id} className="border-b border-slate-100 last:border-0">
+                    <tr key={c.id} className="border-b border-border last:border-0">
                       <td className="px-4 py-3">
-                        <Link href={`/campaigns/${c.id}`} className="font-medium text-slate-900 hover:underline">{c.name}</Link>
-                        <p className="text-xs text-slate-500">{c.objective}</p>
+                        <Link href={`/campaigns/${c.id}`} className="font-medium text-foreground hover:underline">{c.name}</Link>
+                        <p className="text-xs text-muted-foreground">{c.objective}</p>
                       </td>
-                      <td className="px-3 py-3"><span className="inline-flex items-center gap-2 text-slate-700"><span className={`h-2 w-2 rounded-full ${DOT[c.status]}`} aria-hidden="true" />{c.status}</span></td>
+                      <td className="px-3 py-3"><span className="inline-flex items-center gap-2 text-foreground"><span className={`h-2 w-2 rounded-full ${DOT[c.status]}`} aria-hidden="true" />{c.status}</span></td>
                       <td className="px-3 py-3">
                         <button type="button" role="switch" aria-checked={c.status === 'Active'} aria-label={`Delivery for ${c.name}`} disabled={!canToggle}
                           title={canToggle ? undefined : `${c.status} campaigns cannot be switched on`} onClick={() => toggle(c.id)}
-                          className={`relative h-5 w-9 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${c.status === 'Active' ? 'bg-brand-600' : 'bg-slate-300'}`}>
+                          className={`relative h-5 w-9 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${c.status === 'Active' ? 'bg-primary' : 'bg-muted-foreground'}`}>
                           <span className={`absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${c.status === 'Active' ? 'translate-x-4' : ''}`} />
                         </button>
                       </td>
                       <td className="w-44 px-3 py-3">
-                        <p className="text-xs tabular-nums text-slate-700">{inr(c.spend)} <span className="text-slate-400">/ {inr(c.budget)}</span></p>
+                        <p className="text-xs tabular-nums text-foreground">{inr(c.spend)} <span className="text-muted-foreground">/ {inr(c.budget)}</span></p>
                         <div className="mt-1.5"><Bar value={c.spend} max={c.budget} /></div>
                       </td>
                       <td className="px-3 py-3 text-right tabular-nums">{c.results ? num(c.results) : '—'}</td>

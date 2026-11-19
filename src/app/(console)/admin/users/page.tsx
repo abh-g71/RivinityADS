@@ -39,7 +39,7 @@ export default function AdminUsersPage() {
   }
 
   const columns: DataTableColumn<AdminUser>[] = [
-    { key: 'name', header: 'User', render: (user) => <span className="font-medium text-navy-900">{user.name}</span> },
+    { key: 'name', header: 'User', render: (user) => <span className="font-medium text-foreground">{user.name}</span> },
     { key: 'email', header: 'Email', render: (user) => user.email },
     { key: 'role', header: 'Role', render: (user) => user.role },
     { key: 'status', header: 'Status', render: (user) => <Badge tone={user.status === 'Active' ? 'success' : 'warning'}>{user.status}</Badge> },
@@ -62,7 +62,7 @@ export default function AdminUsersPage() {
         breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Users' }]}
         title="Users"
         description="Search anonymized mock accounts and preview role and status controls."
-        action={<Link href="/admin/advertisers" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Advertisers</Link>}
+        action={<Link href="/admin/advertisers" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Advertisers</Link>}
       />
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <Input

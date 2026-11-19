@@ -38,12 +38,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <section
             key={entry.id}
             role={entry.variant === 'error' ? 'alert' : 'status'}
-            className="pointer-events-auto animate-toast-in rounded-lg border border-slate-200 bg-white p-4 text-navy-900 shadow-sm"
+            className="pointer-events-auto animate-toast-in rounded-lg border border-border bg-white p-4 text-foreground shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className={`text-sm font-semibold ${entry.variant === 'error' ? 'text-danger-600' : entry.variant === 'success' ? 'text-success-600' : 'text-navy-900'}`}>{entry.title}</h2>
-                {entry.description && <p className="mt-1 text-sm text-slate-600">{entry.description}</p>}
+                <h2 className={`text-sm font-semibold ${entry.variant === 'error' ? 'text-danger-600' : entry.variant === 'success' ? 'text-success-600' : 'text-foreground'}`}>{entry.title}</h2>
+                {entry.description && <p className="mt-1 text-sm text-muted-foreground">{entry.description}</p>}
                 {entry.action && (
                   <button
                     type="button"
@@ -51,13 +51,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                       entry.action?.onClick()
                       dismiss(entry.id)
                     }}
-                    className="mt-2 rounded-md text-sm font-semibold text-brand-700 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                    className="mt-2 rounded-md text-sm font-semibold text-foreground underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {entry.action.label}
                   </button>
                 )}
               </div>
-              <button type="button" onClick={() => dismiss(entry.id)} aria-label="Dismiss notification" className="rounded-lg p-1 text-slate-500 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+              <button type="button" onClick={() => dismiss(entry.id)} aria-label="Dismiss notification" className="rounded-lg p-1 text-muted-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>

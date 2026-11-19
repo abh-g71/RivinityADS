@@ -79,7 +79,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-20 flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 border-b border-slate-200 bg-white px-3 py-2 sm:px-6 md:h-16 md:flex-nowrap md:py-0">
+    <header className="sticky top-0 z-20 flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-white px-3 py-2 sm:px-6 md:h-16 md:flex-nowrap md:py-0">
       <Button
         variant="ghost"
         className="h-10 w-10 shrink-0 px-0"
@@ -88,13 +88,13 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
       >
         <Menu className="h-5 w-5" aria-hidden="true" />
       </Button>
-      <p className="min-w-0 flex-1 truncate text-sm font-semibold text-navy-900 md:hidden xl:block xl:flex-none">
+      <p className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground md:hidden xl:block xl:flex-none">
         {role === 'publisher' ? 'Publisher Console' : role === 'admin' ? 'Admin Console' : 'Advertiser Console'}
       </p>
 
       {/* Search: own row on phones, centred on wider screens */}
       <div ref={searchRef} className="relative order-last w-full md:order-none md:mx-auto md:w-auto md:max-w-xl md:flex-1">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
         <input
           type="search"
           value={query}
@@ -107,10 +107,10 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
           placeholder="Search pages, e.g. reports, add funds"
           aria-label="Search pages"
           autoComplete="off"
-          className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm text-navy-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          className="h-10 w-full rounded-lg border border-border bg-muted pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         {open && (
-          <div className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-lg border border-slate-200 bg-white p-1" role="listbox" aria-label="Search results">
+          <div className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-lg border border-border bg-white p-1" role="listbox" aria-label="Search results">
             {results.length ? results.map((p) => (
               <button
                 key={p.id}
@@ -118,12 +118,12 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
                 role="option"
                 aria-selected="false"
                 onClick={() => go(p.href)}
-                className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span>{p.label}</span>
-                <span className="text-xs text-slate-500">{p.section}</span>
+                <span className="text-xs text-muted-foreground">{p.section}</span>
               </button>
-            )) : <p className="px-3 py-3 text-sm text-slate-500">No pages match &ldquo;{query}&rdquo;.</p>}
+            )) : <p className="px-3 py-3 text-sm text-muted-foreground">No pages match &ldquo;{query}&rdquo;.</p>}
           </div>
         )}
       </div>
@@ -137,7 +137,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
             </ButtonLink>
             <Link
               href="/add-funds"
-              className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-slate-200 px-2 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 sm:px-3"
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-border px-2 py-2 text-sm font-semibold text-foreground hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
               aria-label={`Mock advertiser balance ${balance}. Add funds`}
             >
               <span className="hidden lg:inline">{balance}</span>
@@ -148,7 +148,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
 
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`Notifications, ${unreadCount} unread`}
           >
             <Bell className="h-5 w-5" aria-hidden="true" />
@@ -164,7 +164,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
               <DropdownMenuItem
                 disabled={!unreadCount}
                 onSelect={markAllAsRead}
-                className="text-xs text-brand-700"
+                className="text-xs text-foreground"
               >
                 Mark all as read
               </DropdownMenuItem>
@@ -178,12 +178,12 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
               >
                 <span
                   aria-label={notification.read ? 'Read' : 'Unread'}
-                  className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${notification.read ? 'bg-slate-300' : 'bg-brand-600'}`}
+                  className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${notification.read ? 'bg-muted-foreground' : 'bg-primary'}`}
                 />
                 <span className="min-w-0">
-                  <span className="block font-medium text-navy-900">{notification.title}</span>
-                  <span className="mt-1 block text-xs text-slate-600">{notification.description}</span>
-                  <span className="mt-1 block text-xs text-slate-500">{notification.time}</span>
+                  <span className="block font-medium text-foreground">{notification.title}</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">{notification.description}</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">{notification.time}</span>
                 </span>
               </DropdownMenuItem>
             ))}
@@ -192,7 +192,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
 
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-navy-900 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={`Open user menu for ${mockConsoleUser.name}`}
           >
             <CircleUserRound className="h-5 w-5 shrink-0" aria-hidden="true" />

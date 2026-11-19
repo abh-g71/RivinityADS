@@ -14,10 +14,10 @@ export function Checkbox({ label, id, className = '', ...props }: CheckboxProps)
       <input
         id={checkboxId}
         type="checkbox"
-        className={`mt-0.5 h-4 w-4 cursor-pointer rounded border-slate-300 accent-brand-600 ${className}`}
+        className={`mt-0.5 h-4 w-4 cursor-pointer rounded border-border accent-primary ${className}`}
         {...props}
       />
-      <span className="text-sm text-slate-700">{label}</span>
+      <span className="text-sm text-foreground">{label}</span>
     </label>
   )
 }

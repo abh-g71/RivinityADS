@@ -27,16 +27,16 @@ function Section({
 }) {
   return (
     <Accordion type="single" collapsible defaultValue={open ? title : undefined}>
-      <AccordionItem value={title} className="rounded-lg border border-slate-200 bg-white last:border-b">
+      <AccordionItem value={title} className="rounded-lg border border-border bg-white last:border-b">
       <AccordionTrigger className="px-4 py-3 text-sm font-medium hover:no-underline">
         <span className="flex items-center gap-3">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-foreground">
             <Icon className="h-4 w-4" aria-hidden />
           </span>
           {title}
         </span>
       </AccordionTrigger>
-      <AccordionContent className="border-t border-slate-100 p-4">{children}</AccordionContent>
+      <AccordionContent className="border-t border-border p-4">{children}</AccordionContent>
       </AccordionItem>
     </Accordion>
   )
@@ -67,7 +67,7 @@ export function Step2Details({ data, update }: StepProps) {
   return (
     <div>
       <h2 className="text-base font-semibold">Listing details</h2>
-      <p className="mt-1 text-sm text-slate-500">Create your ad by entering detailed information.</p>
+      <p className="mt-1 text-sm text-muted-foreground">Create your ad by entering detailed information.</p>
 
       <div className="mt-5 flex flex-col gap-3">
         <Section title="Contact information" icon={User}>
@@ -114,14 +114,14 @@ export function Step2Details({ data, update }: StepProps) {
         </Section>
 
         <Section title="Ad description" icon={AlignLeft}>
-          <label htmlFor="desc" className="text-sm font-medium text-slate-700">Description</label>
+          <label htmlFor="desc" className="text-sm font-medium text-foreground">Description</label>
           <textarea
             id="desc"
             rows={4}
             value={data.description}
             onChange={(e) => update({ description: e.target.value })}
             placeholder="Describe your ad"
-            className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white p-3 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="mt-1.5 w-full rounded-lg border border-border bg-white p-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </Section>
 

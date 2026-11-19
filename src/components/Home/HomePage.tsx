@@ -3,28 +3,16 @@
 import { useEffect, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Menu, Moon, Plus, Sun, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Menu, Plus, X } from 'lucide-react'
 
-/* THEME: change the landing page colors here and nowhere else. */
-const THEMES = {
-  dark: {
-    '--bg': '#0B1020',
-    '--surface': '#111831',
-    '--line': 'rgba(255,255,255,0.1)',
-    '--fg': '#F5F7FA',
-    '--muted': '#9AA4B2',
-    '--accent': '#8B98FF',
-    '--solid': '#4F63F0',
-  },
-  light: {
-    '--bg': '#FFFFFF',
-    '--surface': '#F6F7F9',
-    '--line': '#E4E7EC',
-    '--fg': '#101828',
-    '--muted': '#5B6676',
-    '--accent': '#3B4FE0',
-    '--solid': '#3B4FE0',
-  },
+const THEME = {
+  '--bg': '#E2E2EA',
+  '--surface': '#FFFFFF',
+  '--line': '#D9D9E2',
+  '--fg': '#282828',
+  '--muted': '#6B6B75',
+  '--accent': '#ACBCFF',
+  '--solid': '#282828',
 }
 
 const MUTED = 'text-[color:var(--muted)]'
@@ -194,8 +182,8 @@ function ProductPanel() {
   const rows = [
     { name: 'Diwali sale · Delhi', status: 'Active', dot: 'bg-green-500', spend: '₹6,200', ctr: '2.8%' },
     { name: 'Salon bookings · Pune', status: 'Active', dot: 'bg-green-500', spend: '₹4,150', ctr: '2.1%' },
-    { name: 'App launch · India', status: 'Paused', dot: 'bg-amber-500', spend: '₹5,900', ctr: '1.7%' },
-    { name: 'Event tickets · Mumbai', status: 'Draft', dot: 'bg-slate-400', spend: '₹0', ctr: '—' },
+    { name: 'App launch · India', status: 'Paused', dot: 'bg-muted-foreground', spend: '₹5,900', ctr: '1.7%' },
+    { name: 'Event tickets · Mumbai', status: 'Draft', dot: 'bg-muted-foreground', spend: '₹0', ctr: '—' },
   ]
   return (
     <div className={`overflow-hidden rounded-xl border ${BORDER} ${SURFACE}`}>
@@ -269,7 +257,7 @@ function ProductPanel() {
 }
 
 /* ---------- Nav ---------- */
-function Nav({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
+function Nav() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -294,14 +282,6 @@ function Nav({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
           </nav>
         </div>
         <div className="flex items-center gap-1 sm:gap-3">
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
-            className={`flex h-9 w-9 items-center justify-center rounded-lg ${MUTED} hover:text-[color:var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`}
-          >
-            {dark ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
-          </button>
           <Link href="/login" className="hidden px-2 text-sm font-medium sm:inline">Sign in</Link>
           <Link href="/signup" className={`hidden rounded-lg ${SOLID} px-4 py-2 text-sm font-semibold text-white hover:opacity-90 sm:inline-flex`}>Get started</Link>
           <button
@@ -328,34 +308,16 @@ function Nav({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
 
 /* ---------- Page ---------- */
 export function HomePage() {
-  const [dark, setDark] = useState(true)
   const [tab, setTab] = useState<'advertiser' | 'publisher'>('advertiser')
   const [page, setPage] = useState(0)
   const [openFaq, setOpenFaq] = useState<number | null>(0)
 
-  useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      try {
-        setDark(localStorage.getItem('landing-theme') !== 'light')
-      } catch {}
-    })
-    return () => cancelAnimationFrame(id)
-  }, [])
-
-  function toggleTheme() {
-    const next = !dark
-    setDark(next)
-    try {
-      localStorage.setItem('landing-theme', next ? 'dark' : 'light')
-    } catch {}
-  }
-
-  const vars = (dark ? THEMES.dark : THEMES.light) as unknown as CSSProperties
+  const vars = THEME as unknown as CSSProperties
   const visible = CARDS[tab].slice(page * 3, page * 3 + 3)
 
   return (
     <div style={vars} className="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)]">
-      <Nav dark={dark} onToggle={toggleTheme} />
+      <Nav />
 
       <main>
         {/* Hero */}

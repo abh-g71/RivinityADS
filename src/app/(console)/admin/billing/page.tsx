@@ -23,14 +23,14 @@ export default function AdminBillingPage() {
         breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Billing' }]}
         title="Billing"
         description="Review mock billing records only. No payments, invoices, or balance changes are processed."
-        action={<Link href="/admin/settings" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Billing settings</Link>}
+        action={<Link href="/admin/settings" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Billing settings</Link>}
       />
       <StaggerGrid aria-label="Billing summary" className="mt-6 grid gap-4 sm:grid-cols-2">
         <StatCard label="Mock billing records" value={String(mockAdminBillingRows.length)} detail="Count of local fixture rows" />
         <Card className="p-5">
-          <p className="text-sm font-medium text-slate-500">Payment processing</p>
-          <p className="mt-2 text-lg font-semibold text-navy-900">Not connected</p>
-          <p className="mt-1 text-xs text-slate-500">No real account balances or payment data are available.</p>
+          <p className="text-sm font-medium text-muted-foreground">Payment processing</p>
+          <p className="mt-2 text-lg font-semibold text-foreground">Not connected</p>
+          <p className="mt-1 text-xs text-muted-foreground">No real account balances or payment data are available.</p>
         </Card>
       </StaggerGrid>
       <section aria-label="Billing records" className="mt-6">

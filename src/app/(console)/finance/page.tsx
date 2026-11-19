@@ -20,17 +20,17 @@ export default function FinancePage() {
         breadcrumbs={[{ label: 'Advertiser' }, { label: 'Finance' }]}
         title="Finance"
         description="Mock account overview. No payments or transactions are processed."
-        action={<Link href="/add-funds" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Add funds</Link>}
+        action={<Link href="/add-funds" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Add funds</Link>}
       />
 
       <Card className="mt-6 max-w-md p-6">
-        <p className="text-sm font-medium text-slate-500">Balance</p>
-        <p className="mt-2 text-3xl font-bold text-navy-900">₹0.00</p>
-        <p className="mt-2 text-xs text-slate-500">Mock balance only.</p>
+        <p className="text-sm font-medium text-muted-foreground">Balance</p>
+        <p className="mt-2 text-3xl font-bold text-foreground">₹0.00</p>
+        <p className="mt-2 text-xs text-muted-foreground">Mock balance only.</p>
       </Card>
 
       <section aria-labelledby="transactions-heading" className="mt-8">
-        <h2 id="transactions-heading" className="mb-4 text-lg font-semibold text-navy-900">Transactions</h2>
+        <h2 id="transactions-heading" className="mb-4 text-lg font-semibold text-foreground">Transactions</h2>
         {mockTransactions.length > 0 ? (
           <DataTable label="Transactions" columns={columns} rows={mockTransactions} />
         ) : (

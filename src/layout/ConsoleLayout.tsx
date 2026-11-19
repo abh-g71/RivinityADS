@@ -26,7 +26,7 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
   return (
     <TooltipProvider>
       <ToastProvider>
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-background">
           <Sidebar
             role={role}
             isOpen={menuOpen}

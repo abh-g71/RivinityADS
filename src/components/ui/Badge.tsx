@@ -7,8 +7,8 @@ type BadgeProps = HTMLAttributes<HTMLSpanElement> & {
 }
 
 const toneStyles: Record<BadgeTone, string> = {
-  neutral: 'bg-slate-100 text-slate-700',
-  brand: 'bg-brand-50 text-brand-700',
+  neutral: 'bg-muted text-foreground',
+  brand: 'bg-secondary text-foreground',
   success: 'bg-green-50 text-green-800',
   warning: 'bg-amber-50 text-amber-800',
   danger: 'bg-red-50 text-danger-700',

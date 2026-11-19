@@ -62,7 +62,7 @@ export default function LeafletMap({ locations, onChange }: { locations: Campaig
   const center = useMemo<[number, number]>(() => locations.length ? [locations[0].lat, locations[0].lng] : [20.5937, 78.9629], [locations])
   const pinIcon = useMemo(() => L.divIcon({
     className: 'campaign-map-pin',
-    html: '<span style="display:block;width:18px;height:18px;border:4px solid white;border-radius:999px;background:#2563eb"></span>',
+    html: '<span style="display:block;width:18px;height:18px;border:4px solid white;border-radius:999px;background:#ACBCFF"></span>',
     iconSize: [18, 18], iconAnchor: [9, 9],
   }), [])
   const normalizedQuery = query.trim().toLowerCase()
@@ -123,25 +123,25 @@ export default function LeafletMap({ locations, onChange }: { locations: Campaig
 
   return <div className="min-w-0 space-y-4">
     <div className="relative min-w-0">
-      <label htmlFor="location-search" className="mb-1 block text-sm font-medium text-navy-900">Add a location</label>
-      <input id="location-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a city, country or PIN code" autoComplete="off" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
-      {query && <div className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white p-1 shadow-sm" role="listbox" aria-label="Location suggestions">
-        {suggestions.map((item) => <button key={item.id} type="button" role="option" aria-selected="false" onClick={() => addLocation(item)} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><span className="block font-medium">{item.label}</span><span className="mt-0.5 block text-xs capitalize text-slate-500">{item.type === 'postal' ? 'PIN code' : item.type}</span></button>)}
-        {!suggestions.length && /^\d{6}$/.test(query.trim()) && <button type="button" onClick={() => { addLocation(makePostalLocation(query.trim())) }} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm hover:bg-slate-50">Add PIN code {query.trim()}, India</button>}
-        {!suggestions.length && !/^\d{6}$/.test(query.trim()) && <p className="p-3 text-sm text-slate-500">No matches in the sample list. Try a city, country or six-digit PIN.</p>}
+      <label htmlFor="location-search" className="mb-1 block text-sm font-medium text-foreground">Add a location</label>
+      <input id="location-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a city, country or PIN code" autoComplete="off" className="h-11 w-full rounded-lg border border-border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+      {query && <div className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border bg-white p-1 shadow-sm" role="listbox" aria-label="Location suggestions">
+        {suggestions.map((item) => <button key={item.id} type="button" role="option" aria-selected="false" onClick={() => addLocation(item)} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><span className="block font-medium">{item.label}</span><span className="mt-0.5 block text-xs capitalize text-muted-foreground">{item.type === 'postal' ? 'PIN code' : item.type}</span></button>)}
+        {!suggestions.length && /^\d{6}$/.test(query.trim()) && <button type="button" onClick={() => { addLocation(makePostalLocation(query.trim())) }} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted">Add PIN code {query.trim()}, India</button>}
+        {!suggestions.length && !/^\d{6}$/.test(query.trim()) && <p className="p-3 text-sm text-muted-foreground">No matches in the sample list. Try a city, country or six-digit PIN.</p>}
       </div>}
     </div>
-    <p className="text-xs text-slate-500">Search a place, or click anywhere on the map to pick that point.</p>
+    <p className="text-xs text-muted-foreground">Search a place, or click anywhere on the map to pick that point.</p>
 
     <section aria-label="Selected locations">
-      <h3 className="text-sm font-semibold text-navy-900">Locations ({locations.length})</h3>
+      <h3 className="text-sm font-semibold text-foreground">Locations ({locations.length})</h3>
       {locations.length ? <ul className="mt-2 flex flex-wrap gap-2">
-        {locations.map((item) => <li key={item.id} className="inline-flex max-w-full items-center gap-2 rounded-lg border border-slate-200 bg-white py-1.5 pl-3 pr-1.5 text-sm text-navy-900"><span className="max-w-[min(70vw,22rem)] truncate">{item.label}</span><button type="button" aria-label={`Remove ${item.label}`} onClick={() => removeLocation(item.id)} className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><X className="h-4 w-4" aria-hidden="true" /></button></li>)}
-      </ul> : <p className="mt-2 text-sm text-slate-500">No locations added yet.</p>}
+        {locations.map((item) => <li key={item.id} className="inline-flex max-w-full items-center gap-2 rounded-lg border border-border bg-white py-1.5 pl-3 pr-1.5 text-sm text-foreground"><span className="max-w-[min(70vw,22rem)] truncate">{item.label}</span><button type="button" aria-label={`Remove ${item.label}`} onClick={() => removeLocation(item.id)} className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><X className="h-4 w-4" aria-hidden="true" /></button></li>)}
+      </ul> : <p className="mt-2 text-sm text-muted-foreground">No locations added yet.</p>}
     </section>
 
     {/* "isolate" keeps the map's internal layers from drawing over the top bar */}
-    <div className="relative isolate z-0 overflow-hidden rounded-lg border border-slate-200">
+    <div className="relative isolate z-0 overflow-hidden rounded-lg border border-border">
       <MapContainer center={center} zoom={locations.length ? locations[0].zoom : 4} scrollWheelZoom={false} touchZoom={true} doubleClickZoom={false} className="h-72 w-full sm:h-80 lg:h-[28rem]">
         <TileLayer
           attribution='Tiles &copy; Esri'
@@ -155,19 +155,19 @@ export default function LeafletMap({ locations, onChange }: { locations: Campaig
           <Marker position={[item.lat, item.lng]} icon={pinIcon} eventHandlers={{ click: () => item.type === 'radius' && setActiveRadiusId(item.id) }}>
             <Tooltip direction="top" offset={[0, -8]}>{item.label}</Tooltip>
           </Marker>
-          {item.type === 'radius' && item.radiusKm && <Circle center={[item.lat, item.lng]} radius={item.radiusKm * 1000} pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.1 }} />}
+          {item.type === 'radius' && item.radiusKm && <Circle center={[item.lat, item.lng]} radius={item.radiusKm * 1000} pathOptions={{ color: '#ACBCFF', fillColor: '#ACBCFF', fillOpacity: 0.1 }} />}
         </Fragment>)}
       </MapContainer>
     </div>
-    {activeRadius && <label className="block text-sm font-medium text-navy-900" htmlFor="campaign-map-radius">Radius around {activeRadius.name}, {activeRadius.country}: {activeRadius.radiusKm ?? 10} km
-      <input id="campaign-map-radius" type="range" min="1" max="50" value={activeRadius.radiusKm ?? 10} onChange={(event) => updateRadius(Number(event.target.value))} className="mt-2 w-full accent-brand-600" />
-      <span className="block text-xs font-normal text-slate-500">Radius can be set from 1 to 50 km.</span>
+    {activeRadius && <label className="block text-sm font-medium text-foreground" htmlFor="campaign-map-radius">Radius around {activeRadius.name}, {activeRadius.country}: {activeRadius.radiusKm ?? 10} km
+      <input id="campaign-map-radius" type="range" min="1" max="50" value={activeRadius.radiusKm ?? 10} onChange={(event) => updateRadius(Number(event.target.value))} className="mt-2 w-full accent-primary" />
+      <span className="block text-xs font-normal text-muted-foreground">Radius can be set from 1 to 50 km.</span>
     </label>}
-    <div className="space-y-2 rounded-lg border border-slate-200 p-3">
-      <label htmlFor="pin-codes" className="block text-sm font-medium text-navy-900">Add PIN codes</label>
+    <div className="space-y-2 rounded-lg border border-border p-3">
+      <label htmlFor="pin-codes" className="block text-sm font-medium text-foreground">Add PIN codes</label>
       <div className="flex flex-col gap-2 sm:flex-row">
-        <input id="pin-codes" value={pinInput} onChange={(event) => { setPinInput(event.target.value); setPinError('') }} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addPostalCodes() } }} placeholder="Comma-separated, e.g. 411001, 110001" className="h-11 min-w-0 flex-1 rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
-        <button type="button" onClick={addPostalCodes} className="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-medium text-navy-900 hover:bg-slate-50">Add PIN codes</button>
+        <input id="pin-codes" value={pinInput} onChange={(event) => { setPinInput(event.target.value); setPinError('') }} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addPostalCodes() } }} placeholder="Comma-separated, e.g. 411001, 110001" className="h-11 min-w-0 flex-1 rounded-lg border border-border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+        <button type="button" onClick={addPostalCodes} className="min-h-11 rounded-lg border border-border px-4 text-sm font-medium text-foreground hover:bg-muted">Add PIN codes</button>
       </div>
       {pinError && <p role="alert" className="text-sm text-red-700">{pinError}</p>}
     </div>

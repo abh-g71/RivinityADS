@@ -7,7 +7,7 @@ import { makePostalLocation } from '@/features/advertiser/locationSuggestions'
 
 const LeafletMap = dynamic(() => import('./LeafletMap'), {
   ssr: false,
-  loading: () => <div className="h-72 rounded-lg border border-slate-200 bg-slate-100" aria-label="Loading map" />,
+  loading: () => <div className="h-72 rounded-lg border border-border bg-muted" aria-label="Loading map" />,
 })
 
 type MultiLocationProps = { locations: CampaignTargetLocation[]; onChange: (locations: CampaignTargetLocation[]) => void }

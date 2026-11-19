@@ -35,12 +35,12 @@ export default function AdminPlatformSettingsPage() {
         description="Preview non-production platform switches. No settings are sent to a service."
         action={<Button type="button" onClick={saveSettings}>Save settings</Button>}
       />
-      <Card className="divide-y divide-slate-100 p-5 sm:p-6">
+      <Card className="divide-y divide-border p-5 sm:p-6">
         {controls.map((control) => (
           <div key={control.key} className="flex items-start justify-between gap-5 py-4 first:pt-0 last:pb-0">
             <div className="space-y-1">
-              <label htmlFor={control.key} className="font-medium text-navy-900">{control.label}</label>
-              <p className="text-sm text-slate-600">{control.description}</p>
+              <label htmlFor={control.key} className="font-medium text-foreground">{control.label}</label>
+              <p className="text-sm text-muted-foreground">{control.description}</p>
             </div>
             <Switch
               id={control.key}
@@ -55,8 +55,8 @@ export default function AdminPlatformSettingsPage() {
         ))}
       </Card>
       <EmptyState title="No external integrations connected" description="This prototype has no payment, analytics, or delivery services configured." />
-      <p className="text-xs text-slate-500">Saved settings are mock UI state only. Real platform rules, permissions, and persistence require backend enforcement.</p>
-      {saved && <p role="status" className="text-sm text-slate-700">Mock settings saved for this view.</p>}
+      <p className="text-xs text-muted-foreground">Saved settings are mock UI state only. Real platform rules, permissions, and persistence require backend enforcement.</p>
+      {saved && <p role="status" className="text-sm text-foreground">Mock settings saved for this view.</p>}
     </div>
   )
 }

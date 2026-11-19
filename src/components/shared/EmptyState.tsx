@@ -11,11 +11,11 @@ type EmptyStateProps = {
 export function EmptyState({ title, description, action }: EmptyStateProps) {
   return (
     <Card className="px-6 py-8">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-600" aria-hidden="true">
+      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground" aria-hidden="true">
         <FileText className="h-5 w-5" />
       </div>
-      <h3 className="text-lg font-semibold text-navy-900">{title}</h3>
-      <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-600">{description}</p>
+      <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+      <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{description}</p>
       {action && <div className="mt-6 flex justify-center">{action}</div>}
     </Card>
   )

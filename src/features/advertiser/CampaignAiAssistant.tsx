@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import Link from 'next/link'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
@@ -96,40 +96,40 @@ export function CampaignAiAssistant() {
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-col px-4 py-6 sm:px-6 sm:py-10 lg:h-[calc(100vh-9rem)] lg:min-h-0 lg:py-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/campaigns/new" className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-slate-600 hover:text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</Link>
-        <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">AI assistant (demo)</span>
+        <Link href="/campaigns/new" className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</Link>
+        <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-foreground">AI assistant (demo)</span>
       </div>
       <header className="mt-4 lg:mt-3">
-        <h1 className="text-2xl font-bold text-navy-900 sm:text-3xl">Let’s put your campaign together</h1>
-        <p className="mt-1 text-sm text-slate-600">Tell me what you have in mind. You can edit every detail before anything is submitted.</p>
-        <p className="mt-2 text-xs text-slate-500" role="status">Draft saved in this browser when updated.</p>
+        <h1 className="text-2xl font-bold text-foreground sm:text-3xl">Let’s put your campaign together</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Tell me what you have in mind. You can edit every detail before anything is submitted.</p>
+        <p className="mt-2 text-xs text-muted-foreground" role="status">Draft saved in this browser when updated.</p>
       </header>
 
-      <section aria-label="Campaign assistant conversation" className="mt-4 flex min-h-[26rem] flex-col rounded-lg border border-slate-200 bg-white shadow-sm lg:min-h-0 lg:flex-1">
+      <section aria-label="Campaign assistant conversation" className="mt-4 flex min-h-[26rem] flex-col rounded-lg border border-border bg-white shadow-sm lg:min-h-0 lg:flex-1">
         <div ref={messageHistoryRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 sm:p-5" aria-live="polite">
           {messages.map((message) => (
             <div key={message.id} className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <p className={`max-w-[85%] break-words whitespace-pre-wrap rounded-lg px-4 py-3 text-sm leading-6 ${message.role === 'user' ? 'rounded-br-md bg-brand-600 text-white' : 'rounded-bl-md bg-slate-100 text-navy-900'}`}>{message.text}</p>
+              <p className={`max-w-[85%] break-words whitespace-pre-wrap rounded-lg px-4 py-3 text-sm leading-6 ${message.role === 'user' ? 'rounded-br-md bg-primary text-white' : 'rounded-bl-md bg-muted text-foreground'}`}>{message.text}</p>
             </div>
           ))}
-          {loading && <div className="text-sm text-slate-500" role="status">Thinking...</div>}
+          {loading && <div className="text-sm text-muted-foreground" role="status">Thinking...</div>}
         </div>
         <div className="shrink-0">
           {quickReplies.length > 0 && (
-            <div className="flex flex-wrap gap-2 border-t border-slate-100 px-4 py-3 sm:px-5">
-              {quickReplies.map((reply) => <button key={reply} type="button" disabled={loading} onClick={() => void sendMessage(reply)} className="min-h-10 rounded-full border border-brand-200 bg-brand-50 px-3 text-sm font-medium text-brand-700 hover:bg-brand-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">{reply}</button>)}
+            <div className="flex flex-wrap gap-2 border-t border-border px-4 py-3 sm:px-5">
+              {quickReplies.map((reply) => <button key={reply} type="button" disabled={loading} onClick={() => void sendMessage(reply)} className="min-h-10 rounded-full border border-border bg-secondary px-3 text-sm font-medium text-foreground hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50">{reply}</button>)}
             </div>
           )}
-          <form onSubmit={submit} className="flex gap-2 border-t border-slate-100 p-3 sm:p-4">
+          <form onSubmit={submit} className="flex gap-2 border-t border-border p-3 sm:p-4">
             <label htmlFor="assistant-message" className="sr-only">Your campaign details</label>
-            <input id="assistant-message" value={input} onChange={(event) => setInput(event.target.value)} disabled={loading} placeholder="Write a message..." className="h-11 min-w-0 flex-1 rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:bg-slate-50" />
-            <button type="submit" disabled={!input.trim() || loading} aria-label="Send message" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50"><Send className="h-4 w-4" aria-hidden="true" /></button>
+            <input id="assistant-message" value={input} onChange={(event) => setInput(event.target.value)} disabled={loading} placeholder="Write a message..." className="h-11 min-w-0 flex-1 rounded-lg border border-border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:bg-secondary" />
+            <button type="submit" disabled={!input.trim() || loading} aria-label="Send message" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"><Send className="h-4 w-4" aria-hidden="true" /></button>
           </form>
           {error && <div className="flex items-center justify-between gap-3 px-4 pb-4 text-sm text-red-700" role="alert"><span>{error}</span><button type="button" onClick={() => void sendMessage(lastMessage)} className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-red-200 px-3 text-xs font-semibold hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"><RotateCcw className="h-3 w-3" aria-hidden="true" />Retry</button></div>}
         </div>
-        <div className="flex shrink-0 flex-col gap-2 border-t border-slate-100 p-3 sm:flex-row sm:justify-end sm:p-4">
-          <button type="button" onClick={() => continueWithDraft(false)} disabled={!hasDraftContent} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">Edit manually</button>
-          <button type="button" onClick={() => continueWithDraft(true)} disabled={!hasDraftContent} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-50">Use this campaign <ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
+        <div className="flex shrink-0 flex-col gap-2 border-t border-border p-3 sm:flex-row sm:justify-end sm:p-4">
+          <button type="button" onClick={() => continueWithDraft(false)} disabled={!hasDraftContent} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50">Edit manually</button>
+          <button type="button" onClick={() => continueWithDraft(true)} disabled={!hasDraftContent} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50">Use this campaign <ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
         </div>
       </section>
     </main>

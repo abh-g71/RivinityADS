@@ -45,7 +45,7 @@ export default function PublisherEarningsPage() {
         breadcrumbs={[{ label: 'Publisher workspace', href: '/publisher' }, { label: 'Earnings' }]}
         title="Earnings"
         description="Mock reporting; no actual earnings are shown."
-        action={<Link href="/publisher/statistics" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View statistics</Link>}
+        action={<Link href="/publisher/statistics" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">View statistics</Link>}
       />
       <div className="mt-6 flex justify-end">
         <div className="w-full sm:w-56">
@@ -65,7 +65,7 @@ export default function PublisherEarningsPage() {
       <Tabs value={view} onValueChange={(value) => {
         if (value === 'daily' || value === 'website') setView(value)
       }} className="mt-6">
-      <TabsList variant="line" aria-label="Earnings breakdown" className="border-b border-slate-200">
+      <TabsList variant="line" aria-label="Earnings breakdown" className="border-b border-border">
         {([
           { id: 'daily', label: 'Daily' },
           { id: 'website', label: 'By Website' },
@@ -73,7 +73,7 @@ export default function PublisherEarningsPage() {
           <TabsTrigger
             key={tab.id}
             value={tab.id}
-            className="rounded-t-xl px-4 py-3 data-[state=active]:text-brand-700 after:bg-brand-600"
+            className="rounded-t-xl px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-white after:bg-primary"
           >
             {tab.label}
           </TabsTrigger>

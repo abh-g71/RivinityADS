@@ -64,7 +64,7 @@ export default function PublisherPlacementsPage() {
   }
 
   const columns: DataTableColumn<PublisherPlacement>[] = [
-    { key: 'name', header: 'Placement', render: (placement) => <span className="font-medium text-navy-900">{placement.name}</span> },
+    { key: 'name', header: 'Placement', render: (placement) => <span className="font-medium text-foreground">{placement.name}</span> },
     { key: 'website', header: 'Website', render: (placement) => placement.website },
     { key: 'format', header: 'Format', render: (placement) => placement.format },
     { key: 'status', header: 'Status', render: (placement) => placement.status },
@@ -76,11 +76,11 @@ export default function PublisherPlacementsPage() {
         breadcrumbs={[{ label: 'Publisher', href: '/publisher' }, { label: 'Ad Placements' }]}
         title="Ad Placements"
         description="Create a mock placement and preview a placeholder ad snippet."
-        action={<Link href="#create-placement" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create placement</Link>}
+        action={<Link href="#create-placement" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Create placement</Link>}
       />
 
       <Card id="create-placement" className="mt-6 p-5 sm:p-6">
-        <h2 className="text-lg font-semibold text-navy-900">Create placement</h2>
+        <h2 className="text-lg font-semibold text-foreground">Create placement</h2>
         <form className="mt-5 grid gap-5 lg:grid-cols-2" onSubmit={createPlacement} noValidate>
           <Select
               id="placement-website"
@@ -107,7 +107,7 @@ export default function PublisherPlacementsPage() {
           />
 
           <fieldset className="lg:col-span-2">
-            <legend className="mb-2 text-sm font-medium text-slate-700">Ad format</legend>
+            <legend className="mb-2 text-sm font-medium text-foreground">Ad format</legend>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
               {publisherAdFormats.map((option) => (
                 <label key={option} className="cursor-pointer">
@@ -121,8 +121,8 @@ export default function PublisherPlacementsPage() {
                     onBlur={() => setTouched((current) => ({ ...current, format: true }))}
                     aria-describedby={touched.format && formatError ? 'placement-format-error' : undefined}
                   />
-                  <Card className={`p-4 text-center text-sm font-medium text-slate-700 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 ${
-                    format === option ? 'border-brand-600 bg-brand-50 text-brand-700 ring-1 ring-brand-600' : 'hover:border-brand-500'
+                  <Card className={`p-4 text-center text-sm font-medium text-foreground transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-ring ${
+                    format === option ? 'border-primary bg-secondary text-foreground ring-1 ring-ring' : 'hover:border-accent'
                   }`}>
                     {option}
                   </Card>
@@ -140,20 +140,20 @@ export default function PublisherPlacementsPage() {
         <Card className="mt-6 p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-navy-900">Ad code</h2>
-              <p className="mt-1 text-sm text-slate-600">Mock snippet only; the reserved .example endpoint does not serve ads.</p>
+              <h2 className="text-lg font-semibold text-foreground">Ad code</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Mock snippet only; the reserved .example endpoint does not serve ads.</p>
             </div>
             <Button type="button" variant="outline" onClick={copyAdCode}>Copy</Button>
           </div>
-          <pre className="mt-4 overflow-x-auto rounded-lg bg-navy-950 p-4 text-xs text-slate-100">
+          <pre className="mt-4 overflow-x-auto rounded-lg bg-dark-card p-4 text-xs text-white">
             <code>{adCode}</code>
           </pre>
-          {copyMessage && <p className="mt-2 text-sm text-slate-600" role="status">{copyMessage}</p>}
+          {copyMessage && <p className="mt-2 text-sm text-muted-foreground" role="status">{copyMessage}</p>}
         </Card>
       )}
 
       <section aria-labelledby="existing-placements" className="mt-8">
-        <h2 id="existing-placements" className="mb-4 text-lg font-semibold text-navy-900">Existing placements</h2>
+        <h2 id="existing-placements" className="mb-4 text-lg font-semibold text-foreground">Existing placements</h2>
         {placements.length > 0 ? (
           <DataTable label="Ad placements" columns={columns} rows={placements} />
         ) : (

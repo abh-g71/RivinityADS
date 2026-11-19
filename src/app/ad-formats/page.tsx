@@ -16,10 +16,10 @@ export default function AdFormatsPage() {
       <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
         <header className="py-16 text-center sm:py-20">
           <Badge tone="brand">Ad formats</Badge>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-navy-900 sm:text-5xl">
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Choose a format that fits
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-600">
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
             Explore common ad placements and consider what suits your campaign or website.
           </p>
         </header>
@@ -27,9 +27,9 @@ export default function AdFormatsPage() {
         <section aria-label="Available ad formats" className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {formats.map((format) => (
             <Card key={format.name} className="p-6">
-              <h2 className="text-lg font-semibold text-navy-900">{format.name}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{format.description}</p>
-              <p className="mt-5 text-sm text-slate-700">
+              <h2 className="text-lg font-semibold text-foreground">{format.name}</h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{format.description}</p>
+              <p className="mt-5 text-sm text-foreground">
                 <span className="font-semibold">Best for:</span> {format.bestFor}
               </p>
             </Card>

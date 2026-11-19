@@ -9,14 +9,14 @@ const benefits = [
 export function Features() {
   return (
     <section id="product" className="scroll-mt-24 mx-auto max-w-6xl px-4 py-16 sm:px-6">
-      <p className="text-sm font-semibold text-brand-700">Made for a clearer start</p>
-      <h2 className="mt-2 max-w-xl text-3xl font-bold tracking-tight text-navy-900">The important choices, without the clutter.</h2>
+      <p className="text-sm font-semibold text-foreground">Made for a clearer start</p>
+      <h2 className="mt-2 max-w-xl text-3xl font-bold tracking-tight text-foreground">The important choices, without the clutter.</h2>
       <div className="mt-8 grid gap-4 md:grid-cols-3">
         {benefits.map(({ title, text, Icon }) => (
-          <article key={title} className="rounded-lg border border-slate-200 bg-white p-5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600"><Icon className="h-4 w-4" aria-hidden="true" /></span>
-            <h3 className="mt-4 font-semibold text-navy-900">{title}</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">{text}</p>
+          <article key={title} className="rounded-lg border border-border bg-white p-5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground"><Icon className="h-4 w-4" aria-hidden="true" /></span>
+            <h3 className="mt-4 font-semibold text-foreground">{title}</h3>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">{text}</p>
           </article>
         ))}
       </div>

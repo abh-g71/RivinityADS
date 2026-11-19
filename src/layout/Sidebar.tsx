@@ -106,9 +106,9 @@ function NavigationContent({
           href="/"
           onClick={onClose}
           aria-label="RivinityADS home"
-          className="flex min-w-0 items-center gap-2.5 rounded-lg px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="flex min-w-0 items-center gap-2.5 rounded-lg px-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-base font-semibold text-white">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-base font-semibold text-white">
             R
           </span>
           {!isCollapsed && <span className="truncate text-lg font-bold tracking-tight">RivinityADS</span>}
@@ -116,7 +116,7 @@ function NavigationContent({
         {showCollapseControl && (
           <button
             type="button"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onClick={onToggleCollapse}
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             aria-expanded={!isCollapsed}
@@ -130,8 +130,8 @@ function NavigationContent({
         {groups.map((group, index) => (
           <div key={group.title ?? index}>
             {group.title && (isCollapsed
-              ? <div className="mx-3 mb-2 border-t border-white/10" aria-hidden="true" />
-              : <p className="mb-1 px-3 text-[11px] font-medium uppercase tracking-wider text-slate-500">{group.title}</p>)}
+              ? <div className="mx-3 mb-2 border-t border-border" aria-hidden="true" />
+              : <p className="mb-1 px-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{group.title}</p>)}
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => <li key={item.id}>{renderNavigationLink(item)}</li>)}
             </ul>
@@ -142,17 +142,17 @@ function NavigationContent({
       {/* Account card (generic, no real user data) */}
       <div className="mt-auto pt-8">
         <div
-          className={`flex items-center rounded-lg border border-white/10 bg-white/5 ${
+          className={`flex items-center rounded-lg border border-border bg-muted ${
             isCollapsed ? 'justify-center p-2' : 'gap-3 p-3'
           }`}
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-slate-300">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
             <Users className="h-4 w-4" aria-hidden="true" />
           </span>
           {!isCollapsed && (
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{roleLabel(role)} workspace</p>
-              <p className="truncate text-xs text-slate-400">Simulated workspace</p>
+              <p className="truncate text-xs text-muted-foreground">Simulated workspace</p>
             </div>
           )}
         </div>
@@ -171,12 +171,12 @@ function NavigationContent({
         href={item.href}
         onClick={onClose}
         aria-current={isActive ? 'page' : undefined}
-        className={`group relative flex items-center rounded-md border-l-2 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+        className={`group relative flex items-center rounded-md border-l-2 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
           isCollapsed ? 'justify-center px-2' : 'gap-3 px-3'
         } ${
           isActive
-            ? 'border-brand-500 bg-white/5 font-medium text-white'
-            : 'border-transparent text-slate-400 hover:bg-white/5 hover:text-white'
+            ? 'border-transparent bg-primary font-medium text-primary-foreground'
+            : 'border-transparent text-muted-foreground hover:bg-muted hover:text-foreground'
         }`}
       >
         <Icon
@@ -208,7 +208,7 @@ export function Sidebar({
 }: SidebarProps) {
   return (
     <>
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden overflow-y-auto border-r border-white/10 bg-navy-950 px-3 py-6 text-white transition-[width] duration-200 lg:block ${isCollapsed ? 'w-20' : 'w-64'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-30 hidden overflow-y-auto border-r border-border bg-sidebar px-3 py-6 text-sidebar-foreground transition-[width] duration-200 lg:block ${isCollapsed ? 'w-20' : 'w-64'}`}>
         <NavigationContent
           role={role}
           onClose={onClose}
@@ -218,7 +218,7 @@ export function Sidebar({
         />
       </aside>
       <Sheet open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
-        <SheetContent side="left" className="w-64 overflow-y-auto border-r border-white/10 bg-navy-950 px-3 py-6 text-white sm:max-w-64">
+        <SheetContent side="left" className="w-64 overflow-y-auto border-r border-border bg-sidebar px-3 py-6 text-sidebar-foreground sm:max-w-64">
           <SheetTitle className="sr-only">Console navigation</SheetTitle>
           <NavigationContent
             role={role}

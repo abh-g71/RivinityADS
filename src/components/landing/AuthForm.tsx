@@ -99,24 +99,24 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   if (complete) {
     return (
       <Card className="p-6 sm:p-8">
-        <p className="text-sm font-semibold text-brand-700">{isForgot ? 'Recovery request complete' : 'Password reset preview'}</p>
-        <h1 className="mt-2 text-2xl font-bold text-navy-900">{isForgot ? 'Check your inbox' : 'You’re all set'}</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
+        <p className="text-sm font-semibold text-foreground">{isForgot ? 'Recovery request complete' : 'Password reset preview'}</p>
+        <h1 className="mt-2 text-2xl font-bold text-foreground">{isForgot ? 'Check your inbox' : 'You’re all set'}</h1>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
           {isForgot
             ? 'In a full product, recovery instructions would be sent to this address. No email is sent in this preview.'
             : 'This confirmation is simulated. No account password was changed on a server.'}
         </p>
-        <Link href="/login" className="mt-6 inline-flex font-semibold text-brand-700 hover:underline">Return to sign in</Link>
-        {isForgot && <p className="mt-4 text-sm text-slate-600">Continue with the <Link href="/reset-password" className="font-semibold text-brand-700 hover:underline">password reset preview</Link>.</p>}
+        <Link href="/login" className="mt-6 inline-flex font-semibold text-foreground hover:underline">Return to sign in</Link>
+        {isForgot && <p className="mt-4 text-sm text-muted-foreground">Continue with the <Link href="/reset-password" className="font-semibold text-foreground hover:underline">password reset preview</Link>.</p>}
       </Card>
     )
   }
 
   return (
     <Card className="p-6 shadow-sm sm:p-8">
-      <p className="text-sm font-semibold text-brand-700">RivinityADS</p>
-      <h1 className="mt-2 text-2xl font-bold text-navy-900">{heading}</h1>
-      {!isLogin && <p className="mt-2 text-sm leading-6 text-slate-600">
+      <p className="text-sm font-semibold text-foreground">RivinityADS</p>
+      <h1 className="mt-2 text-2xl font-bold text-foreground">{heading}</h1>
+      {!isLogin && <p className="mt-2 text-sm leading-6 text-muted-foreground">
         {isSignup
           ? 'Choose a workspace to explore. No account is created.'
           : isForgot
@@ -169,7 +169,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 type="button"
                 onClick={() => setShowPassword((visible) => !visible)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-2 top-8 rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                className="absolute right-2 top-8 rounded-lg p-2 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
               </button>
@@ -178,15 +178,15 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
             {(isSignup || isReset) && (
               <div className="mt-3" aria-live="polite">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium text-slate-700">Password strength</span>
-                  <span className="text-slate-600">{['Add a password', 'Weak', 'Fair', 'Good', 'Strong'][getPasswordStrength(password)]}</span>
+                  <span className="font-medium text-foreground">Password strength</span>
+                  <span className="text-muted-foreground">{['Add a password', 'Weak', 'Fair', 'Good', 'Strong'][getPasswordStrength(password)]}</span>
                 </div>
                 <div className="mt-2 grid grid-cols-4 gap-1" aria-hidden="true">
                   {[0, 1, 2, 3].map((level) => (
-                    <span key={level} className={`h-1.5 rounded-full ${getPasswordStrength(password) > level ? 'bg-brand-600' : 'bg-slate-200'}`} />
+                    <span key={level} className={`h-1.5 rounded-full ${getPasswordStrength(password) > level ? 'bg-primary' : 'bg-border'}`} />
                   ))}
                 </div>
-                <p className="mt-1 text-xs text-slate-500">Use 8+ characters with a mix of letters, numbers, and symbols.</p>
+                <p className="mt-1 text-xs text-muted-foreground">Use 8+ characters with a mix of letters, numbers, and symbols.</p>
               </div>
             )}
           </div>
@@ -210,7 +210,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
               type="button"
               onClick={() => setShowConfirmPassword((visible) => !visible)}
               aria-label={showConfirmPassword ? 'Hide confirmation password' : 'Show confirmation password'}
-              className="absolute right-2 top-8 rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="absolute right-2 top-8 rounded-lg p-2 text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
             </button>
@@ -219,7 +219,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
         {(isSignup || isLogin) && (
           <fieldset>
-            <legend className="mb-2 text-sm font-medium text-slate-700">{isSignup ? 'Choose your workspace' : 'Continue as'}</legend>
+            <legend className="mb-2 text-sm font-medium text-foreground">{isSignup ? 'Choose your workspace' : 'Continue as'}</legend>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {(isLogin ? loginRoles : signupRoles).map((option) => (
                 <label key={option.id} className="cursor-pointer">
@@ -233,9 +233,9 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                     onChange={() => setRole(option.id)}
                     aria-describedby={fieldError('role') ? 'auth-role-error' : undefined}
                   />
-                  <span className={`block h-full rounded-lg border p-3 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 ${role === option.id ? 'border-brand-600 bg-brand-50' : 'border-slate-200 hover:border-brand-500'}`}>
-                    <span className="block text-sm font-semibold capitalize text-navy-900">{option.title}</span>
-                    <span className="mt-1 block text-xs leading-5 text-slate-600">{option.description}</span>
+                  <span className={`block h-full rounded-lg border p-3 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-ring ${role === option.id ? 'border-primary bg-secondary' : 'border-border hover:border-accent'}`}>
+                    <span className="block text-sm font-semibold capitalize text-foreground">{option.title}</span>
+                    <span className="mt-1 block text-xs leading-5 text-muted-foreground">{option.description}</span>
                   </span>
                 </label>
               ))}
@@ -246,7 +246,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
         {isLogin && (
           <div className="flex justify-end">
-            <Link href="/forgot-password" className="text-sm font-medium text-brand-700 hover:underline">Forgot password?</Link>
+            <Link href="/forgot-password" className="text-sm font-medium text-foreground hover:underline">Forgot password?</Link>
           </div>
         )}
 
@@ -255,16 +255,16 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
         </Button>
 
         {(isForgot || isReset) && (
-          <p className="text-center text-sm text-slate-600">
-            Remember your password? <Link href="/login" className="font-semibold text-brand-700 hover:underline">Sign in</Link>
+          <p className="text-center text-sm text-muted-foreground">
+            Remember your password? <Link href="/login" className="font-semibold text-foreground hover:underline">Sign in</Link>
           </p>
         )}
       </form>
 
       {(isLogin || isSignup) && (
-        <p className="mt-5 text-center text-sm text-slate-600">
+        <p className="mt-5 text-center text-sm text-muted-foreground">
           {isSignup ? 'Already have an account?' : 'New to RivinityADS?'}{' '}
-          <Link href={isSignup ? '/login' : '/signup'} className="font-semibold text-brand-700 hover:underline">
+          <Link href={isSignup ? '/login' : '/signup'} className="font-semibold text-foreground hover:underline">
             {isSignup ? 'Sign in' : 'Create an account'}
           </Link>
         </p>

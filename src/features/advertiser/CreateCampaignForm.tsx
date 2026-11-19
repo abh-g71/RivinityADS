@@ -181,13 +181,13 @@ function CampaignChoiceCards({
 }) {
   return (
     <fieldset>
-      <legend className="mb-2 text-sm font-medium text-navy-900">{label}</legend>
+      <legend className="mb-2 text-sm font-medium text-foreground">{label}</legend>
       <div className={`grid gap-3 ${columns === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
         {options.map((option) => (
           <label
             key={option.value}
-            className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border p-3 text-sm transition-colors focus-within:ring-2 focus-within:ring-blue-600 ${
-              value === option.value ? 'border-blue-600 bg-blue-50 text-navy-900' : 'border-slate-200 bg-white text-slate-700'
+            className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border p-3 text-sm transition-colors focus-within:ring-2 focus-within:ring-ring ${
+              value === option.value ? 'border-primary bg-accent text-foreground' : 'border-border bg-white text-foreground'
             }`}
           >
             <input
@@ -196,7 +196,7 @@ function CampaignChoiceCards({
               value={option.value}
               checked={value === option.value}
               onChange={() => onChange(option.value)}
-              className="accent-blue-600"
+              className="accent-primary"
             />
             <span>{option.label}</span>
           </label>
@@ -219,7 +219,7 @@ function SelectableChips({
 }) {
   return (
     <fieldset>
-      <legend className="mb-2 text-sm font-medium text-navy-900">{label}</legend>
+      <legend className="mb-2 text-sm font-medium text-foreground">{label}</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => {
           const isSelected = selected.includes(option)
@@ -229,8 +229,8 @@ function SelectableChips({
               type="button"
               aria-pressed={isSelected}
               onClick={() => onToggle(option)}
-              className={`rounded-lg border px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 ${
-                isSelected ? 'border-blue-600 bg-blue-50 text-navy-900' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+              className={`rounded-lg border px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                isSelected ? 'border-primary bg-accent text-foreground' : 'border-border bg-white text-foreground hover:bg-muted'
               }`}
             >
               {option}
@@ -288,7 +288,7 @@ function TextField({
 function AdPreview({ draft, mobile }: { draft: CampaignDraft; mobile: boolean }) {
   return (
     <div
-      className={`mx-auto overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm ${mobile ? 'max-w-60' : 'max-w-md'}`}
+      className={`mx-auto overflow-hidden rounded-lg border border-border bg-white shadow-sm ${mobile ? 'max-w-60' : 'max-w-md'}`}
       aria-label={`${mobile ? 'Mobile' : 'Desktop'} ad preview`}
     >
       {draft.imageDataUrl ? (
@@ -301,17 +301,17 @@ function AdPreview({ draft, mobile }: { draft: CampaignDraft; mobile: boolean })
           className="aspect-video w-full object-cover"
         />
       ) : (
-        <div className="flex aspect-video items-center justify-center bg-slate-100 text-sm text-slate-500">
+        <div className="flex aspect-video items-center justify-center bg-muted text-sm text-muted-foreground">
           No image uploaded
         </div>
       )}
       <div className="space-y-2 p-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Sponsored preview</p>
-        <h3 className="font-semibold text-navy-900">{draft.headline || 'Headline will appear here'}</h3>
-        <p className="line-clamp-3 text-sm text-slate-600">{draft.primaryText || 'Primary text will appear here'}</p>
-        {draft.description && <p className="text-xs text-slate-500">{draft.description}</p>}
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Sponsored preview</p>
+        <h3 className="font-semibold text-foreground">{draft.headline || 'Headline will appear here'}</h3>
+        <p className="line-clamp-3 text-sm text-muted-foreground">{draft.primaryText || 'Primary text will appear here'}</p>
+        {draft.description && <p className="text-xs text-muted-foreground">{draft.description}</p>}
         <Button type="button" size="sm" disabled>{draft.callToAction || 'CTA'}</Button>
-        {draft.landingUrl && <p className="truncate text-xs text-slate-500">{draft.landingUrl}</p>}
+        {draft.landingUrl && <p className="truncate text-xs text-muted-foreground">{draft.landingUrl}</p>}
       </div>
     </div>
   )
@@ -322,14 +322,14 @@ function LivePreview({ draft }: { draft: CampaignDraft }) {
     <Card className="lg:sticky lg:top-24">
       <CardHeader>
         <CardTitle className="text-lg">Live preview</CardTitle>
-        <p className="text-sm text-slate-600">Changes appear here as you fill out the form.</p>
+        <p className="text-sm text-muted-foreground">Changes appear here as you fill out the form.</p>
       </CardHeader>
       <CardContent className="space-y-4">
         <AdPreview draft={draft} mobile={false} />
-        <div className="space-y-2 rounded-lg bg-slate-50 p-4 text-sm">
-          <p className="font-medium text-navy-900">{displayValue(draft.campaignName)}</p>
-          <p className="text-slate-600">{displayValue(draft.objective)} · {displayValue(draft.adUnit)}</p>
-          <p className="text-slate-600">
+        <div className="space-y-2 rounded-lg bg-secondary p-4 text-sm">
+          <p className="font-medium text-foreground">{displayValue(draft.campaignName)}</p>
+          <p className="text-muted-foreground">{displayValue(draft.objective)} · {displayValue(draft.adUnit)}</p>
+          <p className="text-muted-foreground">
             {draft.budget && draft.budgetType
               ? `₹${draft.budget} ${draft.budgetType === 'daily' ? 'daily' : 'lifetime'} budget`
               : 'Budget not set'}
@@ -350,16 +350,16 @@ function SummarySection({
   onEdit: () => void
 }) {
   return (
-    <section className="rounded-lg border border-slate-200 p-4">
+    <section className="rounded-lg border border-border p-4">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h3 className="font-semibold text-navy-900">{title}</h3>
+        <h3 className="font-semibold text-foreground">{title}</h3>
         <Button type="button" variant="outline" size="sm" onClick={onEdit}>Edit</Button>
       </div>
       <dl className="grid gap-3 sm:grid-cols-2">
         {rows.map((row) => (
           <div key={row.label}>
-            <dt className="text-xs text-slate-500">{row.label}</dt>
-            <dd className="break-words text-sm text-navy-900">{row.value}</dd>
+            <dt className="text-xs text-muted-foreground">{row.label}</dt>
+            <dd className="break-words text-sm text-foreground">{row.value}</dd>
           </div>
         ))}
       </dl>
@@ -616,9 +616,9 @@ export function CreateCampaignForm({
       <div className="mx-auto max-w-3xl space-y-6">
         <Card>
           <CardContent className="space-y-4 p-6 sm:p-8">
-            <p className="text-sm font-semibold text-blue-700">Mock action complete</p>
-            <h1 className="text-2xl font-bold text-navy-900">Campaign ready</h1>
-            <p className="text-slate-600">
+            <p className="text-sm font-semibold text-foreground">Mock action complete</p>
+            <h1 className="text-2xl font-bold text-foreground">Campaign ready</h1>
+            <p className="text-muted-foreground">
               “{draft.campaignName}” was marked as published in this prototype. No backend, payment, or ad delivery was triggered.
             </p>
             <Button type="button" onClick={() => router.push('/campaigns')}>Back to campaigns</Button>
@@ -632,7 +632,7 @@ export function CreateCampaignForm({
     <Card>
       <CardHeader>
         <CardTitle>Campaign</CardTitle>
-        <p className="text-sm text-slate-600">Set the campaign identity and buying preferences.</p>
+        <p className="text-sm text-muted-foreground">Set the campaign identity and buying preferences.</p>
       </CardHeader>
       <CardContent className="space-y-6">
         <TextField
@@ -665,18 +665,18 @@ export function CreateCampaignForm({
           }}
         />
         {fieldError('buyingType') && <p role="alert" className="-mt-4 text-sm text-red-700">{fieldError('buyingType')}</p>}
-        <div className="space-y-4 rounded-lg border border-slate-200 p-4">
+        <div className="space-y-4 rounded-lg border border-border p-4">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <Label htmlFor="special-category">Special ad category</Label>
-              <p className="text-sm text-slate-600">Select this if your campaign relates to a regulated category.</p>
+              <p className="text-sm text-muted-foreground">Select this if your campaign relates to a regulated category.</p>
             </div>
             <Switch id="special-category" checked={draft.specialCategory} onCheckedChange={(checked) => toggleSwitch('specialCategory', checked)} />
           </div>
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <Label htmlFor="ab-test">A/B test</Label>
-              <p className="text-sm text-slate-600">Keep this off unless you want to compare creative variants.</p>
+              <p className="text-sm text-muted-foreground">Keep this off unless you want to compare creative variants.</p>
             </div>
             <Switch id="ab-test" checked={draft.abTest} onCheckedChange={(checked) => toggleSwitch('abTest', checked)} />
           </div>
@@ -687,7 +687,7 @@ export function CreateCampaignForm({
     <Card>
       <CardHeader>
         <CardTitle>Ad Set</CardTitle>
-        <p className="text-sm text-slate-600">Choose audience, placements, budget, and schedule.</p>
+        <p className="text-sm text-muted-foreground">Choose audience, placements, budget, and schedule.</p>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -725,7 +725,7 @@ export function CreateCampaignForm({
         </div>
         <SelectableChips label="Interests" options={[...campaignInterestOptions]} selected={draft.interests} onToggle={(value) => toggle('interests', value)} />
         <div className="space-y-4">
-          <h3 className="font-semibold text-navy-900">Location</h3>
+          <h3 className="font-semibold text-foreground">Location</h3>
           <div className="space-y-2">
             <Label htmlFor="country">Country</Label>
             <Select value={draft.country} onValueChange={(value) => updateDraft('country', value)}>
@@ -766,7 +766,7 @@ export function CreateCampaignForm({
             <ul aria-label="Selected PIN codes" className="flex flex-wrap gap-2">
               {draft.pins.map((pin) => (
                 <li key={pin}>
-                  <button type="button" onClick={() => updateDraft('pins', draft.pins.filter((item) => item !== pin))} className="rounded-lg bg-blue-50 px-3 py-1.5 text-sm text-navy-900">
+                  <button type="button" onClick={() => updateDraft('pins', draft.pins.filter((item) => item !== pin))} className="rounded-lg bg-accent px-3 py-1.5 text-sm text-foreground">
                     {pin}<span className="ml-2" aria-label={`Remove ${pin}`}>×</span>
                   </button>
                 </li>
@@ -796,8 +796,8 @@ export function CreateCampaignForm({
         <SelectableChips label="Devices" options={advertiserDevices} selected={draft.devices} onToggle={(value) => toggle('devices', value)} />
         <SelectableChips label="Operating systems" options={[...campaignOperatingSystems]} selected={draft.operatingSystems} onToggle={(value) => toggle('operatingSystems', value)} />
         <SelectableChips label="Placements" options={[...campaignPlacementOptions]} selected={draft.placements} onToggle={(value) => toggle('placements', value)} />
-        <div className="space-y-4 rounded-lg border border-slate-200 p-4">
-          <h3 className="font-semibold text-navy-900">Budget</h3>
+        <div className="space-y-4 rounded-lg border border-border p-4">
+          <h3 className="font-semibold text-foreground">Budget</h3>
           <CampaignChoiceCards
             label="Budget type"
             options={[{ label: 'Daily budget', value: 'daily' }, { label: 'Lifetime budget', value: 'lifetime' }]}
@@ -825,15 +825,15 @@ export function CreateCampaignForm({
           <TextField id="end-date" label="End date" type="date" value={draft.endDate} onChange={(value) => updateDraft('endDate', value)} onBlur={() => markTouched('endDate')} error={fieldError('endDate')} />
         </div>
         <TextField id="frequency-cap" label="Frequency cap (impressions per person)" type="number" min={1} value={draft.frequencyCap} onChange={(value) => updateDraft('frequencyCap', value)} />
-        <section aria-label="Mock audience meter" className="space-y-3 rounded-lg bg-blue-50 p-4">
+        <section aria-label="Mock audience meter" className="space-y-3 rounded-lg bg-accent p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="font-semibold text-navy-900">Audience setup</h3>
-            <span className="text-sm text-navy-900">
+            <h3 className="font-semibold text-foreground">Audience setup</h3>
+            <span className="text-sm text-foreground">
               {draft.country && (draft.city || draft.state) && draft.interests.length ? 'Focused configuration' : draft.country || draft.interests.length ? 'Partially configured' : 'Not configured'}
             </span>
           </div>
           <Progress value={draft.country && (draft.city || draft.state) && draft.interests.length ? 100 : draft.country || draft.interests.length ? 50 : 0} aria-label="Mock audience configuration completeness" />
-          <p className="text-xs text-slate-600">Mock configuration indicator only. It does not estimate audience size or reach.</p>
+          <p className="text-xs text-muted-foreground">Mock configuration indicator only. It does not estimate audience size or reach.</p>
         </section>
         <Accordion type="single" collapsible value={advancedOpen ? 'advanced' : ''} onValueChange={(value) => setAdvancedOpen(value === 'advanced')}>
           <AccordionItem value="advanced">
@@ -861,7 +861,7 @@ export function CreateCampaignForm({
               <TextField id="blacklist" label="Blacklist / whitelist" value={draft.blacklist} onChange={(value) => updateDraft('blacklist', value)} placeholder="Optional domains or categories" />
               <TextField id="ip-range" label="IP range" value={draft.ipRange} onChange={(value) => updateDraft('ipRange', value)} placeholder="Optional CIDR range" />
               <TextField id="custom-bid" label="Custom bid (₹)" type="number" min={0} value={draft.customBid} onChange={(value) => updateDraft('customBid', value)} />
-              <p className="text-xs text-slate-600">Delivery, pricing, capping, and targeting rules require real backend enforcement before launch.</p>
+              <p className="text-xs text-muted-foreground">Delivery, pricing, capping, and targeting rules require real backend enforcement before launch.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -871,7 +871,7 @@ export function CreateCampaignForm({
     <Card>
       <CardHeader>
         <CardTitle>Ad</CardTitle>
-        <p className="text-sm text-slate-600">Add creative and preview how the ad may appear.</p>
+        <p className="text-sm text-muted-foreground">Add creative and preview how the ad may appear.</p>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
@@ -884,12 +884,12 @@ export function CreateCampaignForm({
             onChange={handleImageChange}
             aria-describedby={imageError ? 'creative-image-error' : undefined}
           />
-          <p className="text-xs text-slate-500">PNG, JPEG, or WebP up to 2 MB. Stored locally in this browser.</p>
+          <p className="text-xs text-muted-foreground">PNG, JPEG, or WebP up to 2 MB. Stored locally in this browser.</p>
           {imageError && <p id="creative-image-error" role="alert" className="text-sm text-red-700">{imageError}</p>}
           {draft.imageDataUrl && (
-            <div className="flex items-center gap-3 rounded-lg border border-slate-200 p-3">
+            <div className="flex items-center gap-3 rounded-lg border border-border p-3">
               <Image src={draft.imageDataUrl} alt="Campaign creative thumbnail" width={80} height={56} unoptimized className="h-14 w-20 rounded-lg object-cover" />
-              <p className="min-w-0 flex-1 truncate text-sm text-navy-900">{draft.imageName}</p>
+              <p className="min-w-0 flex-1 truncate text-sm text-foreground">{draft.imageName}</p>
               <Button
                 type="button"
                 variant="outline"
@@ -1017,7 +1017,7 @@ export function CreateCampaignForm({
         action={<Button type="button" variant="outline" onClick={saveDraft}>Save draft</Button>}
       />
       {!isHydrated && (
-        <div role="status" className="h-1 w-full rounded-lg bg-slate-200">
+        <div role="status" className="h-1 w-full rounded-lg bg-border">
           <span className="sr-only">Restoring saved campaign draft</span>
         </div>
       )}
@@ -1031,10 +1031,10 @@ export function CreateCampaignForm({
             <Card>
               <CardHeader>
                 <CardTitle>Review campaign</CardTitle>
-                <p className="text-sm text-slate-600">Review the values you entered before the mock publish action.</p>
+                <p className="text-sm text-muted-foreground">Review the values you entered before the mock publish action.</p>
               </CardHeader>
               <CardContent className="space-y-5">
-                <p className="rounded-lg bg-blue-50 p-3 text-sm text-navy-900">
+                <p className="rounded-lg bg-accent p-3 text-sm text-foreground">
                   Nothing has been filled in automatically. “Not set” means you have not entered a value.
                 </p>
                 {missingRequired.length > 0 && (
@@ -1045,9 +1045,9 @@ export function CreateCampaignForm({
                     </ul>
                   </section>
                 )}
-                <section aria-labelledby="optional-missing-title" className="rounded-lg border border-slate-200 p-4">
-                  <h3 id="optional-missing-title" className="font-semibold text-navy-900">Optional information not provided</h3>
-                  <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-slate-600">
+                <section aria-labelledby="optional-missing-title" className="rounded-lg border border-border p-4">
+                  <h3 id="optional-missing-title" className="font-semibold text-foreground">Optional information not provided</h3>
+                  <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-muted-foreground">
                     {!draft.country && <li>No country targeting is selected; no location is assumed.</li>}
                     {!draft.interests.length && <li>No interest targeting is selected.</li>}
                     {!draft.imageDataUrl && <li>No creative image is uploaded; the preview shows a placeholder.</li>}

@@ -18,14 +18,14 @@ export function DataTable<T extends { id: string }>({
   label,
 }: DataTableProps<T>) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+    <div className="overflow-x-auto rounded-lg border border-border bg-white">
       <table className="w-full min-w-[640px] text-left text-sm" aria-label={label}>
-        <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <thead className="border-b border-border bg-secondary text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           <tr>
             {columns.map((column) => <th key={column.key} scope="col" className="px-4 py-3">{column.header}</th>)}
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 text-slate-700">
+        <tbody className="divide-y divide-border text-foreground">
           {rows.map((row) => (
             <tr key={row.id}>
               {columns.map((column) => <td key={column.key} className="px-4 py-3">{column.render(row)}</td>)}

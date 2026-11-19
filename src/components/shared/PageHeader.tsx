@@ -15,12 +15,12 @@ export function PageHeader({ breadcrumbs, title, description, action }: PageHead
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
         <nav aria-label="Breadcrumb" className="mb-2">
-          <ol className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <ol className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             {breadcrumbs.map((crumb, index) => (
               <li key={`${crumb.label}-${index}`} className="flex items-center gap-2">
                 {index > 0 && <span aria-hidden="true">/</span>}
                 {crumb.href ? (
-                  <Link href={crumb.href} className="rounded-sm hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                  <Link href={crumb.href} className="rounded-sm hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     {crumb.label}
                   </Link>
                 ) : (
@@ -30,8 +30,8 @@ export function PageHeader({ breadcrumbs, title, description, action }: PageHead
             ))}
           </ol>
         </nav>
-        <h1 className="text-2xl font-bold text-navy-900">{title}</h1>
-        <p className="mt-2 text-sm text-slate-600">{description}</p>
+        <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{description}</p>
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </header>

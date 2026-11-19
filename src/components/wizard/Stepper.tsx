@@ -9,13 +9,13 @@ export const Stepper = ({ steps, current }: StepperProps) => {
     <>
       {/* Mobile progress */}
       <div className="sm:hidden">
-        <p className="text-sm font-medium text-slate-700">
+        <p className="text-sm font-medium text-foreground">
           Step {current + 1} of {steps.length} · {steps[current]}
         </p>
 
-        <div className="mt-2 h-2 rounded-full bg-slate-100">
+        <div className="mt-2 h-2 rounded-full bg-muted">
           <div
-            className="h-2 rounded-full bg-brand-600"
+            className="h-2 rounded-full bg-progress"
             style={{
               width: `${((current + 1) / steps.length) * 100}%`,
             }}
@@ -39,8 +39,8 @@ export const Stepper = ({ steps, current }: StepperProps) => {
                   aria-hidden
                   className={`absolute -left-1/2 top-5 w-full -translate-y-1/2 ${
                     i <= current
-                      ? 'h-0.5 bg-brand-600'
-                      : 'border-t-2 border-dashed border-slate-300'
+                      ? 'h-0.5 bg-progress'
+                      : 'border-t-2 border-dashed border-border'
                   }`}
                 />
               )}
@@ -48,10 +48,10 @@ export const Stepper = ({ steps, current }: StepperProps) => {
               <span
                 className={`relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-semibold ${
                   done
-                    ? 'border-brand-600 bg-brand-600 text-white'
+                    ? 'border-primary bg-primary text-white'
                     : active
-                      ? 'border-brand-600 bg-white text-brand-600'
-                      : 'border-slate-300 bg-white text-slate-400'
+                      ? 'border-primary bg-white text-foreground'
+                      : 'border-border bg-white text-muted-foreground'
                 }`}
               >
                 {done ? '✓' : i + 1}
@@ -60,8 +60,8 @@ export const Stepper = ({ steps, current }: StepperProps) => {
               <span
                 className={`mt-2 text-xs ${
                   active || done
-                    ? 'font-medium text-slate-900'
-                    : 'text-slate-400'
+                    ? 'font-medium text-foreground'
+                    : 'text-muted-foreground'
                 }`}
               >
                 {label}

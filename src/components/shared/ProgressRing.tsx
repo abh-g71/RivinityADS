@@ -10,7 +10,7 @@ export function ProgressRing({ value, label }: ProgressRingProps) {
   return (
     <div className="flex items-center gap-3" aria-label={`${label}: ${progress}%`}>
       <svg className="h-16 w-16 -rotate-90" viewBox="0 0 64 64" role="img" aria-label={`${progress}% ${label}`}>
-        <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="5" className="text-slate-100" />
+        <circle cx="32" cy="32" r="28" fill="none" stroke="currentColor" strokeWidth="5" className="text-white" />
         <circle
           cx="32"
           cy="32"
@@ -21,10 +21,10 @@ export function ProgressRing({ value, label }: ProgressRingProps) {
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={circumference * (1 - progress / 100)}
-          className="text-brand-600"
+          className="text-foreground"
         />
       </svg>
-      <span className="text-sm font-semibold text-navy-900">{label}</span>
+      <span className="text-sm font-semibold text-foreground">{label}</span>
     </div>
   )
 }

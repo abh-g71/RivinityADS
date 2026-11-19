@@ -43,16 +43,16 @@ export default function AddFundsPage() {
         breadcrumbs={[{ label: 'Advertiser' }, { label: 'Add Funds' }]}
         title="Add Funds"
         description="This demo does not connect to payment providers or move money."
-        action={<Link href="/finance" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View finance</Link>}
+        action={<Link href="/finance" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">View finance</Link>}
       />
 
       <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
         <div className="space-y-6">
           <Card className="p-5 sm:p-6">
-            <h2 className="text-lg font-semibold text-navy-900">Payment method</h2>
+            <h2 className="text-lg font-semibold text-foreground">Payment method</h2>
             {mockPaymentGroups.map((group) => (
               <fieldset key={group.title} className="mt-5">
-                <legend className="text-sm font-medium text-slate-600">{group.title}</legend>
+                <legend className="text-sm font-medium text-muted-foreground">{group.title}</legend>
                 <div className="mt-2 grid gap-3 sm:grid-cols-3">
                   {group.methods.map((item) => (
                     <label key={item} className="cursor-pointer">
@@ -64,8 +64,8 @@ export default function AddFundsPage() {
                         checked={method === item}
                         onChange={() => { setMethod(item); setSuccess('') }}
                       />
-                      <span className={`flex min-h-16 items-center justify-center rounded-lg border p-4 text-center text-sm font-semibold peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 ${
-                        method === item ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-200 text-slate-700 hover:border-brand-500'
+                      <span className={`flex min-h-16 items-center justify-center rounded-lg border p-4 text-center text-sm font-semibold peer-focus-visible:ring-2 peer-focus-visible:ring-ring ${
+                        method === item ? 'border-primary bg-secondary text-foreground' : 'border-border text-foreground hover:border-accent'
                       }`}>
                         {item}
                       </span>
@@ -75,14 +75,14 @@ export default function AddFundsPage() {
               </fieldset>
             ))}
             {touched && !method && <p className="mt-3 text-xs text-danger-600" role="alert">Choose a payment method.</p>}
-            <div className="mt-5 rounded-lg bg-slate-50 p-4 text-sm text-slate-600">
+            <div className="mt-5 rounded-lg bg-secondary p-4 text-sm text-muted-foreground">
               <p>Deposit limits: <span className="font-medium">set by platform</span></p>
               <p className="mt-1">Fees: <span className="font-medium">set by platform</span></p>
             </div>
           </Card>
 
           <Card className="p-5 sm:p-6">
-            <h2 className="text-lg font-semibold text-navy-900">Amount</h2>
+            <h2 className="text-lg font-semibold text-foreground">Amount</h2>
             <Input
               id="funding-amount"
               label="Amount (₹)"
@@ -109,8 +109,8 @@ export default function AddFundsPage() {
 
         <div className="space-y-5 lg:sticky lg:top-24">
           <Card className="p-5 sm:p-6">
-            <h2 className="text-lg font-semibold text-navy-900">Account details</h2>
-            <p className="mt-1 text-sm text-slate-600">Editable demo information for invoice preview only.</p>
+            <h2 className="text-lg font-semibold text-foreground">Account details</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Editable demo information for invoice preview only.</p>
             <div className="mt-4 space-y-4">
               <Select
                 id="invoice-account-type"
@@ -121,15 +121,15 @@ export default function AddFundsPage() {
               />
               <Input id="invoice-email" label="Email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} onBlur={() => setTouched(true)} error={touched ? emailError : undefined} />
               <FormField id="invoice-address" label="Address">
-                <textarea id="invoice-address" rows={3} value={address} onChange={(event) => setAddress(event.target.value)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+                <textarea id="invoice-address" rows={3} value={address} onChange={(event) => setAddress(event.target.value)} className="rounded-lg border border-border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
               </FormField>
             </div>
           </Card>
 
           <Card className="flex items-center justify-between gap-4 p-5">
             <div>
-              <h2 className="font-semibold text-navy-900">Verification</h2>
-              <p className="mt-1 text-sm text-slate-600">Mock account status</p>
+              <h2 className="font-semibold text-foreground">Verification</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Mock account status</p>
             </div>
             <Badge tone="warning">Not verified</Badge>
           </Card>

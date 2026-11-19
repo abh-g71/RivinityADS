@@ -11,12 +11,12 @@ type ToggleProps = {
 
 export function Toggle({ id, label, checked, onChange }: ToggleProps) {
   return (
-    <label htmlFor={id} className="inline-flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+    <label htmlFor={id} className="inline-flex cursor-pointer items-center gap-2 text-sm text-foreground">
       <Switch
         id={id}
         checked={checked}
         onCheckedChange={onChange}
-        className="h-6 w-11 data-[state=unchecked]:bg-slate-300 data-[state=checked]:bg-brand-600"
+        className="h-6 w-11 data-[state=unchecked]:bg-muted-foreground data-[state=checked]:bg-primary"
       />
       {label}
     </label>

@@ -324,21 +324,21 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
     }
   }
 
-  if (!ready) return <main className="mx-auto max-w-3xl px-4 py-10"><div className="h-48 rounded-lg border border-slate-200 bg-slate-100" /></main>
+  if (!ready) return <main className="mx-auto max-w-3xl px-4 py-10"><div className="h-48 rounded-lg border border-border bg-muted" /></main>
 
   if (published) {
     return (
       <main className="mx-auto w-full max-w-2xl px-4 py-16 text-center sm:px-6">
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-50 text-green-700"><Check className="h-7 w-7" aria-hidden="true" /></span>
         <p className="mt-5 text-sm font-semibold text-green-700">Campaign submitted</p>
-        <h1 className="mt-2 text-3xl font-bold text-navy-900">Your campaign is ready for review</h1>
-        <p className="mt-3 text-slate-600">This demo does not deliver ads. You can view the campaign list or create another draft.</p>
+        <h1 className="mt-2 text-3xl font-bold text-foreground">Your campaign is ready for review</h1>
+        <p className="mt-3 text-muted-foreground">This demo does not deliver ads. You can view the campaign list or create another draft.</p>
         <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link href="/campaigns" className="rounded-lg bg-brand-600 px-5 py-3 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">View campaigns</Link>
+          <Link href="/campaigns" className="rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">View campaigns</Link>
           <button type="button" onClick={() => {
             try { window.localStorage.removeItem(campaignDraftStorageKey) } catch (error) { console.error('Unable to clear campaign draft', error) }
             router.push('/campaigns/new')
-          }} className="rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Create another</button>
+          }} className="rounded-lg border border-border px-5 py-3 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Create another</button>
         </div>
       </main>
     )
@@ -372,41 +372,41 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:min-h-[calc(100vh-9rem)] lg:py-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/campaigns/new" className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-slate-600 hover:text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Exit setup</Link>
+        <Link href="/campaigns/new" className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Exit setup</Link>
         <div className="flex items-center gap-3">
-          <Link href="/campaigns/new/ai" onClick={saveDraftNow} className="rounded-lg px-2 py-1 text-xs font-medium text-brand-700 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Switch to AI</Link>
-          <p className={`text-xs ${saveMessage === 'Could not save' ? 'text-red-700' : 'text-slate-500'}`} role="status">{saveMessage}</p>
+          <Link href="/campaigns/new/ai" onClick={saveDraftNow} className="rounded-lg px-2 py-1 text-xs font-medium text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Switch to AI</Link>
+          <p className={`text-xs ${saveMessage === 'Could not save' ? 'text-red-700' : 'text-muted-foreground'}`} role="status">{saveMessage}</p>
         </div>
       </div>
 
-      <section className="mt-5 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:mt-4">
+      <section className="mt-5 rounded-lg border border-border bg-white p-4 shadow-sm sm:p-5 lg:mt-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-navy-900">{review ? 'Review your campaign' : `Step ${step + 1} of 5`}</p>
-            <p className="mt-1 text-xs text-slate-500">{review ? 'Check each detail before you publish.' : step === 0 ? 'About 2 minutes left' : step < 3 ? 'About 1 minute left' : 'Less than 1 minute left'}</p>
+            <p className="text-sm font-semibold text-foreground">{review ? 'Review your campaign' : `Step ${step + 1} of 5`}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{review ? 'Check each detail before you publish.' : step === 0 ? 'About 2 minutes left' : step < 3 ? 'About 1 minute left' : 'Less than 1 minute left'}</p>
           </div>
           <div className="flex gap-1.5" aria-label={`${review ? 5 : step + 1} of 5 steps complete`}>
-            {campaignObjectives.map((goal, index) => <span key={goal.title} className={`h-1.5 w-8 rounded-full sm:w-12 ${index <= step ? 'bg-brand-600' : 'bg-slate-200'}`} />)}
+            {campaignObjectives.map((goal, index) => <span key={goal.title} className={`h-1.5 w-8 rounded-full sm:w-12 ${index <= step ? 'bg-progress' : 'bg-border'}`} />)}
           </div>
         </div>
-        <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
-          <div className="h-full rounded-full bg-brand-600" style={{ width: `${review ? 100 : ((step + 1) / 5) * 100}%` }} />
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-muted" aria-hidden="true">
+          <div className="h-full rounded-full bg-progress" style={{ width: `${review ? 100 : ((step + 1) / 5) * 100}%` }} />
         </div>
       </section>
 
       {!review ? (
         <section className={`mt-4 min-w-0 ${step === 1 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-stretch' : step === 3 ? 'grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(300px,0.9fr)] lg:items-start' : 'grid gap-5'}`}>
-          <div className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="min-w-0 rounded-lg border border-border bg-white p-4 shadow-sm sm:p-5">
             {step === 0 && (
               <>
-                <h1 className="text-2xl font-bold text-navy-900">What is your main goal?</h1>
-                <p className="mt-2 text-sm text-slate-600">Choose one. You can change this later.</p>
+                <h1 className="text-2xl font-bold text-foreground">What is your main goal?</h1>
+                <p className="mt-2 text-sm text-muted-foreground">Choose one. You can change this later.</p>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   {campaignObjectives.map((goal) => (
-                    <button key={goal.title} type="button" onClick={() => chooseGoal(goal.title)} className={`min-h-28 rounded-lg border p-4 text-left transition hover:border-brand-500 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.objective === goal.title ? 'border-brand-600 bg-brand-50' : 'border-slate-200'}`}>
-                      <span className="block font-semibold text-navy-900">{goal.title}</span>
-                      <span className="mt-1 block text-sm text-slate-600">{goal.hint}</span>
-                      <span className="mt-2 block text-xs text-slate-500">Recommended · continue in 1 tap</span>
+                    <button key={goal.title} type="button" onClick={() => chooseGoal(goal.title)} className={`min-h-28 rounded-lg border p-4 text-left transition hover:border-accent hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.objective === goal.title ? 'border-primary bg-secondary' : 'border-border'}`}>
+                      <span className="block font-semibold text-foreground">{goal.title}</span>
+                      <span className="mt-1 block text-sm text-muted-foreground">{goal.hint}</span>
+                      <span className="mt-2 block text-xs text-muted-foreground">Recommended · continue in 1 tap</span>
                     </button>
                   ))}
                 </div>
@@ -414,164 +414,164 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
             )}
             {step === 1 && (
               <>
-                <h1 className="text-2xl font-bold text-navy-900">Where and who</h1>
-                <p className="mt-2 text-sm text-slate-600">Add one or more places on the map, then choose who should see your ad.</p>
+                <h1 className="text-2xl font-bold text-foreground">Where and who</h1>
+                <p className="mt-2 text-sm text-muted-foreground">Add one or more places on the map, then choose who should see your ad.</p>
                 <div className="mt-5 space-y-5">
                   <div>
-                    <p className="text-sm font-semibold text-navy-900">Age range: {draft.ageMin}–{draft.ageMax}</p>
-                    <p className="mt-1 text-xs text-slate-500">Choose an age range that fits your audience.</p>
+                    <p className="text-sm font-semibold text-foreground">Age range: {draft.ageMin}–{draft.ageMax}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Choose an age range that fits your audience.</p>
                     <div className="mt-3 grid grid-cols-2 gap-4">
-                      <label className="text-xs text-slate-600">From {draft.ageMin}
-                        <input aria-label="Minimum age" type="range" min="18" max={Math.max(18, draft.ageMax - 1)} value={draft.ageMin} onChange={(event) => setField('ageMin', Number(event.target.value))} className="mt-2 w-full accent-brand-600" />
+                      <label className="text-xs text-muted-foreground">From {draft.ageMin}
+                        <input aria-label="Minimum age" type="range" min="18" max={Math.max(18, draft.ageMax - 1)} value={draft.ageMin} onChange={(event) => setField('ageMin', Number(event.target.value))} className="mt-2 w-full accent-primary" />
                       </label>
-                      <label className="text-xs text-slate-600">To {draft.ageMax}
-                        <input aria-label="Maximum age" type="range" min={Math.min(65, draft.ageMin + 1)} max="65" value={draft.ageMax} onChange={(event) => setField('ageMax', Number(event.target.value))} className="mt-2 w-full accent-brand-600" />
+                      <label className="text-xs text-muted-foreground">To {draft.ageMax}
+                        <input aria-label="Maximum age" type="range" min={Math.min(65, draft.ageMin + 1)} max="65" value={draft.ageMax} onChange={(event) => setField('ageMax', Number(event.target.value))} className="mt-2 w-full accent-primary" />
                       </label>
                     </div>
                   </div>
                   <fieldset>
-                    <legend className="text-sm font-semibold text-navy-900">Gender</legend>
-                    <p className="mt-1 text-xs text-slate-500">Everyone is a broad starting point.</p>
+                    <legend className="text-sm font-semibold text-foreground">Gender</legend>
+                    <p className="mt-1 text-xs text-muted-foreground">Everyone is a broad starting point.</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {['Everyone', 'Men', 'Women'].map((gender) => <button key={gender} type="button" aria-pressed={draft.gender === gender} onClick={() => setField('gender', gender, true)} className={`min-h-10 rounded-lg border px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.gender === gender ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>{gender}</button>)}
+                      {['Everyone', 'Men', 'Women'].map((gender) => <button key={gender} type="button" aria-pressed={draft.gender === gender} onClick={() => setField('gender', gender, true)} className={`min-h-10 rounded-lg border px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.gender === gender ? 'border-primary bg-secondary text-foreground' : 'border-border text-foreground'}`}>{gender}</button>)}
                     </div>
                   </fieldset>
                   <fieldset>
-                    <legend className="text-sm font-semibold text-navy-900">Interests <span className="font-normal text-slate-500">(optional, choose up to 8)</span></legend>
-                    <p className="mt-1 text-xs text-slate-500">Choose topics that match the people you want to reach.</p>
+                    <legend className="text-sm font-semibold text-foreground">Interests <span className="font-normal text-muted-foreground">(optional, choose up to 8)</span></legend>
+                    <p className="mt-1 text-xs text-muted-foreground">Choose topics that match the people you want to reach.</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {interests.map((interest) => <button key={interest} type="button" aria-pressed={draft.interests.includes(interest)} onClick={() => toggleInterest(interest)} className={`min-h-10 rounded-lg border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.interests.includes(interest) ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>{interest}</button>)}
+                      {interests.map((interest) => <button key={interest} type="button" aria-pressed={draft.interests.includes(interest)} onClick={() => toggleInterest(interest)} className={`min-h-10 rounded-lg border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.interests.includes(interest) ? 'border-primary bg-secondary text-foreground' : 'border-border text-foreground'}`}>{interest}</button>)}
                     </div>
                   </fieldset>
                   <section aria-label="Country audience targeting" className="space-y-3">
-                    <h2 className="text-sm font-semibold text-navy-900">Country audience</h2>
+                    <h2 className="text-sm font-semibold text-foreground">Country audience</h2>
                     <div className="grid min-w-0 gap-4 sm:grid-cols-2">
                       <CountryMultiSelect title="Include countries" countries={mockCountries} selected={draft.includedCountries} recommended="India" onToggle={(country) => toggleCountry(country, 'include')} helper={audienceEligibilityNote} />
                       <CountryMultiSelect title="Exclude countries" countries={mockCountries} selected={draft.excludedCountries} onToggle={(country) => toggleCountry(country, 'exclude')} helper={audienceEligibilityNote} />
                     </div>
                   </section>
-                  <p className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-navy-900">{audienceSummary(draft)}</p>
+                  <p className="rounded-lg border border-border bg-secondary p-3 text-sm text-foreground">{audienceSummary(draft)}</p>
                 </div>
               </>
             )}
             {step === 2 && (
               <>
-                <h1 className="text-2xl font-bold text-navy-900">{campaignObjectives.find((item) => item.title === draft.objective)?.budgetTitle ?? 'Choose your budget'}</h1>
-                <p className="mt-2 text-sm text-slate-600">Set a daily limit. You can change it whenever you like.</p>
-                <div className="mt-5 rounded-lg border border-brand-200 bg-brand-50 p-4">
+                <h1 className="text-2xl font-bold text-foreground">{campaignObjectives.find((item) => item.title === draft.objective)?.budgetTitle ?? 'Choose your budget'}</h1>
+                <p className="mt-2 text-sm text-muted-foreground">Set a daily limit. You can change it whenever you like.</p>
+                <div className="mt-5 rounded-lg border border-border bg-secondary p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-sm font-semibold text-navy-900">Daily budget</p>
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-brand-700">Recommended</span>
+                    <p className="text-sm font-semibold text-foreground">Daily budget</p>
+                    <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-foreground">Recommended</span>
                   </div>
-                  <p className="mt-2 text-3xl font-bold text-navy-900">₹{draft.dailyBudget.toLocaleString('en-IN')}<span className="text-sm font-medium text-slate-600"> / day</span></p>
-                  <input aria-label="Daily budget" type="range" min="200" max="10000" step="100" value={draft.dailyBudget} onFocus={beginFieldEdit} onPointerUp={finishFieldEdit} onKeyUp={finishFieldEdit} onChange={(event) => setField('dailyBudget', Number(event.target.value))} className="mt-4 w-full accent-brand-600" />
-                  <p className="mt-1 text-xs text-slate-600">This is the most you plan to spend each day.</p>
+                  <p className="mt-2 text-3xl font-bold text-foreground">₹{draft.dailyBudget.toLocaleString('en-IN')}<span className="text-sm font-medium text-muted-foreground"> / day</span></p>
+                  <input aria-label="Daily budget" type="range" min="200" max="10000" step="100" value={draft.dailyBudget} onFocus={beginFieldEdit} onPointerUp={finishFieldEdit} onKeyUp={finishFieldEdit} onChange={(event) => setField('dailyBudget', Number(event.target.value))} className="mt-4 w-full accent-primary" />
+                  <p className="mt-1 text-xs text-muted-foreground">This is the most you plan to spend each day.</p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2" aria-label="Common daily budgets">
-                  {[200, 500, 1000].map((amount) => <button key={amount} type="button" aria-pressed={draft.dailyBudget === amount} onClick={() => setField('dailyBudget', amount, true)} className={`min-h-10 rounded-lg border px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.dailyBudget === amount ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>₹{amount.toLocaleString('en-IN')}{amount === 500 ? ' · Recommended' : ''}</button>)}
+                  {[200, 500, 1000].map((amount) => <button key={amount} type="button" aria-pressed={draft.dailyBudget === amount} onClick={() => setField('dailyBudget', amount, true)} className={`min-h-10 rounded-lg border px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.dailyBudget === amount ? 'border-primary bg-secondary text-foreground' : 'border-border text-foreground'}`}>₹{amount.toLocaleString('en-IN')}{amount === 500 ? ' · Recommended' : ''}</button>)}
                 </div>
-                <div className="mt-5 rounded-lg bg-slate-50 p-4">
-                  <p className="text-sm font-semibold text-navy-900">{campaignObjectives.find((item) => item.title === draft.objective)?.estimateLabels[0] ?? 'Estimated results'}</p>
-                  <p className="mt-1 text-sm text-slate-700">{draft.objective === 'Get leads' ? `${Math.max(1, Math.round(draft.dailyBudget / 250))}–${Math.max(2, Math.round(draft.dailyBudget / 100))} leads · Cost per lead ₹${Math.max(50, Math.round(draft.dailyBudget / 5))}` : draft.objective === 'Get sales' ? `${Math.max(1, Math.round(draft.dailyBudget / 500))}–${Math.max(2, Math.round(draft.dailyBudget / 200))} sales · Return on ad spend 1.8×` : draft.objective === 'Build awareness' ? `${Math.round(draft.dailyBudget * 20 * reachMultiplier).toLocaleString('en-IN')}–${Math.round(draft.dailyBudget * 45 * reachMultiplier).toLocaleString('en-IN')} people · ${draft.objectiveDetails.objective === 'Build awareness' ? draft.objectiveDetails.frequency : 3} times each` : `${(draft.dailyBudget * 2).toLocaleString('en-IN')}–${(draft.dailyBudget * 5).toLocaleString('en-IN')} visits`}</p>
-                  <p className="mt-1 text-xs text-slate-500">Estimated, sample data</p>
+                <div className="mt-5 rounded-lg bg-secondary p-4">
+                  <p className="text-sm font-semibold text-foreground">{campaignObjectives.find((item) => item.title === draft.objective)?.estimateLabels[0] ?? 'Estimated results'}</p>
+                  <p className="mt-1 text-sm text-foreground">{draft.objective === 'Get leads' ? `${Math.max(1, Math.round(draft.dailyBudget / 250))}–${Math.max(2, Math.round(draft.dailyBudget / 100))} leads · Cost per lead ₹${Math.max(50, Math.round(draft.dailyBudget / 5))}` : draft.objective === 'Get sales' ? `${Math.max(1, Math.round(draft.dailyBudget / 500))}–${Math.max(2, Math.round(draft.dailyBudget / 200))} sales · Return on ad spend 1.8×` : draft.objective === 'Build awareness' ? `${Math.round(draft.dailyBudget * 20 * reachMultiplier).toLocaleString('en-IN')}–${Math.round(draft.dailyBudget * 45 * reachMultiplier).toLocaleString('en-IN')} people · ${draft.objectiveDetails.objective === 'Build awareness' ? draft.objectiveDetails.frequency : 3} times each` : `${(draft.dailyBudget * 2).toLocaleString('en-IN')}–${(draft.dailyBudget * 5).toLocaleString('en-IN')} visits`}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Estimated, sample data</p>
                 </div>
-                {draft.objective === 'Build awareness' && draft.objectiveDetails.objective === 'Build awareness' && <label className="mt-4 block text-sm font-medium text-navy-900">Average frequency: {draft.objectiveDetails.frequency}<input aria-label="Average frequency" type="range" min="1" max="8" value={draft.objectiveDetails.frequency} onChange={(event) => updateDraft((current) => current.objectiveDetails.objective === 'Build awareness' ? { ...current, objectiveDetails: { ...current.objectiveDetails, frequency: Number(event.target.value) } } : current)} className="mt-2 w-full accent-brand-600" /></label>}
-                {draft.objective === 'Get sales' && <p className="mt-4 rounded-lg border border-slate-200 p-3 text-sm text-slate-700">Conversion tracking: Mock status · ready to configure</p>}
+                {draft.objective === 'Build awareness' && draft.objectiveDetails.objective === 'Build awareness' && <label className="mt-4 block text-sm font-medium text-foreground">Average frequency: {draft.objectiveDetails.frequency}<input aria-label="Average frequency" type="range" min="1" max="8" value={draft.objectiveDetails.frequency} onChange={(event) => updateDraft((current) => current.objectiveDetails.objective === 'Build awareness' ? { ...current, objectiveDetails: { ...current.objectiveDetails, frequency: Number(event.target.value) } } : current)} className="mt-2 w-full accent-primary" /></label>}
+                {draft.objective === 'Get sales' && <p className="mt-4 rounded-lg border border-border p-3 text-sm text-foreground">Conversion tracking: Mock status · ready to configure</p>}
                 <fieldset className="mt-5">
-                  <legend className="text-sm font-semibold text-navy-900">How long should it run?</legend>
-                  <p className="mt-1 text-xs text-slate-500">Choose a run time or keep the campaign running.</p>
+                  <legend className="text-sm font-semibold text-foreground">How long should it run?</legend>
+                  <p className="mt-1 text-xs text-muted-foreground">Choose a run time or keep the campaign running.</p>
                   <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    {durations.map((duration) => <button key={duration} type="button" aria-pressed={draft.duration === duration} onClick={() => setField('duration', duration, true)} className={`min-h-11 rounded-lg border px-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.duration === duration ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>{duration === 'ongoing' ? 'Keep running' : `${duration} days`}</button>)}
+                    {durations.map((duration) => <button key={duration} type="button" aria-pressed={draft.duration === duration} onClick={() => setField('duration', duration, true)} className={`min-h-11 rounded-lg border px-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.duration === duration ? 'border-primary bg-secondary text-foreground' : 'border-border text-foreground'}`}>{duration === 'ongoing' ? 'Keep running' : `${duration} days`}</button>)}
                   </div>
                 </fieldset>
-                <p className="mt-4 rounded-lg border border-slate-200 p-3 text-sm text-navy-900">
+                <p className="mt-4 rounded-lg border border-border p-3 text-sm text-foreground">
                   {totalBudget === null ? <>Your daily cap is <strong>₹{draft.dailyBudget.toLocaleString('en-IN')}</strong>. No end date is set.</> : <>Estimated maximum: <strong>₹{totalBudget.toLocaleString('en-IN')}</strong> over {draft.duration} days.</>}
                 </p>
-                <details className="mt-4 rounded-lg border border-slate-200 p-4">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-navy-900">More options <ChevronDown className="h-4 w-4" aria-hidden="true" /></summary>
-                  <p className="mt-3 text-sm text-slate-600">Your daily budget is a spending limit, not a promise to spend the full amount.</p>
+                <details className="mt-4 rounded-lg border border-border p-4">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-foreground">More options <ChevronDown className="h-4 w-4" aria-hidden="true" /></summary>
+                  <p className="mt-3 text-sm text-muted-foreground">Your daily budget is a spending limit, not a promise to spend the full amount.</p>
                 </details>
               </>
             )}
             {step === 3 && <ObjectiveAdStep draft={draft} updateDraft={updateDraft} beginFieldEdit={beginFieldEdit} finishFieldEdit={finishFieldEdit} uploadImage={uploadImage} imageError={imageError} imageUploadButton={imageUploadButton} />}
-            <div className="sticky bottom-0 z-10 mt-6 -mx-4 border-t border-slate-200 bg-white px-4 pb-4 pt-4 sm:-mx-5 sm:px-5">
+            <div className="sticky bottom-0 z-10 mt-6 -mx-4 border-t border-border bg-white px-4 pb-4 pt-4 sm:-mx-5 sm:px-5">
               <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <button type="button" onClick={() => updateStep(step - 1)} disabled={step === 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:opacity-40"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</button>
-                <button type="button" onClick={advanceStep} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{step === 3 ? 'Review campaign' : 'Continue'}<ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
+                <button type="button" onClick={() => updateStep(step - 1)} disabled={step === 0} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border px-4 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Back</button>
+                <button type="button" onClick={advanceStep} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{step === 3 ? 'Review campaign' : 'Continue'}<ArrowRight className="h-4 w-4" aria-hidden="true" /></button>
               </div>
             </div>
           </div>
-          {step === 3 && <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-hidden"><AdPreview draft={draft} /></aside>}
+          {step === 3 && <aside className="rounded-lg border border-border bg-white p-4 shadow-sm sm:p-5 lg:overflow-hidden"><AdPreview draft={draft} /></aside>}
           {step === 1 && (
-            <aside className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-              <h2 className="mb-4 text-base font-semibold text-navy-900">Locations and map</h2>
+            <aside className="min-w-0 rounded-lg border border-border bg-white p-4 shadow-sm sm:p-5">
+              <h2 className="mb-4 text-base font-semibold text-foreground">Locations and map</h2>
               <MapPicker locations={draft.locations} onChange={(locations: CampaignTargetLocation[]) => setField('locations', locations)} />
             </aside>
           )}
         </section>
       ) : (
         <section className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)] lg:min-h-0">
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
+          <div className="rounded-lg border border-border bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-navy-900">Review your campaign</h1>
-                <p className="mt-2 text-sm text-slate-600">Select any value to edit it right here.</p>
+                <h1 className="text-2xl font-bold text-foreground">Review your campaign</h1>
+                <p className="mt-2 text-sm text-muted-foreground">Select any value to edit it right here.</p>
               </div>
-              <p className="rounded-lg bg-brand-50 px-3 py-2 text-sm font-semibold text-navy-900">₹{draft.dailyBudget.toLocaleString('en-IN')} per day</p>
+              <p className="rounded-lg bg-secondary px-3 py-2 text-sm font-semibold text-foreground">₹{draft.dailyBudget.toLocaleString('en-IN')} per day</p>
             </div>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {(['objective', 'location', 'age', 'gender', 'interests', 'budget', 'duration', 'headline', 'text', 'cta', 'url'] as ReviewField[]).map((field) => (
-                <div key={field} className="min-w-0 rounded-lg border border-slate-200 p-3">
-                  <p className="text-xs font-medium capitalize text-slate-500">{field === 'cta' ? 'Button text' : field === 'url' ? 'Website link' : field === 'text' ? 'Ad text' : field}</p>
+                <div key={field} className="min-w-0 rounded-lg border border-border p-3">
+                  <p className="text-xs font-medium capitalize text-muted-foreground">{field === 'cta' ? 'Button text' : field === 'url' ? 'Website link' : field === 'text' ? 'Ad text' : field}</p>
                   {editing === field ? (
                     <div className="mt-1 flex gap-2">
                       {field === 'text'
-                        ? <textarea autoFocus value={draft.text} onChange={(event) => updateReviewField(field, event.target.value)} className="min-h-20 w-full rounded-lg border border-slate-300 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
-                        : <input autoFocus aria-label={`Edit ${field}`} value={field === 'age' ? `${draft.ageMin}-${draft.ageMax}` : field === 'interests' ? draft.interests.join(', ') : field === 'budget' ? String(draft.dailyBudget) : field === 'duration' ? (draft.duration === 'ongoing' ? 'ongoing' : String(draft.duration)) : field === 'location' ? locationSummary : field === 'objective' ? draft.objective : field === 'gender' ? draft.gender : field === 'headline' ? draft.headline : field === 'cta' ? draft.cta : draft.url} onChange={(event) => updateReviewField(field, event.target.value)} className="h-10 min-w-0 flex-1 rounded-lg border border-slate-300 px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />}
-                      <button type="button" onClick={() => setEditing(null)} className="rounded-lg px-2 text-xs font-semibold text-brand-700 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Done</button>
+                        ? <textarea autoFocus value={draft.text} onChange={(event) => updateReviewField(field, event.target.value)} className="min-h-20 w-full rounded-lg border border-border p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+                        : <input autoFocus aria-label={`Edit ${field}`} value={field === 'age' ? `${draft.ageMin}-${draft.ageMax}` : field === 'interests' ? draft.interests.join(', ') : field === 'budget' ? String(draft.dailyBudget) : field === 'duration' ? (draft.duration === 'ongoing' ? 'ongoing' : String(draft.duration)) : field === 'location' ? locationSummary : field === 'objective' ? draft.objective : field === 'gender' ? draft.gender : field === 'headline' ? draft.headline : field === 'cta' ? draft.cta : draft.url} onChange={(event) => updateReviewField(field, event.target.value)} className="h-10 min-w-0 flex-1 rounded-lg border border-border px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />}
+                      <button type="button" onClick={() => setEditing(null)} className="rounded-lg px-2 text-xs font-semibold text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Done</button>
                     </div>
                   ) : (
                     field === 'location'
-                      ? <p className="mt-1 break-words text-sm font-medium text-navy-900">{reviewFieldValue(field) ?? ''}</p>
-                      : <button type="button" onClick={() => setEditing(field)} className="mt-1 block max-w-full break-words text-left text-sm font-medium text-navy-900 underline decoration-dotted underline-offset-4 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{reviewFieldValue(field) ?? ''}</button>
+                      ? <p className="mt-1 break-words text-sm font-medium text-foreground">{reviewFieldValue(field) ?? ''}</p>
+                      : <button type="button" onClick={() => setEditing(field)} className="mt-1 block max-w-full break-words text-left text-sm font-medium text-foreground underline decoration-dotted underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{reviewFieldValue(field) ?? ''}</button>
                   )}
                 </div>
               ))}
             </div>
-            <section className="mt-4 rounded-lg border border-slate-200 p-4">
-              <h2 className="text-sm font-semibold text-navy-900">Audience targeting</h2>
-              <p className="mt-2 text-sm text-slate-700">Locations: {draft.locations.map((item) => item.label).join(' · ') || 'None selected'}</p>
-              <p className="mt-1 text-sm text-slate-700">Include countries: {draft.includedCountries.join(', ') || 'None'}</p>
-              <p className="mt-1 text-sm text-slate-700">Exclude countries: {draft.excludedCountries.join(', ') || 'None'}</p>
-              <p className="mt-1 text-sm text-slate-700">Interests: {draft.interests.join(', ') || 'All interests'}</p>
+            <section className="mt-4 rounded-lg border border-border p-4">
+              <h2 className="text-sm font-semibold text-foreground">Audience targeting</h2>
+              <p className="mt-2 text-sm text-foreground">Locations: {draft.locations.map((item) => item.label).join(' · ') || 'None selected'}</p>
+              <p className="mt-1 text-sm text-foreground">Include countries: {draft.includedCountries.join(', ') || 'None'}</p>
+              <p className="mt-1 text-sm text-foreground">Exclude countries: {draft.excludedCountries.join(', ') || 'None'}</p>
+              <p className="mt-1 text-sm text-foreground">Interests: {draft.interests.join(', ') || 'All interests'}</p>
             </section>
-            {draft.objectiveDetails.objective === 'Get leads' && <section className="mt-4 rounded-lg border border-slate-200 p-4"><h2 className="text-sm font-semibold text-navy-900">Lead form: {draft.objectiveDetails.leadForm.name || 'Unnamed form'}</h2><p className="mt-2 text-sm text-slate-600">Fields: {draft.objectiveDetails.leadForm.fields.filter((field) => field.enabled).map((field) => `${field.label}${field.required ? ' (required)' : ''}`).join(', ') || 'No fields selected'}</p><p className="mt-1 break-all text-xs text-slate-500">Privacy policy: {draft.objectiveDetails.leadForm.privacyPolicyUrl || 'Not set'}</p></section>}
-            {draft.objectiveDetails.objective === 'Get sales' && <section className="mt-4 rounded-lg border border-slate-200 p-4"><h2 className="text-sm font-semibold text-navy-900">Product details</h2><p className="mt-2 text-sm text-slate-600">{draft.objectiveDetails.productName || 'Product name'} · ₹{draft.objectiveDetails.offerPrice || draft.objectiveDetails.price || '0'}{draft.objectiveDetails.offerPrice ? ` (regular ₹${draft.objectiveDetails.price})` : ''}</p></section>}
-            {draft.objectiveDetails.objective === 'Build awareness' && <section className="mt-4 rounded-lg border border-slate-200 p-4"><h2 className="text-sm font-semibold text-navy-900">Brand details</h2><p className="mt-2 text-sm text-slate-600">{draft.objectiveDetails.brandName || 'Brand name'} · {draft.objectiveDetails.tagline || 'Tagline'} · Frequency {draft.objectiveDetails.frequency}</p></section>}
-            <p className="mt-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
+            {draft.objectiveDetails.objective === 'Get leads' && <section className="mt-4 rounded-lg border border-border p-4"><h2 className="text-sm font-semibold text-foreground">Lead form: {draft.objectiveDetails.leadForm.name || 'Unnamed form'}</h2><p className="mt-2 text-sm text-muted-foreground">Fields: {draft.objectiveDetails.leadForm.fields.filter((field) => field.enabled).map((field) => `${field.label}${field.required ? ' (required)' : ''}`).join(', ') || 'No fields selected'}</p><p className="mt-1 break-all text-xs text-muted-foreground">Privacy policy: {draft.objectiveDetails.leadForm.privacyPolicyUrl || 'Not set'}</p></section>}
+            {draft.objectiveDetails.objective === 'Get sales' && <section className="mt-4 rounded-lg border border-border p-4"><h2 className="text-sm font-semibold text-foreground">Product details</h2><p className="mt-2 text-sm text-muted-foreground">{draft.objectiveDetails.productName || 'Product name'} · ₹{draft.objectiveDetails.offerPrice || draft.objectiveDetails.price || '0'}{draft.objectiveDetails.offerPrice ? ` (regular ₹${draft.objectiveDetails.price})` : ''}</p></section>}
+            {draft.objectiveDetails.objective === 'Build awareness' && <section className="mt-4 rounded-lg border border-border p-4"><h2 className="text-sm font-semibold text-foreground">Brand details</h2><p className="mt-2 text-sm text-muted-foreground">{draft.objectiveDetails.brandName || 'Brand name'} · {draft.objectiveDetails.tagline || 'Tagline'} · Frequency {draft.objectiveDetails.frequency}</p></section>}
+            <p className="mt-4 rounded-lg bg-secondary p-3 text-sm text-foreground">
               {totalBudget === null ? `Daily cap: ₹${draft.dailyBudget.toLocaleString('en-IN')} · no end date` : `Total budget: ₹${totalBudget.toLocaleString('en-IN')} (${draft.duration} days)`}. Estimated results are a mock range, not a forecast.
             </p>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
-            <h2 className="text-lg font-semibold text-navy-900">Ad readiness</h2>
-            <p className="mt-1 text-sm text-slate-600">Warnings are optional. Fix any errors before publishing.</p>
+          <div className="rounded-lg border border-border bg-white p-4 shadow-sm sm:p-5 lg:overflow-y-auto">
+            <h2 className="text-lg font-semibold text-foreground">Ad readiness</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Warnings are optional. Fix any errors before publishing.</p>
             <ul className="mt-4 space-y-3">
               {readiness.map((item) => (
-                <li key={item.key} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-slate-50 px-3 py-3">
-                  <span className="flex items-center gap-2 text-sm text-navy-900">
+                <li key={item.key} className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-secondary px-3 py-3">
+                  <span className="flex items-center gap-2 text-sm text-foreground">
                     <span className={`h-2.5 w-2.5 rounded-full ${item.ready ? 'bg-green-600' : item.warning ? 'bg-amber-500' : 'bg-red-600'}`} aria-hidden="true" />
                     {item.label}{!item.ready && item.warning ? ' · optional' : ''}
                   </span>
-                  {!item.ready && <button type="button" onClick={() => focusReadiness(item.key)} className="min-h-9 rounded-lg border border-slate-300 bg-white px-3 text-xs font-semibold text-brand-700 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Fix</button>}
+                  {!item.ready && <button type="button" onClick={() => focusReadiness(item.key)} className="min-h-9 rounded-lg border border-border bg-white px-3 text-xs font-semibold text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Fix</button>}
                 </li>
               ))}
             </ul>
             {!canPublish && <p role="alert" className="mt-3 text-sm text-red-700">Complete each required item above before publishing. Use Fix to jump to the field; the image reminder is optional.</p>}
-            <div className="mt-5 flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:justify-between">
-              <button type="button" onClick={() => { setReview(false); setStep(3) }} className="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Back to ad</button>
+            <div className="mt-5 flex flex-col-reverse gap-3 border-t border-border pt-4 sm:flex-row sm:justify-between">
+              <button type="button" onClick={() => { setReview(false); setStep(3) }} className="min-h-11 rounded-lg border border-border px-4 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Back to ad</button>
               <div className="flex flex-col gap-2 sm:flex-row">
-                <button type="button" onClick={saveDraftNow} className="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Save draft</button>
-                <button type="button" onClick={() => setConfirming(true)} disabled={!canPublish} className="min-h-11 rounded-lg bg-brand-600 px-5 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50">Publish campaign</button>
+                <button type="button" onClick={saveDraftNow} className="min-h-11 rounded-lg border border-border px-4 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Save draft</button>
+                <button type="button" onClick={() => setConfirming(true)} disabled={!canPublish} className="min-h-11 rounded-lg bg-primary px-5 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">Publish campaign</button>
               </div>
             </div>
           </div>
@@ -579,32 +579,32 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       )}
 
       {confirming && (
-        <div className="fixed inset-0 z-[120] flex items-end justify-center bg-navy-950/50 p-0 sm:items-center sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setConfirming(false) }}>
+        <div className="fixed inset-0 z-[120] flex items-end justify-center bg-foreground/50 p-0 sm:items-center sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setConfirming(false) }}>
           <section role="dialog" aria-modal="true" aria-labelledby="confirm-title" className="w-full max-w-md rounded-t-xl bg-white p-5 shadow-sm sm:rounded-lg sm:p-6">
-            <h2 id="confirm-title" className="text-xl font-bold text-navy-900">Publish this campaign?</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">This will submit your campaign for review in the demo. No ad will be delivered and no payment will be taken.</p>
+            <h2 id="confirm-title" className="text-xl font-bold text-foreground">Publish this campaign?</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">This will submit your campaign for review in the demo. No ad will be delivered and no payment will be taken.</p>
             <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <button autoFocus type="button" onClick={() => setConfirming(false)} className="min-h-11 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Keep editing</button>
-              <button type="button" onClick={() => { setConfirming(false); setPublished(true) }} className="min-h-11 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Confirm publish</button>
+              <button autoFocus type="button" onClick={() => setConfirming(false)} className="min-h-11 rounded-lg border border-border px-4 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Keep editing</button>
+              <button type="button" onClick={() => { setConfirming(false); setPublished(true) }} className="min-h-11 rounded-lg bg-primary px-4 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Confirm publish</button>
             </div>
           </section>
         </div>
       )}
       {pendingObjective && (
-        <div className="fixed inset-0 z-[110] flex items-end justify-center bg-navy-950/40 p-0 sm:items-center sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setPendingObjective('') }}>
-          <section role="dialog" aria-modal="true" aria-labelledby="objective-change-title" className="w-full max-w-md rounded-t-xl border border-slate-200 bg-white p-5 shadow-sm sm:rounded-xl">
-            <h2 id="objective-change-title" className="text-lg font-semibold text-navy-900">Change campaign goal?</h2>
-            <p className="mt-2 text-sm text-slate-600">This clears details entered for {draft.objective}. Your location, audience and budget will stay.</p>
+        <div className="fixed inset-0 z-[110] flex items-end justify-center bg-foreground/40 p-0 sm:items-center sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setPendingObjective('') }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="objective-change-title" className="w-full max-w-md rounded-t-xl border border-border bg-white p-5 shadow-sm sm:rounded-xl">
+            <h2 id="objective-change-title" className="text-lg font-semibold text-foreground">Change campaign goal?</h2>
+            <p className="mt-2 text-sm text-muted-foreground">This clears details entered for {draft.objective}. Your location, audience and budget will stay.</p>
             <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <button type="button" onClick={() => setPendingObjective('')} className="min-h-10 rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy-900">Keep current goal</button>
-              <button type="button" onClick={() => applyObjective(pendingObjective)} className="min-h-10 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white">Change goal</button>
+              <button type="button" onClick={() => setPendingObjective('')} className="min-h-10 rounded-lg border border-border px-4 text-sm font-semibold text-foreground">Keep current goal</button>
+              <button type="button" onClick={() => applyObjective(pendingObjective)} className="min-h-10 rounded-lg bg-primary px-4 text-sm font-semibold text-white">Change goal</button>
             </div>
           </section>
         </div>
       )}
       {!review && (
         <div className="mt-4 text-center">
-          <button type="button" onClick={saveDraftNow} className="inline-flex min-h-10 items-center gap-1 rounded-lg px-3 text-xs font-medium text-slate-500 hover:text-navy-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Save draft now <ChevronDown className="h-3 w-3" aria-hidden="true" /></button>
+          <button type="button" onClick={saveDraftNow} className="inline-flex min-h-10 items-center gap-1 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Save draft now <ChevronDown className="h-3 w-3" aria-hidden="true" /></button>
         </div>
       )}
     </main>
@@ -622,19 +622,19 @@ function CountryMultiSelect({ title, countries, selected, recommended, helper, o
   const [query, setQuery] = useState('')
   const filteredCountries = countries.filter((country) => country.toLowerCase().includes(query.trim().toLowerCase()))
   const searchId = title === 'Include countries' ? 'include-country-search' : 'exclude-country-search'
-  return <div className="min-w-0 rounded-lg border border-slate-200 p-3">
-    <label htmlFor={searchId} className="block text-sm font-medium text-navy-900">{title}</label>
-    <input id={searchId} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search countries" className="mt-2 h-10 w-full min-w-0 rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+  return <div className="min-w-0 rounded-lg border border-border p-3">
+    <label htmlFor={searchId} className="block text-sm font-medium text-foreground">{title}</label>
+    <input id={searchId} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search countries" className="mt-2 h-10 w-full min-w-0 rounded-lg border border-border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
     <ul className="mt-2 max-h-40 space-y-1 overflow-y-auto" aria-label={title}>
       {filteredCountries.map((country) => <li key={country}>
-        <label className="flex min-h-9 items-center gap-2 rounded-md px-2 text-sm text-slate-700 hover:bg-slate-50">
-          <input type="checkbox" checked={selected.includes(country)} onChange={() => onToggle(country)} className="accent-brand-600" />
+        <label className="flex min-h-9 items-center gap-2 rounded-md px-2 text-sm text-foreground hover:bg-muted">
+          <input type="checkbox" checked={selected.includes(country)} onChange={() => onToggle(country)} className="accent-primary" />
           <span className="min-w-0 flex-1">{country}</span>
-          {country === recommended && <span className="text-xs text-slate-500">Recommended</span>}
+          {country === recommended && <span className="text-xs text-muted-foreground">Recommended</span>}
         </label>
       </li>)}
-      {!filteredCountries.length && <li className="p-2 text-xs text-slate-500">No country matches that search.</li>}
+      {!filteredCountries.length && <li className="p-2 text-xs text-muted-foreground">No country matches that search.</li>}
     </ul>
-    <p className="mt-2 text-xs leading-5 text-slate-500">{helper}</p>
+    <p className="mt-2 text-xs leading-5 text-muted-foreground">{helper}</p>
   </div>
 }
