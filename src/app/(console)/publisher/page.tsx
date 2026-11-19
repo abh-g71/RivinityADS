@@ -12,9 +12,9 @@ export default function PublisherDashboardPage() {
         <Link href="/publisher/websites" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Add website <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
       </Card>
       <section aria-label="Publisher summary" className="mt-5 grid gap-3 sm:grid-cols-3">
-        {[['Websites', '0'], ['Results', '0'], ['Earnings', '₹0.00']].map(([label, value]) => <Card key={label} className="p-4"><p className="text-sm text-slate-600">{label}</p><p className="mt-2 text-2xl font-bold text-navy-900">{value}</p></Card>)}
+        {[['Websites', '0'], ['Results', '0'], ['Earnings', 'â‚¹0.00']].map(([label, value]) => <Card key={label} className="p-4"><p className="text-sm text-slate-600">{label}</p><p className="mt-2 text-2xl font-bold text-navy-900">{value}</p></Card>)}
       </section>
-      <p className="mt-2 text-xs text-slate-500">Mock data · No live publisher activity</p>
+      <p className="mt-2 text-xs text-slate-500">Mock data Â· No live publisher activity</p>
       <Card className="mt-6 p-4 sm:p-5">
         <h2 className="font-semibold text-navy-900">Activity</h2>
         <p className="mt-1 text-xs text-slate-500">A simple view of your website activity.</p>

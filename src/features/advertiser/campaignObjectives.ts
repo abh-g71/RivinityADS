@@ -113,7 +113,7 @@ export function isCampaignObjective(value: string): value is CampaignObjective {
 
 export function getObjectiveReadiness(draft: CampaignDraft) {
   const checks: Record<ObjectiveCheckId, { label: string; ready: boolean; step: number; warning?: boolean }> = {
-    location: { label: 'Location is set', ready: hasLocation(draft), step: 1 },
+    location: { label: 'At least one location is set', ready: hasLocation(draft), step: 1 },
     headline: { label: 'Headline is under 40 characters', ready: Boolean(draft.headline.trim()) && draft.headline.length <= 40, step: 3 },
     adText: { label: 'Short text is added', ready: Boolean(draft.text.trim()), step: 3 },
     website: { label: 'Website URL is valid', ready: isValidHttpsUrl(draft.url), step: 3 },
@@ -145,6 +145,5 @@ export function isValidHttpsUrl(value: string) {
 }
 
 function hasLocation(draft: CampaignDraft) {
-  const location = draft.location
-  return Boolean(location.label || location.pin || location.countries?.length || location.regions?.length || location.cities?.length || location.pinCodes?.length)
+  return draft.locations.length > 0
 }

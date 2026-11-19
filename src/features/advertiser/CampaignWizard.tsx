@@ -8,18 +8,13 @@ import { MapPicker } from '@/features/advertiser/MapPicker'
 import { AdPreview } from '@/features/advertiser/AdPreview'
 import { campaignDraftStorageKey, campaignTemplates } from '@/features/advertiser/campaignTemplates'
 import { useToast } from '@/components/shared/Toast'
-import { createEmptyCampaignDraft, createObjectiveDetails, migrateCampaignDraft, type CampaignDraft } from '@/types/campaign'
+import { createEmptyCampaignDraft, createObjectiveDetails, migrateCampaignDraft, type CampaignDraft, type CampaignTargetLocation } from '@/types/campaign'
 import { campaignObjectives, getObjectiveReadiness, isCampaignObjective } from '@/features/advertiser/campaignObjectives'
 import { ObjectiveAdStep } from '@/features/advertiser/ObjectiveAdStep'
+import { mockCountries } from '@/features/advertiser/locationSuggestions'
 
-const countryOptions = ['India', 'United States', 'United Kingdom', 'UAE', 'Canada', 'Australia', 'Germany', 'Singapore', 'France', 'Japan', 'Brazil', 'Saudi Arabia', 'South Africa', 'Indonesia', 'Thailand', 'Netherlands', 'Spain', 'Italy']
-const locationModes = [
-  { value: 'country', label: 'Whole country' },
-  { value: 'region', label: 'States / regions' },
-  { value: 'city', label: 'Cities' },
-  { value: 'radius', label: 'Around a point' },
-] as const
-const interests = ['Shopping', 'Food & dining', 'Travel', 'Technology', 'Fitness', 'Events', 'Beauty', 'Education']
+const interests = ['Shopping', 'Food', 'Travel', 'Technology', 'Events', 'Fashion', 'Health', 'Education', 'Finance', 'Sports']
+const audienceEligibilityNote = 'These settings decide who sees your ad. They do not affect where people can register.'
 const durations: (number | 'ongoing')[] = [7, 14, 30, 'ongoing']
 
 type ReviewField = 'objective' | 'location' | 'age' | 'gender' | 'interests' | 'budget' | 'duration' | 'headline' | 'text' | 'cta' | 'url'
@@ -32,6 +27,15 @@ function urlError(value: string) {
   } catch {
     return 'Enter a complete link, such as https://example.com.'
   }
+}
+
+function audienceSummary(draft: CampaignDraft) {
+  const firstPlace = draft.locations[0]?.name
+  const places = !firstPlace ? 'No locations selected' : draft.locations.length > 1 ? `${firstPlace} and ${draft.locations.length - 1} more places` : firstPlace
+  const placeCountryNames = new Set(draft.locations.filter((item) => item.type === 'country').map((item) => item.name))
+  const countries = draft.includedCountries.filter((country) => !placeCountryNames.has(country)).join(', ') || (draft.includedCountries.length ? '' : 'No included countries')
+  const interestsText = draft.interests.join(', ') || 'All interests'
+  return `Showing your ad to: ${places}${countries ? `, ${countries}` : ''} · Ages ${draft.ageMin}–${draft.ageMax} · ${interestsText}`
 }
 
 export function CampaignWizard({ templateId = '', startReview = false }: { templateId?: string; startReview?: boolean }) {
@@ -59,7 +63,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
         const value: unknown = stored ? JSON.parse(stored) : null
         const migrated = migrateCampaignDraft(value)
         const savedDraft = { ...migrated, dailyBudget: migrated.dailyBudget || 500 }
-        const initial = template?.draft ?? savedDraft
+        const initial = template ? migrateCampaignDraft({ ...template.draft, locations: undefined }) : savedDraft
         setDraft(initial)
         currentDraft.current = initial
       } catch (error) {
@@ -150,12 +154,8 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   }, [confirming, ready, review, step, published])
 
   const missingGoal = !draft.objective
-  const locationCountries = draft.location.countries ?? []
-  const locationRegions = draft.location.regions ?? []
-  const locationCities = draft.location.cities ?? []
-  const locationPinCodes = draft.location.pinCodes ?? []
-  const locationSummary = draft.location.label || locationCountries.join(', ') || locationRegions.join(', ') || locationCities.join(', ') || (draft.location.pin ? 'Pinned area' : 'No location selected')
-  const missingLocation = locationCountries.length === 0 && locationRegions.length === 0 && locationCities.length === 0 && locationPinCodes.length === 0 && !draft.location.pin && !draft.location.label
+  const locationSummary = draft.locations.map((item) => item.label).join(' · ') || 'No locations selected'
+  const missingLocation = draft.locations.length === 0
   const headlineError = draft.headline.trim().length === 0
     ? 'Add a short headline for your ad.'
     : draft.headline.length > 40
@@ -166,6 +166,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   const readiness = getObjectiveReadiness(draft)
   const canPublish = Boolean(draft.objective) && readiness.filter((item) => !item.warning).every((item) => item.ready)
   const totalBudget = draft.duration === 'ongoing' ? null : draft.dailyBudget * draft.duration
+  const reachMultiplier = Math.max(0.25, (Math.max(1, draft.locations.length) * Math.max(1, draft.includedCountries.length)) / ((draft.excludedCountries.length + 1) * (1 + draft.interests.length * 0.08)))
 
   function chooseGoal(goal: string) {
     if (!isCampaignObjective(goal)) return
@@ -189,11 +190,28 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
 
   function toggleInterest(value: string) {
     const selected = draft.interests
-    if (!selected.includes(value) && selected.length >= 6) {
-      toast({ title: 'Choose up to 6 interests', description: 'Remove an interest before adding another.' })
+    if (!selected.includes(value) && selected.length >= 8) {
+      toast({ title: 'Choose up to 8 interests', description: 'Remove an interest before adding another.' })
       return
     }
     setField('interests', selected.includes(value) ? selected.filter((item) => item !== value) : [...selected, value], true)
+  }
+
+  function toggleCountry(country: string, side: 'include' | 'exclude') {
+    const ownList = side === 'include' ? draft.includedCountries : draft.excludedCountries
+    const otherList = side === 'include' ? draft.excludedCountries : draft.includedCountries
+    const isSelected = ownList.includes(country)
+    const moved = !isSelected && otherList.includes(country)
+    updateDraft((current) => {
+      const own = side === 'include' ? current.includedCountries : current.excludedCountries
+      const other = side === 'include' ? current.excludedCountries : current.includedCountries
+      const nextOwn = own.includes(country) ? own.filter((item) => item !== country) : [...own, country]
+      const nextOther = !own.includes(country) ? other.filter((item) => item !== country) : other
+      return side === 'include'
+        ? { ...current, includedCountries: nextOwn, excludedCountries: nextOther }
+        : { ...current, excludedCountries: nextOwn, includedCountries: nextOther }
+    })
+    if (moved) toast({ title: `${country} moved`, description: `It was removed from ${side === 'include' ? 'Exclude' : 'Include'} countries.` })
   }
 
   function uploadImage(event: ChangeEvent<HTMLInputElement>) {
@@ -236,17 +254,6 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
     }
   }
 
-  function setLocationMode(mode: CampaignDraft['location']['mode']) {
-    const countries = draft.location.countries ?? []
-    const regions = draft.location.regions ?? []
-    const cities = draft.location.cities ?? []
-    setField('location', {
-      ...draft.location,
-      mode,
-      label: mode === 'country' ? (countries[0] ? `${countries[0]} (whole country)` : 'India (whole country)') : mode === 'region' ? (regions[0] ? `${regions[0]} region` : 'Region selected') : mode === 'city' ? (cities[0] ? cities[0] : 'City selected') : (draft.location.pin ? 'Pinned area' : 'Area around a point'),
-    })
-  }
-
   function focusReadiness(key: string) {
     if (key === 'image') {
       setReview(false)
@@ -259,7 +266,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       return
     }
     const targets: Record<string, { step: number; id: string }> = {
-      location: { step: 1, id: draft.location.mode === 'city' ? 'city-search' : draft.location.mode === 'region' ? 'region-search' : 'country-picker' },
+      location: { step: 1, id: 'location-search' },
       headline: { step: 3, id: 'headline' },
       adText: { step: 3, id: 'ad-text' },
       website: { step: 3, id: 'website-url' },
@@ -284,7 +291,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   function reviewFieldValue(field: ReviewField) {
     switch (field) {
       case 'objective': return draft.objective || 'Choose a goal'
-      case 'location': return draft.location.label || 'Choose a location'
+      case 'location': return locationSummary
       case 'age': return `${draft.ageMin}–${draft.ageMax} years`
       case 'gender': return draft.gender
       case 'interests': return draft.interests.join(', ') || 'No interests selected'
@@ -300,14 +307,14 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   function updateReviewField(field: ReviewField, value: string) {
     switch (field) {
       case 'objective': if (isCampaignObjective(value)) applyObjective(value); break
-      case 'location': setField('location', { ...draft.location, label: value }); break
+      case 'location': break
       case 'age': {
         const [min, max] = value.split('-').map(Number)
         if (Number.isFinite(min) && Number.isFinite(max)) updateDraft((current) => ({ ...current, ageMin: min, ageMax: max }))
         break
       }
       case 'gender': setField('gender', value); break
-      case 'interests': setField('interests', value.split(',').map((item) => item.trim()).filter(Boolean).slice(0, 6)); break
+      case 'interests': setField('interests', value.split(',').map((item) => item.trim()).filter(Boolean).slice(0, 8)); break
       case 'budget': setField('dailyBudget', Number(value.replace(/[^\d]/g, '')) || 0); break
       case 'duration': setField('duration', value.toLowerCase().includes('ongoing') ? 'ongoing' : Number(value.replace(/[^\d]/g, '')) || 0); break
       case 'headline': setField('headline', value); break
@@ -407,46 +414,12 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
             )}
             {step === 1 && (
               <>
-                <h1 className="text-2xl font-bold text-navy-900">Where and who?</h1>
-                <p className="mt-2 text-sm text-slate-600">{campaignObjectives.find((item) => item.title === draft.objective)?.locationHint ?? 'Choose a place and a broad audience. You can refine this anytime.'}</p>
+                <h1 className="text-2xl font-bold text-navy-900">Where and who</h1>
+                <p className="mt-2 text-sm text-slate-600">Add one or more places on the map, then choose who should see your ad.</p>
                 <div className="mt-5 space-y-5">
                   <div>
-                    <div className="mb-3 flex flex-wrap gap-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
-                      {locationModes.map((mode) => (
-                        <button key={mode.value} type="button" onClick={() => setLocationMode(mode.value)} className={`rounded-lg px-3 py-2 text-xs font-medium transition ${draft.location.mode === mode.value ? 'bg-brand-600 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100'}`}>
-                          {mode.label}
-                        </button>
-                      ))}
-                    </div>
-                    <label className="mb-2 block text-sm font-semibold text-navy-900">Location</label>
-                    <p className="mb-3 text-xs text-slate-500">Use the map to set your target area.</p>
-                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
-                      {locationSummary}
-                    </div>
-                    {draft.location.mode === 'country' && (
-                      <div className="mt-3 space-y-3">
-                        <input id="country-picker" value={draft.location.countries?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'country', countries: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} (whole country)` : '' })} list="country-list" placeholder="Search a country" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
-                        <datalist id="country-list">
-                          {countryOptions.map((country) => <option key={country} value={country} />)}
-                        </datalist>
-                        <label className="flex items-center gap-2 text-sm text-slate-700"><input type="checkbox" checked={Boolean(draft.location.excludeCountries)} onChange={(event) => setField('location', { ...draft.location, excludeCountries: event.target.checked })} /> Exclude these countries</label>
-                      </div>
-                    )}
-                    {draft.location.mode === 'region' && (
-                      <div className="mt-3 space-y-3">
-                        <input id="region-search" value={draft.location.regions?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'region', regions: event.target.value ? [event.target.value] : [], label: event.target.value ? `${event.target.value} region` : '' })} placeholder="Search state or region" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
-                      </div>
-                    )}
-                    {draft.location.mode === 'city' && (
-                      <div className="mt-3 space-y-3">
-                        <input id="city-search" value={draft.location.cities?.[0] ?? ''} onChange={(event) => setField('location', { ...draft.location, mode: 'city', cities: event.target.value ? [event.target.value] : [], label: event.target.value ? event.target.value : '' })} placeholder="Search a city" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
-                      </div>
-                    )}
-                    {missingLocation && <p className="mt-2 text-sm text-amber-700">Choose a location or add PIN codes to continue.</p>}
-                  </div>
-                  <div>
                     <p className="text-sm font-semibold text-navy-900">Age range: {draft.ageMin}–{draft.ageMax}</p>
-                    <p className="mt-1 text-xs text-slate-500">Choose the age range most relevant to your campaign.</p>
+                    <p className="mt-1 text-xs text-slate-500">Choose an age range that fits your audience.</p>
                     <div className="mt-3 grid grid-cols-2 gap-4">
                       <label className="text-xs text-slate-600">From {draft.ageMin}
                         <input aria-label="Minimum age" type="range" min="18" max={Math.max(18, draft.ageMax - 1)} value={draft.ageMin} onChange={(event) => setField('ageMin', Number(event.target.value))} className="mt-2 w-full accent-brand-600" />
@@ -457,19 +430,27 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                     </div>
                   </div>
                   <fieldset>
-                    <legend className="text-sm font-semibold text-navy-900">Who should see it?</legend>
-                    <p className="mt-1 text-xs text-slate-500">Everyone is a broad, recommended starting point.</p>
+                    <legend className="text-sm font-semibold text-navy-900">Gender</legend>
+                    <p className="mt-1 text-xs text-slate-500">Everyone is a broad starting point.</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {['Everyone', 'Women', 'Men'].map((gender) => <button key={gender} type="button" aria-pressed={draft.gender === gender} onClick={() => setField('gender', gender, true)} className={`min-h-10 rounded-full border px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.gender === gender ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>{gender}{gender === 'Everyone' ? ' · Recommended' : ''}</button>)}
+                      {['Everyone', 'Men', 'Women'].map((gender) => <button key={gender} type="button" aria-pressed={draft.gender === gender} onClick={() => setField('gender', gender, true)} className={`min-h-10 rounded-lg border px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.gender === gender ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>{gender}</button>)}
                     </div>
                   </fieldset>
                   <fieldset>
-                    <legend className="text-sm font-semibold text-navy-900">Interests <span className="font-normal text-slate-500">(optional, up to 6)</span></legend>
-                    <p className="mt-1 text-xs text-slate-500">Pick a few things your audience may enjoy.</p>
+                    <legend className="text-sm font-semibold text-navy-900">Interests <span className="font-normal text-slate-500">(optional, choose up to 8)</span></legend>
+                    <p className="mt-1 text-xs text-slate-500">Choose topics that match the people you want to reach.</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {interests.map((interest) => <button key={interest} type="button" aria-pressed={draft.interests.includes(interest)} onClick={() => toggleInterest(interest)} className={`min-h-10 rounded-full border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.interests.includes(interest) ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>{interest}</button>)}
+                      {interests.map((interest) => <button key={interest} type="button" aria-pressed={draft.interests.includes(interest)} onClick={() => toggleInterest(interest)} className={`min-h-10 rounded-lg border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${draft.interests.includes(interest) ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-slate-300 text-slate-700'}`}>{interest}</button>)}
                     </div>
                   </fieldset>
+                  <section aria-label="Country audience targeting" className="space-y-3">
+                    <h2 className="text-sm font-semibold text-navy-900">Country audience</h2>
+                    <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+                      <CountryMultiSelect title="Include countries" countries={mockCountries} selected={draft.includedCountries} recommended="India" onToggle={(country) => toggleCountry(country, 'include')} helper={audienceEligibilityNote} />
+                      <CountryMultiSelect title="Exclude countries" countries={mockCountries} selected={draft.excludedCountries} onToggle={(country) => toggleCountry(country, 'exclude')} helper={audienceEligibilityNote} />
+                    </div>
+                  </section>
+                  <p className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-navy-900">{audienceSummary(draft)}</p>
                 </div>
               </>
             )}
@@ -491,7 +472,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 </div>
                 <div className="mt-5 rounded-lg bg-slate-50 p-4">
                   <p className="text-sm font-semibold text-navy-900">{campaignObjectives.find((item) => item.title === draft.objective)?.estimateLabels[0] ?? 'Estimated results'}</p>
-                  <p className="mt-1 text-sm text-slate-700">{draft.objective === 'Get leads' ? `${Math.max(1, Math.round(draft.dailyBudget / 250))}–${Math.max(2, Math.round(draft.dailyBudget / 100))} leads · Cost per lead ₹${Math.max(50, Math.round(draft.dailyBudget / 5))}` : draft.objective === 'Get sales' ? `${Math.max(1, Math.round(draft.dailyBudget / 500))}–${Math.max(2, Math.round(draft.dailyBudget / 200))} sales · Return on ad spend 1.8×` : draft.objective === 'Build awareness' ? `${(draft.dailyBudget * 20).toLocaleString('en-IN')}–${(draft.dailyBudget * 45).toLocaleString('en-IN')} people · ${draft.objectiveDetails.objective === 'Build awareness' ? draft.objectiveDetails.frequency : 3} times each` : `${(draft.dailyBudget * 2).toLocaleString('en-IN')}–${(draft.dailyBudget * 5).toLocaleString('en-IN')} visits`}</p>
+                  <p className="mt-1 text-sm text-slate-700">{draft.objective === 'Get leads' ? `${Math.max(1, Math.round(draft.dailyBudget / 250))}–${Math.max(2, Math.round(draft.dailyBudget / 100))} leads · Cost per lead ₹${Math.max(50, Math.round(draft.dailyBudget / 5))}` : draft.objective === 'Get sales' ? `${Math.max(1, Math.round(draft.dailyBudget / 500))}–${Math.max(2, Math.round(draft.dailyBudget / 200))} sales · Return on ad spend 1.8×` : draft.objective === 'Build awareness' ? `${Math.round(draft.dailyBudget * 20 * reachMultiplier).toLocaleString('en-IN')}–${Math.round(draft.dailyBudget * 45 * reachMultiplier).toLocaleString('en-IN')} people · ${draft.objectiveDetails.objective === 'Build awareness' ? draft.objectiveDetails.frequency : 3} times each` : `${(draft.dailyBudget * 2).toLocaleString('en-IN')}–${(draft.dailyBudget * 5).toLocaleString('en-IN')} visits`}</p>
                   <p className="mt-1 text-xs text-slate-500">Estimated, sample data</p>
                 </div>
                 {draft.objective === 'Build awareness' && draft.objectiveDetails.objective === 'Build awareness' && <label className="mt-4 block text-sm font-medium text-navy-900">Average frequency: {draft.objectiveDetails.frequency}<input aria-label="Average frequency" type="range" min="1" max="8" value={draft.objectiveDetails.frequency} onChange={(event) => updateDraft((current) => current.objectiveDetails.objective === 'Build awareness' ? { ...current, objectiveDetails: { ...current.objectiveDetails, frequency: Number(event.target.value) } } : current)} className="mt-2 w-full accent-brand-600" /></label>}
@@ -522,21 +503,9 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
           </div>
           {step === 3 && <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:overflow-hidden"><AdPreview draft={draft} /></aside>}
           {step === 1 && (
-            <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:min-h-0 lg:overflow-hidden">
-              <div className="flex h-full flex-col gap-3">
-                <div>
-                  <h2 className="text-base font-semibold text-navy-900">Map preview</h2>
-                  <p className="mt-1 text-xs text-slate-500">Your audience radius updates in real time.</p>
-                </div>
-                <div className="lg:flex-1">
-                  <MapPicker
-                    location={draft.location}
-                    onChange={(location) => updateDraft((current) => ({ ...current, location }))}
-                    pinCodes={draft.pinCodes}
-                    onPinCodesChange={(pinCodes) => setField('pinCodes', pinCodes)}
-                  />
-                </div>
-              </div>
+            <aside className="min-w-0 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+              <h2 className="mb-4 text-base font-semibold text-navy-900">Locations and map</h2>
+              <MapPicker locations={draft.locations} onChange={(locations: CampaignTargetLocation[]) => setField('locations', locations)} />
             </aside>
           )}
         </section>
@@ -558,15 +527,24 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                     <div className="mt-1 flex gap-2">
                       {field === 'text'
                         ? <textarea autoFocus value={draft.text} onChange={(event) => updateReviewField(field, event.target.value)} className="min-h-20 w-full rounded-lg border border-slate-300 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
-                        : <input autoFocus aria-label={`Edit ${field}`} value={field === 'age' ? `${draft.ageMin}-${draft.ageMax}` : field === 'interests' ? draft.interests.join(', ') : field === 'budget' ? String(draft.dailyBudget) : field === 'duration' ? (draft.duration === 'ongoing' ? 'ongoing' : String(draft.duration)) : field === 'location' ? draft.location.label : field === 'objective' ? draft.objective : field === 'gender' ? draft.gender : field === 'headline' ? draft.headline : field === 'cta' ? draft.cta : draft.url} onChange={(event) => updateReviewField(field, event.target.value)} className="h-10 min-w-0 flex-1 rounded-lg border border-slate-300 px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />}
+                        : <input autoFocus aria-label={`Edit ${field}`} value={field === 'age' ? `${draft.ageMin}-${draft.ageMax}` : field === 'interests' ? draft.interests.join(', ') : field === 'budget' ? String(draft.dailyBudget) : field === 'duration' ? (draft.duration === 'ongoing' ? 'ongoing' : String(draft.duration)) : field === 'location' ? locationSummary : field === 'objective' ? draft.objective : field === 'gender' ? draft.gender : field === 'headline' ? draft.headline : field === 'cta' ? draft.cta : draft.url} onChange={(event) => updateReviewField(field, event.target.value)} className="h-10 min-w-0 flex-1 rounded-lg border border-slate-300 px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />}
                       <button type="button" onClick={() => setEditing(null)} className="rounded-lg px-2 text-xs font-semibold text-brand-700 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">Done</button>
                     </div>
                   ) : (
-                    <button type="button" onClick={() => setEditing(field)} className="mt-1 block max-w-full break-words text-left text-sm font-medium text-navy-900 underline decoration-dotted underline-offset-4 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{reviewFieldValue(field) ?? ''}</button>
+                    field === 'location'
+                      ? <p className="mt-1 break-words text-sm font-medium text-navy-900">{reviewFieldValue(field) ?? ''}</p>
+                      : <button type="button" onClick={() => setEditing(field)} className="mt-1 block max-w-full break-words text-left text-sm font-medium text-navy-900 underline decoration-dotted underline-offset-4 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">{reviewFieldValue(field) ?? ''}</button>
                   )}
                 </div>
               ))}
             </div>
+            <section className="mt-4 rounded-lg border border-slate-200 p-4">
+              <h2 className="text-sm font-semibold text-navy-900">Audience targeting</h2>
+              <p className="mt-2 text-sm text-slate-700">Locations: {draft.locations.map((item) => item.label).join(' · ') || 'None selected'}</p>
+              <p className="mt-1 text-sm text-slate-700">Include countries: {draft.includedCountries.join(', ') || 'None'}</p>
+              <p className="mt-1 text-sm text-slate-700">Exclude countries: {draft.excludedCountries.join(', ') || 'None'}</p>
+              <p className="mt-1 text-sm text-slate-700">Interests: {draft.interests.join(', ') || 'All interests'}</p>
+            </section>
             {draft.objectiveDetails.objective === 'Get leads' && <section className="mt-4 rounded-lg border border-slate-200 p-4"><h2 className="text-sm font-semibold text-navy-900">Lead form: {draft.objectiveDetails.leadForm.name || 'Unnamed form'}</h2><p className="mt-2 text-sm text-slate-600">Fields: {draft.objectiveDetails.leadForm.fields.filter((field) => field.enabled).map((field) => `${field.label}${field.required ? ' (required)' : ''}`).join(', ') || 'No fields selected'}</p><p className="mt-1 break-all text-xs text-slate-500">Privacy policy: {draft.objectiveDetails.leadForm.privacyPolicyUrl || 'Not set'}</p></section>}
             {draft.objectiveDetails.objective === 'Get sales' && <section className="mt-4 rounded-lg border border-slate-200 p-4"><h2 className="text-sm font-semibold text-navy-900">Product details</h2><p className="mt-2 text-sm text-slate-600">{draft.objectiveDetails.productName || 'Product name'} · ₹{draft.objectiveDetails.offerPrice || draft.objectiveDetails.price || '0'}{draft.objectiveDetails.offerPrice ? ` (regular ₹${draft.objectiveDetails.price})` : ''}</p></section>}
             {draft.objectiveDetails.objective === 'Build awareness' && <section className="mt-4 rounded-lg border border-slate-200 p-4"><h2 className="text-sm font-semibold text-navy-900">Brand details</h2><p className="mt-2 text-sm text-slate-600">{draft.objectiveDetails.brandName || 'Brand name'} · {draft.objectiveDetails.tagline || 'Tagline'} · Frequency {draft.objectiveDetails.frequency}</p></section>}
@@ -631,4 +609,32 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       )}
     </main>
   )
+}
+
+function CountryMultiSelect({ title, countries, selected, recommended, helper, onToggle }: {
+  title: string
+  countries: string[]
+  selected: string[]
+  recommended?: string
+  helper: string
+  onToggle: (country: string) => void
+}) {
+  const [query, setQuery] = useState('')
+  const filteredCountries = countries.filter((country) => country.toLowerCase().includes(query.trim().toLowerCase()))
+  const searchId = title === 'Include countries' ? 'include-country-search' : 'exclude-country-search'
+  return <div className="min-w-0 rounded-lg border border-slate-200 p-3">
+    <label htmlFor={searchId} className="block text-sm font-medium text-navy-900">{title}</label>
+    <input id={searchId} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search countries" className="mt-2 h-10 w-full min-w-0 rounded-lg border border-slate-300 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500" />
+    <ul className="mt-2 max-h-40 space-y-1 overflow-y-auto" aria-label={title}>
+      {filteredCountries.map((country) => <li key={country}>
+        <label className="flex min-h-9 items-center gap-2 rounded-md px-2 text-sm text-slate-700 hover:bg-slate-50">
+          <input type="checkbox" checked={selected.includes(country)} onChange={() => onToggle(country)} className="accent-brand-600" />
+          <span className="min-w-0 flex-1">{country}</span>
+          {country === recommended && <span className="text-xs text-slate-500">Recommended</span>}
+        </label>
+      </li>)}
+      {!filteredCountries.length && <li className="p-2 text-xs text-slate-500">No country matches that search.</li>}
+    </ul>
+    <p className="mt-2 text-xs leading-5 text-slate-500">{helper}</p>
+  </div>
 }

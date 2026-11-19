@@ -5,6 +5,7 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import type { LucideIcon } from 'lucide-react'
 import {
+  ArrowDownRight,
   ArrowLeft,
   ArrowRight,
   Banknote,
@@ -19,30 +20,36 @@ import {
   Moon,
   Plus,
   ShieldCheck,
+  SlidersHorizontal,
   Sun,
   Wallet,
   X,
 } from 'lucide-react'
 
-/* ---------- Theme (scoped to this page only) ---------- */
 const themes = {
   dark: {
-    '--bg': 'var(--color-navy-950)',
-    '--fg': '#ffffff',
-    '--muted': 'var(--color-slate-400)',
-    '--line': 'rgb(255 255 255 / 0.1)',
-    '--card': 'var(--color-navy-900)',
-    '--accent': 'var(--color-brand-500)',
-    '--navbg': 'var(--color-navy-950)',
+    '--bg': '#101C27',
+    '--fg': '#F3F2ED',
+    '--muted': '#AEBBC0',
+    '--line': '#354650',
+    '--card': '#162631',
+    '--surface-muted': '#20343D',
+    '--accent': '#83B8B5',
+    '--accent-fg': '#102329',
+    '--navbg': '#101C27',
+    '--soft': '#1B303A',
   },
   light: {
-    '--bg': '#ffffff',
-    '--fg': 'var(--color-navy-900)',
-    '--muted': 'var(--color-slate-600)',
-    '--line': 'var(--color-slate-200)',
-    '--card': '#ffffff',
-    '--accent': 'var(--color-brand-600)',
-    '--navbg': '#ffffff',
+    '--bg': '#F4F2EB',
+    '--fg': '#172631',
+    '--muted': '#586A70',
+    '--line': '#D2DAD7',
+    '--card': '#FFFEFA',
+    '--surface-muted': '#E7ECE8',
+    '--accent': '#2E7180',
+    '--accent-fg': '#FFFFFF',
+    '--navbg': '#F4F2EB',
+    '--soft': '#EDF0EB',
   },
 }
 
@@ -50,11 +57,9 @@ const muted = 'text-[color:var(--muted)]'
 const accent = 'text-[color:var(--accent)]'
 const line = 'border-[color:var(--line)]'
 const card = 'bg-[color:var(--card)]'
-const primaryBtn =
-  'inline-flex items-center justify-center gap-2 rounded-lg bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-white transition-colors duration-150 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2'
-const outlineBtn = `inline-flex items-center justify-center gap-2 rounded-lg border ${line} ${card} px-5 py-3 text-sm font-semibold transition-colors duration-150 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`
+const primaryBtn = 'inline-flex min-h-12 items-center justify-center gap-2 bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-[color:var(--accent-fg)] transition-colors duration-200 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bg)]'
+const secondaryBtn = `inline-flex min-h-12 items-center justify-center gap-2 border ${line} px-5 py-3 text-sm font-semibold transition-colors duration-200 hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`
 
-/* ---------- Content ---------- */
 const navLinks = [
   { label: 'Advertisers', href: '/advertisers' },
   { label: 'Publishers', href: '/publishers' },
@@ -62,265 +67,142 @@ const navLinks = [
   { label: 'FAQ', href: '#faq' },
 ]
 
-const steps = [
-  { name: 'Goal', user: 'I want more people to visit my store website.', ai: 'Great. Is your goal visits, leads, sales or awareness?' },
-  { name: 'Where', user: 'Show it in Delhi, within 10 km.', ai: 'Got it. I set Delhi with a 10 km radius.' },
-  { name: 'Budget', user: '₹500 a day.', ai: 'Done. ₹500 a day for 14 days. Want to change it?' },
-  { name: 'Your ad', user: 'Use my shop photo and a Shop now button.', ai: 'Here is your preview. Ready to publish?' },
-]
-
-const points = [
-  { title: 'Two sides, one place', text: 'Advertisers and publishers share one simple console.' },
-  { title: 'An ad in two minutes', text: 'Short guided steps that move on by themselves.' },
-  { title: 'AI or manual', text: 'Describe your goal, or fill in four easy steps.' },
-  { title: 'Reach the right place', text: 'Choose a country, region, city or a spot on the map.' },
-  { title: 'See before you publish', text: 'A live preview for every ad size.' },
-  { title: 'Simple reports', text: 'Clear numbers in one place.' },
-]
-
-type Card = { icon: LucideIcon; title: string; text: string }
-
-const cards: Record<'advertiser' | 'publisher', Card[]> = {
+type Feature = { icon: LucideIcon; title: string; text: string }
+const cards: Record<'advertiser' | 'publisher', Feature[]> = {
   advertiser: [
-    { icon: Megaphone, title: 'Create a campaign', text: 'Pick a goal and follow short steps.' },
-    { icon: MapPin, title: 'Choose where it shows', text: 'Country, region, city or a map.' },
-    { icon: Eye, title: 'Preview every size', text: 'Feed, Story and Banner, live.' },
-    { icon: Wallet, title: 'Set a budget', text: 'A daily amount in ₹ with a recommended default.' },
-    { icon: LayoutGrid, title: 'Pick an ad format', text: 'Banner, Native, Popunder, Push or Social Bar.' },
-    { icon: BarChart3, title: 'Track results', text: 'Clear numbers in one place.' },
+    { icon: Megaphone, title: 'Create a campaign', text: 'Choose a goal and move through a short guided setup.' },
+    { icon: MapPin, title: 'Choose where it shows', text: 'Set cities, regions, countries, PIN codes or a radius.' },
+    { icon: Eye, title: 'Preview every size', text: 'Check Feed, Story and Banner creative as you build.' },
+    { icon: Wallet, title: 'Set a budget', text: 'Choose a daily budget and review sample estimates.' },
+    { icon: LayoutGrid, title: 'Pick an ad format', text: 'Explore Banner, Native, Popunder, Push and Social Bar.' },
+    { icon: BarChart3, title: 'Review results', text: 'Campaign reporting is shown with sample data.' },
   ],
   publisher: [
-    { icon: Globe, title: 'Add your website', text: 'Tell us about your site.' },
-    { icon: ShieldCheck, title: 'Verify ownership', text: 'Confirm that the site is yours.' },
-    { icon: LayoutGrid, title: 'Create a placement', text: 'Choose where ads appear.' },
-    { icon: Code, title: 'Copy the ad code', text: 'Paste one snippet on your site.' },
-    { icon: BarChart3, title: 'Track earnings', text: 'See impressions and clicks.' },
-    { icon: Banknote, title: 'Get paid', text: 'Payout details are simulated until payments are available.' },
+    { icon: Globe, title: 'Add your website', text: 'Register a site to prepare its advertising placements.' },
+    { icon: ShieldCheck, title: 'Verify ownership', text: 'Confirm that the website belongs to you.' },
+    { icon: LayoutGrid, title: 'Create a placement', text: 'Choose a format and where it belongs on your site.' },
+    { icon: Code, title: 'Add the code', text: 'Copy the placement snippet for your website.' },
+    { icon: BarChart3, title: 'Review activity', text: 'See placement impressions and clicks in the console.' },
+    { icon: Banknote, title: 'Manage payout details', text: 'Payout setup is shown in the publisher console.' },
   ],
 }
 
-const faqs = [
-  { q: 'What is RivinityADS?', a: 'A simple console where advertisers create ads and publishers earn from their websites.' },
-  { q: 'How do I create my first ad?', a: 'Choose a goal, pick where it shows, set a budget and add your ad. Or describe it to the AI assistant.' },
-  { q: 'How do I earn as a publisher?', a: 'Add your website, verify it, create a placement and paste the ad code on your site.' },
-  { q: 'Which ad formats are available?', a: 'Banner, Native, Popunder, Push and Social Bar.' },
-  { q: 'Is this a live product?', a: 'No. Displayed data is simulated. Real ad delivery and payments are not active.' },
+const formats = [
+  { name: 'Banner', mark: '▰', text: 'A display placement shown within page content.' },
+  { name: 'Native', mark: '▤', text: 'An ad styled to fit alongside surrounding content.' },
+  { name: 'Popunder', mark: '↗', text: 'A page that opens behind the active browser window.' },
+  { name: 'Push Notification', mark: '▣', text: 'A brief message delivered as a browser notification.' },
+  { name: 'Social Bar', mark: '━', text: 'An interactive, floating ad placement on a page.' },
 ]
 
-/* ---------- Nav ---------- */
+const faqs = [
+  { q: 'What is RivinityADS?', a: 'A platform where advertisers create campaigns and publishers prepare website advertising placements.' },
+  { q: 'How do I create my first campaign?', a: 'Choose a campaign goal, set its audience and budget, then prepare the ad. You can use the guided manual flow or start with the AI assistant.' },
+  { q: 'How do I get started as a publisher?', a: 'Add your website, verify ownership, create a placement and add its code to your site.' },
+  { q: 'Which ad formats are available?', a: 'The product includes Banner, Native, Popunder, Push and Social Bar formats.' },
+  { q: 'Are the numbers on this page live?', a: 'No. This homepage uses sample data. Live ad delivery and payments are not active.' },
+]
+
 function Nav({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
   const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   return (
-    <header
-      className={`sticky top-0 z-40 border-b ${line} bg-[color:var(--navbg)]`}
-    >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-tight">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[color:var(--accent)] text-sm text-white">R</span>
-            RivinityADS
+    <header className="sticky top-0 z-40 border-b border-[color:var(--line)] bg-[color:var(--navbg)] text-[color:var(--fg)]">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
+        <div className="flex min-w-0 items-center gap-8">
+          <Link href="/" className="flex shrink-0 items-center gap-2.5 text-base font-bold tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]">
+            <span className="flex h-8 w-8 items-center justify-center bg-[color:var(--accent)] text-sm font-bold text-[color:var(--accent-fg)]">R</span>
+            <span>Rivinity<span className="ml-0.5 font-medium tracking-[0.08em]">ADS</span></span>
           </Link>
-          <nav className="hidden items-center gap-6 md:flex" aria-label="Main">
-            {navLinks.map((l) => (
-              <Link key={l.label} href={l.href} className={`text-sm ${muted} transition hover:text-[color:var(--fg)]`}>
-                {l.label}
-              </Link>
-            ))}
+          <nav className="hidden items-center gap-7 md:flex" aria-label="Main">
+            {navLinks.map((item) => <Link key={item.label} href={item.href} className={`text-sm font-medium ${muted} transition-colors duration-200 hover:text-[color:var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`}>{item.label}</Link>)}
           </nav>
         </div>
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
-            className={`flex h-9 w-9 items-center justify-center rounded-lg ${muted} transition hover:text-[color:var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`}
-          >
-            {dark ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          <button type="button" onClick={onToggle} aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'} className={`flex h-10 w-10 items-center justify-center ${muted} transition-colors hover:text-[color:var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`}>
+            {dark ? <Sun className="h-[18px] w-[18px]" aria-hidden="true" /> : <Moon className="h-[18px] w-[18px]" aria-hidden="true" />}
           </button>
-          <Link href="/login" className="hidden text-sm font-medium sm:inline">Sign in</Link>
-          <Link href="/signup" className="hidden rounded-lg bg-[color:var(--accent)] px-4 py-2 text-sm font-semibold text-white sm:inline-flex">
-            Get started
-          </Link>
-          <button
-            type="button"
-            className="flex h-9 w-9 items-center justify-center md:hidden"
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            aria-expanded={open}
-            onClick={() => setOpen(!open)}
-          >
+          <Link href="/login" className="hidden min-h-10 items-center px-2 text-sm font-medium transition-colors hover:text-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] sm:inline-flex">Sign in</Link>
+          <Link href="/signup" className="hidden min-h-10 items-center justify-center bg-[color:var(--accent)] px-4 text-sm font-semibold text-[color:var(--accent-fg)] transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] sm:inline-flex">Get started</Link>
+          <button type="button" className="flex h-10 w-10 items-center justify-center md:hidden" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} onClick={() => setOpen(!open)}>
             {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
           </button>
         </div>
       </div>
-      {open && (
-        <div className={`border-t ${line} bg-[color:var(--bg)] px-4 pb-4 md:hidden`}>
-          <nav className="flex flex-col py-2" aria-label="Mobile">
-            {[...navLinks, { label: 'Sign in', href: '/login' }, { label: 'Get started', href: '/signup' }].map((l) => (
-              <Link key={l.label} href={l.href} onClick={() => setOpen(false)} className="rounded-lg px-2 py-3 text-sm font-medium">
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
+      {open && <div className="border-t border-[color:var(--line)] px-4 pb-5 md:hidden"><nav className="mx-auto flex max-w-[1440px] flex-col py-2" aria-label="Mobile">
+        {[...navLinks, { label: 'Sign in', href: '/login' }, { label: 'Get started', href: '/signup' }].map((item) => <Link key={item.label} href={item.href} onClick={() => setOpen(false)} className="border-b border-[color:var(--line)] px-1 py-3 text-sm font-medium transition-colors hover:text-[color:var(--accent)] last:border-b-0">{item.label}</Link>)}
+      </nav></div>}
     </header>
   )
 }
 
-/* ---------- Product mock (drawn with HTML only) ---------- */
-function ProductMock() {
-  const [size, setSize] = useState<'Feed' | 'Story' | 'Banner'>('Feed')
-
-  const shape = { Feed: 'h-24 w-44', Story: 'h-36 w-24', Banner: 'h-12 w-full max-w-xs' }[size]
-
+function AdPreview({ size, onSizeChange }: { size: 'Feed' | 'Story' | 'Banner'; onSizeChange: (size: 'Feed' | 'Story' | 'Banner') => void }) {
+  const shape = { Feed: 'aspect-[1.45/1] w-full max-w-[18rem]', Story: 'aspect-[9/15] w-32', Banner: 'aspect-[5/1] w-full max-w-[22rem]' }[size]
   return (
-    <div
-      className={`overflow-hidden rounded-lg border ${line} bg-[color:var(--bg)]`}
-    >
-      <div className={`flex flex-wrap items-center justify-between gap-3 border-b ${line} px-4 py-3 sm:px-5`}>
-        <div>
-          <p className="text-sm font-semibold">North &amp; Co. - Spring campaign</p>
-          <p className={`mt-1 text-xs ${muted}`}>Apr 08 - Apr 14, 2025 <span className="mx-1.5">/</span> Delhi, India</p>
+    <div className="min-w-0">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div><p className={`text-[10px] font-semibold uppercase tracking-[0.16em] ${accent}`}>Publisher placement</p><h3 className="mt-1 text-sm font-semibold">Ad preview</h3></div>
+        <div className={`flex border ${line}`} role="tablist" aria-label="Ad preview size">
+          {(['Feed', 'Story', 'Banner'] as const).map((format) => <button key={format} type="button" role="tab" aria-selected={size === format} onClick={() => onSizeChange(format)} className={`px-2.5 py-2 text-[11px] font-medium transition-colors duration-200 ${size === format ? 'bg-[color:var(--accent)] text-[color:var(--accent-fg)]' : `${muted} hover:bg-[color:var(--surface-muted)]`}`}>{format}</button>)}
         </div>
-        <span className={`rounded-md border ${line} px-2 py-1 text-[10px] font-medium ${muted}`}>Sample data</span>
       </div>
-
-      <div className="p-4 sm:p-5">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-3 border-b pb-4 sm:grid-cols-4 sm:gap-0 sm:divide-x sm:divide-[color:var(--line)] sm:pb-5">
-          {[
-            { label: 'Impressions', value: '48,260', note: '+12.4%' },
-            { label: 'Clicks', value: '1,284', note: '+8.2%' },
-            { label: 'Click-through rate', value: '2.66%', note: '7-day average' },
-            { label: 'Spend', value: <><span aria-label="Indian rupees">INR</span> 3,240</>, note: 'of INR 5,000' },
-          ].map((metric, index) => (
-            <div key={metric.label} className={index > 0 ? 'sm:pl-4' : ''}>
-              <p className={`text-[11px] ${muted}`}>{metric.label}</p>
-              <p className="mt-1 text-lg font-semibold tracking-tight">{metric.value}</p>
-              <p className={`mt-0.5 text-[10px] ${muted}`}>{metric.note}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className={`mt-4 border-b ${line} pb-4`}>
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span className="font-medium">Budget pacing</span>
-            <span className={muted}>INR 3,240 spent <span className="mx-1">/</span> INR 5,000 total</span>
-          </div>
-          <div className={`mt-2 h-1.5 overflow-hidden rounded-full bg-[color:var(--line)]`}>
-            <div className="h-full w-[64.8%] rounded-full bg-[color:var(--accent)]" />
-          </div>
-        </div>
-
-        <div className="grid gap-5 py-4 sm:grid-cols-[1.5fr_1fr]">
-          <section aria-label="Campaign clicks chart">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3 className="text-xs font-semibold">Clicks over time</h3>
-                <p className={`mt-1 text-[10px] ${muted}`}>Daily results for campaign period</p>
-              </div>
-              <span className={`text-[10px] ${muted}`}>Clicks</span>
-            </div>
-            <div className="mt-3 flex h-24 gap-2">
-              <div className={`flex flex-col justify-between pb-4 text-[9px] ${muted}`} aria-hidden="true"><span>400</span><span>200</span><span>0</span></div>
-              <div className="relative min-w-0 flex-1">
-                <div className="absolute inset-0 flex flex-col justify-between pb-4" aria-hidden="true">
-                  <span className={`border-t ${line}`} /><span className={`border-t ${line}`} /><span className={`border-t ${line}`} />
-                </div>
-                <svg viewBox="0 0 420 90" preserveAspectRatio="none" className="relative h-[calc(100%-1rem)] w-full" aria-hidden="true">
-                  <path d="M4 75C38 72 51 58 80 63S122 51 150 56 188 36 216 43 251 46 279 35 318 32 347 24 387 28 416 9" fill="none" stroke="#3b82f6" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
-                  <circle cx="416" cy="9" r="3.5" fill="#3b82f6" />
-                </svg>
-                <div className={`absolute inset-x-0 bottom-0 flex justify-between text-[9px] ${muted}`} aria-hidden="true">
-                  <span>Apr 08</span><span>10</span><span>12</span><span>14</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className={`border-t ${line} pt-4 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0`} aria-label="Audience insights">
-            <h3 className="text-xs font-semibold">Audience insights</h3>
-            <p className={`mt-1 text-[10px] ${muted}`}>Top segments by impressions</p>
-            <dl className="mt-3 space-y-2.5">
-              {[
-                { label: 'Delhi', value: '42%' },
-                { label: 'Age 25-34', value: '38%' },
-                { label: 'Mobile devices', value: '68%' },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center justify-between gap-2 text-[11px]">
-                  <dt className={muted}>{item.label}</dt><dd className="font-medium">{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-        </div>
-
-        <div className={`overflow-x-auto border-t ${line} pt-4`}>
-          <div className="mb-2 flex items-center justify-between gap-3">
-            <h3 className="text-xs font-semibold">Recent campaigns</h3>
-            <span className={`text-[10px] ${muted}`}>Sample data</span>
-          </div>
-          <table className="w-full min-w-[360px] text-left text-[10px]">
-            <thead className={muted}><tr><th className="py-2 font-medium">Campaign</th><th className="py-2 font-medium">Status</th><th className="py-2 font-medium">Spend</th><th className="py-2 font-medium">Clicks</th></tr></thead>
-            <tbody className={`divide-y ${line}`}>
-              <tr><td className="py-2 font-medium">Spring collection</td><td className="py-2">Active</td><td className="py-2">INR 3,240</td><td className="py-2">1,284</td></tr>
-              <tr><td className="py-2 font-medium">Weekend offers</td><td className="py-2">Paused</td><td className="py-2">INR 1,860</td><td className="py-2">742</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className={`grid gap-4 border-t ${line} pt-4 sm:grid-cols-[1fr_1.2fr] sm:items-center`}>
-          <div>
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="text-xs font-semibold">Campaign setup</h3>
-              <span className={`text-[10px] ${muted}`}>Step 1 of {steps.length}: {steps[0].name}</span>
-            </div>
-            <p className={`mt-1.5 text-[10px] leading-4 ${muted}`}>{steps[0].ai}</p>
-          </div>
-
-          <div>
-            <div className="mb-2 flex items-center justify-between gap-2">
-              <span className={`text-[10px] ${muted}`}>Ad format</span>
-              <div className="flex gap-1" role="tablist" aria-label="Ad size">
-                {(['Feed', 'Story', 'Banner'] as const).map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    role="tab"
-                    aria-selected={size === t}
-                    onClick={() => setSize(t)}
-                    className={`rounded-md px-2 py-1 text-[10px] font-medium transition-colors ${size === t ? 'bg-[color:var(--accent)] text-white' : muted}`}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="flex min-h-24 items-center justify-center overflow-hidden rounded-md bg-slate-100 p-2">
-              <div className={`${shape} flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded border border-slate-200 bg-white p-2 text-left text-navy-900 ${size === 'Story' ? 'flex-col text-center' : 'flex-row'}`}>
-                <div className={`flex shrink-0 items-center justify-center bg-slate-100 text-[9px] font-semibold text-slate-600 ${size === 'Story' ? 'h-8 w-8' : 'h-8 w-10'}`}>N&amp;C</div>
-                <div className="min-w-0">
-                  <p className="text-[9px] font-bold uppercase tracking-wide text-slate-500">North &amp; Co.</p>
-                  <p className="mt-0.5 truncate text-[10px] font-semibold">New season, made for everyday</p>
-                  {size !== 'Banner' && <span className="mt-1 inline-flex rounded bg-blue-700 px-1.5 py-0.5 text-[8px] font-semibold text-white">Shop collection</span>}
-                </div>
-              </div>
-            </div>
+      <div className="flex min-h-[16rem] items-center justify-center bg-[color:var(--surface-muted)] p-5 sm:min-h-[18rem]">
+        <div key={size} className={`${shape} flex items-center justify-center overflow-hidden border border-[color:var(--line)] bg-[color:var(--card)] p-4 text-left animate-preview-in ${size === 'Story' ? 'flex-col text-center' : 'flex-row gap-3'}`}>
+          <div className={`flex shrink-0 items-center justify-center bg-[color:var(--soft)] text-sm font-semibold ${accent} ${size === 'Story' ? 'mb-3 h-10 w-10' : 'h-12 w-12'}`}>N&amp;C</div>
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-wide">North &amp; Co.</p>
+            <p className="mt-1 text-sm font-semibold leading-snug text-[color:var(--fg)]">New season, made for everyday</p>
+            {size !== 'Banner' && <span className="mt-3 inline-flex bg-[color:var(--accent)] px-2.5 py-1.5 text-[10px] font-semibold text-[color:var(--accent-fg)]">Shop collection</span>}
           </div>
         </div>
       </div>
+      <div className={`mt-3 flex items-center justify-between border-t ${line} pt-3 text-[11px] ${muted}`}><span>Illustrative creative</span><span>Sample data</span></div>
     </div>
   )
 }
 
-/* ---------- Page ---------- */
+function ProductShowcase() {
+  const [size, setSize] = useState<'Feed' | 'Story' | 'Banner'>('Feed')
+  return (
+    <div className={`grid overflow-hidden border ${line} ${card} xl:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.75fr)]`}>
+      <div className="min-w-0 p-4 sm:p-6 lg:p-8">
+        <div className={`flex flex-wrap items-center justify-between gap-3 border-b ${line} pb-4 sm:pb-5`}>
+          <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center bg-[color:var(--accent)] text-sm font-bold text-[color:var(--accent-fg)]">R</span><div><p className="text-[10px] font-semibold uppercase tracking-[0.15em]">RivinityADS / Campaigns</p><h2 className="mt-0.5 text-base font-semibold">Spring collection</h2></div></div>
+          <span className={`border ${line} px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] ${muted}`}>Sample workspace</span>
+        </div>
+        <div className={`grid grid-cols-2 gap-4 border-b ${line} py-5 sm:grid-cols-4 sm:gap-6 sm:py-6`}>
+          {[
+            { label: 'Spend', value: 'INR 3,240', note: 'of INR 5,000' },
+            { label: 'Impressions', value: '48,260', note: 'sample total' },
+            { label: 'Clicks', value: '1,284', note: 'sample total' },
+            { label: 'Click-through rate', value: '2.66%', note: 'sample average' },
+          ].map((metric) => <div key={metric.label} className="min-w-0"><p className={`text-[11px] font-medium ${muted}`}>{metric.label}</p><p className="mt-1 truncate text-lg font-semibold tracking-tight tabular-nums sm:text-xl">{metric.value}</p><p className={`mt-1 text-[10px] ${muted}`}>{metric.note}</p></div>)}
+        </div>
+        <div className="grid gap-6 border-b border-[color:var(--line)] py-5 sm:grid-cols-[minmax(0,1.65fr)_minmax(12rem,0.75fr)] sm:gap-8 sm:py-6">
+          <section aria-label="Sample campaign performance">
+            <div className="flex items-start justify-between gap-2"><div><h3 className="text-sm font-semibold">Campaign performance</h3><p className={`mt-1 text-xs ${muted}`}>Daily clicks / last 7 days</p></div><span className={`text-[10px] font-medium uppercase tracking-[0.1em] ${muted}`}>Sample</span></div>
+            <div className="mt-4 flex h-32 gap-3">
+              <div className={`flex flex-col justify-between pb-5 text-[10px] ${muted}`} aria-hidden="true"><span>400</span><span>200</span><span>0</span></div>
+              <div className="relative min-w-0 flex-1"><div className="absolute inset-0 flex flex-col justify-between pb-5" aria-hidden="true"><span className={`border-t ${line}`} /><span className={`border-t ${line}`} /><span className={`border-t ${line}`} /></div>
+                <svg viewBox="0 0 420 100" preserveAspectRatio="none" className="relative h-[calc(100%-1.25rem)] w-full" aria-hidden="true"><path className="chart-stroke" d="M4 82C38 78 51 60 80 66S122 55 150 59 188 36 216 45 251 48 279 36 318 32 347 24 387 29 416 9" fill="none" stroke="var(--accent)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" /><circle cx="416" cy="9" r="4" fill="var(--accent)" /></svg>
+                <div className={`absolute inset-x-0 bottom-0 flex justify-between text-[10px] ${muted}`} aria-hidden="true"><span>Mon</span><span>Wed</span><span>Fri</span><span>Sun</span></div>
+              </div>
+            </div>
+          </section>
+          <section className={`border-t ${line} pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0`} aria-label="Sample audience and budget settings">
+            <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-semibold">Audience &amp; budget</h3><SlidersHorizontal className={`h-4 w-4 ${muted}`} aria-hidden="true" /></div>
+            <dl className={`mt-4 space-y-3 text-xs ${muted}`}><div className="flex items-start justify-between gap-3"><dt>Location</dt><dd className="text-right font-medium text-[color:var(--fg)]">Pune, India / 10 km</dd></div><div className="flex items-start justify-between gap-3"><dt>Audience</dt><dd className="text-right font-medium text-[color:var(--fg)]">Ages 21-45 / Shopping</dd></div><div className="flex items-start justify-between gap-3"><dt>Daily budget</dt><dd className="text-right font-medium text-[color:var(--fg)]">INR 500</dd></div></dl>
+            <div className={`mt-4 h-1 overflow-hidden ${line}`}><div className="h-full w-[64.8%] bg-[color:var(--accent)]" /></div><p className={`mt-1 text-right text-[9px] ${muted}`}>Illustrative budget pacing</p>
+          </section>
+        </div>
+        <section className="pt-5 sm:pt-6" aria-label="Sample campaign list"><div className="mb-2 flex items-center justify-between gap-2"><h3 className="text-sm font-semibold">Campaigns</h3><span className={`text-[10px] ${muted}`}>Workspace preview</span></div>
+          <div className="overflow-x-auto"><table className="w-full min-w-[320px] text-left text-xs"><thead className={muted}><tr><th className="py-2 font-medium">Campaign</th><th className="py-2 font-medium">Status</th><th className="py-2 text-right font-medium">Spend</th></tr></thead><tbody className={`divide-y ${line}`}><tr><td className="py-3 font-medium">Spring collection</td><td className="py-3"><span className="mr-2 inline-block h-2 w-2 bg-[color:var(--accent)]" />Active</td><td className="py-3 text-right tabular-nums">INR 3,240</td></tr><tr><td className="py-3 font-medium">Weekend offers</td><td className="py-3"><span className="mr-2 inline-block h-2 w-2 bg-[color:var(--muted)]" />Paused</td><td className="py-3 text-right tabular-nums">INR 1,860</td></tr></tbody></table></div>
+        </section>
+      </div>
+      <aside className={`border-t ${line} p-4 sm:p-6 lg:p-8 xl:border-l xl:border-t-0`}><AdPreview size={size} onSizeChange={setSize} /></aside>
+    </div>
+  )
+}
+
 export function HomePage() {
   const [dark, setDark] = useState(true)
   const [tab, setTab] = useState<'advertiser' | 'publisher'>('advertiser')
@@ -329,201 +211,133 @@ export function HomePage() {
 
   useEffect(() => {
     const id = requestAnimationFrame(() => {
-      try {
-        setDark(localStorage.getItem('landing-theme') !== 'light')
-      } catch {}
+      try { setDark(localStorage.getItem('landing-theme') !== 'light') } catch {}
     })
     return () => cancelAnimationFrame(id)
+  }, [])
+
+  useEffect(() => {
+    const elements = document.querySelectorAll<HTMLElement>('[data-reveal]')
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      elements.forEach((element) => element.classList.add('is-visible'))
+      return
+    }
+    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible')
+        observer.unobserve(entry.target)
+      }
+    }), { threshold: 0.12 })
+    elements.forEach((element) => observer.observe(element))
+    return () => observer.disconnect()
   }, [])
 
   function toggleTheme() {
     const next = !dark
     setDark(next)
-    try {
-      localStorage.setItem('landing-theme', next ? 'dark' : 'light')
-    } catch {}
+    try { localStorage.setItem('landing-theme', next ? 'dark' : 'light') } catch {}
   }
 
   const vars = (dark ? themes.dark : themes.light) as unknown as CSSProperties
   const visible = cards[tab].slice(page * 3, page * 3 + 3)
 
   return (
-    <div style={vars} className="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)] transition-colors duration-150">
+    <div style={vars} className="min-h-screen overflow-x-clip bg-[color:var(--bg)] text-[color:var(--fg)] transition-colors duration-200">
+      <style>{`
+        @keyframes home-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes preview-in { from { opacity: .5; transform: translateY(5px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes chart-draw { to { stroke-dashoffset: 0; } }
+        .hero-rise { animation: home-rise .7s cubic-bezier(.2,.7,.2,1) both; }
+        .animate-preview-in { animation: preview-in .24s ease-out both; }
+        .chart-stroke { stroke-dasharray: 560; stroke-dashoffset: 560; animation: chart-draw 1.35s .25s ease-out forwards; }
+        .reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+        .reveal.is-visible { opacity: 1; transform: translateY(0); }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } .reveal { opacity: 1; transform: none; } }
+      `}</style>
       <Nav dark={dark} onToggle={toggleTheme} />
-
       <main>
-        {/* Hero and product preview */}
-        <section
-          className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:min-h-[calc(100vh-4rem)] lg:grid-cols-[0.78fr_1.22fr] lg:gap-12 lg:py-14"
-          style={{ backgroundImage: 'linear-gradient(to right, #3b82f60a 1px, transparent 1px), linear-gradient(to bottom, #3b82f60a 1px, transparent 1px)', backgroundSize: '32px 32px' }}
-        >
-          <div className="max-w-lg">
-            <p className={`mb-5 text-xs font-semibold uppercase tracking-[0.16em] ${accent}`}>Digital advertising, in one place</p>
-            <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.5rem]">
-              Plan campaigns. Reach the right people.
-            </h1>
-            <p className={`mt-5 max-w-md text-base leading-7 sm:text-lg sm:leading-8 ${muted}`}>
-              Build digital ad campaigns with clear targeting and budget controls, then track performance in one place. Publishers can manage their inventory alongside them.
-            </p>
-
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Link href="/signup" className={primaryBtn}>Get started</Link>
-              <Link href="/publishers" className={outlineBtn}>For publishers</Link>
-            </div>
-            <div className={`mt-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm ${muted}`}>
-              <span>Want a faster start?</span>
-              <Link href="/campaigns/new/ai" className="font-medium text-[color:var(--fg)] underline decoration-[color:var(--line)] underline-offset-4 transition hover:decoration-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]">
-                Create a campaign with AI
-              </Link>
-            </div>
-            <p className={`mt-3 text-xs ${muted}`}>Authentication and displayed data are simulated. No ads are delivered.</p>
-          </div>
-
-          <ProductMock />
-        </section>
-        {/* What is */}
-        <section className={`border-t ${line}`}>
-          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2">
-            <div>
-              <h2 className="text-4xl font-bold tracking-tight">What is RivinityADS?</h2>
-              <p className={`mt-4 max-w-md text-lg leading-8 ${muted}`}>
-                Advertisers create ads in a few short steps. Publishers add their websites and earn from the ads shown there.
-              </p>
-              <Link href="/advertisers" className="mt-6 inline-flex items-center gap-2 font-semibold">
-                Learn more <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-            </div>
-            <ol>
-              {points.map((p, i) => (
-                <li key={p.title} className={`flex gap-5 border-t ${line} py-5 first:border-t-0 lg:first:border-t`}>
-                  <span className={`font-mono text-sm ${accent}`}>{String(i + 1).padStart(2, '0')}</span>
-                  <div>
-                    <h3 className="text-lg font-semibold">{p.title}</h3>
-                    <p className={`mt-1 ${muted}`}>{p.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        {/* What can you do */}
-        <section className={`border-t ${line}`}>
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="text-4xl font-bold tracking-tight">What can you do?</h2>
-            <p className={`mt-4 text-lg ${muted}`}>Create an ad from one sentence, or add your website and start earning.</p>
-
-            <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-              <div className={`inline-flex rounded-lg border ${line} ${card} p-1`} role="tablist" aria-label="Choose your side">
-                {([['advertiser', "I'm an advertiser"], ['publisher', "I'm a publisher"]] as const).map(([key, label]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    role="tab"
-                    aria-selected={tab === key}
-                    onClick={() => {
-                      setTab(key)
-                      setPage(0)
-                    }}
-                    className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${tab === key ? 'bg-[color:var(--accent)] text-white' : muted}`}
-                  >
-                    {label}
-                  </button>
-                ))}
+        <section className={`relative border-b ${line}`}>
+          <div className="mx-auto max-w-[1440px] px-4 pb-10 pt-10 sm:px-6 sm:pb-14 sm:pt-14 lg:px-10 lg:pb-12 lg:pt-16">
+            <div className="grid items-end gap-8 md:grid-cols-12 md:gap-10">
+              <div className="md:col-span-7 hero-rise">
+                <p className={`mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] ${accent}`}>One ecosystem / two connected sides</p>
+                <h1 className="max-w-4xl text-[clamp(3.25rem,8vw,7.4rem)] font-semibold leading-[0.88] tracking-[-0.065em]">Campaigns meet<br /><span className={accent}>their placement.</span></h1>
               </div>
-              <div className="flex items-center gap-3">
-                <span className={`text-sm ${muted}`}>{page + 1} / 2</span>
-                <button
-                  type="button"
-                  aria-label="Previous"
-                  disabled={page === 0}
-                  onClick={() => setPage(0)}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border ${line} disabled:opacity-40`}
-                >
-                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Next"
-                  disabled={page === 1}
-                  onClick={() => setPage(1)}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border ${line} disabled:opacity-40`}
-                >
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-x-8 md:grid-cols-3">
-              {visible.map(({ icon: Icon, title, text }) => (
-                <Link
-                  key={title}
-                  href={tab === 'advertiser' ? '/advertisers' : '/publishers'}
-                  className={`flex items-start gap-3 border-t ${line} ${card} py-4 transition-colors duration-150`}
-                >
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-                    <Icon className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                  <span>
-                    <h3 className="text-sm font-semibold">{title}</h3>
-                    <p className={`mt-1 text-sm ${muted}`}>{text}</p>
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section id="faq" className={`border-t ${line}`}>
-          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2">
-            <div>
-              <h2 className="text-4xl font-bold tracking-tight">FAQ</h2>
-              <p className={`mt-4 text-lg ${muted}`}>
-                Something else?{' '}
-                <Link href="/support" className="underline">Contact us</Link>.
-              </p>
-            </div>
-            <div>
-              {faqs.map((f, i) => (
-                <div key={f.q} className={`border-t ${line} last:border-b`}>
-                  <button
-                    type="button"
-                    aria-expanded={openFaq === i}
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="flex w-full items-center justify-between gap-4 py-5 text-left font-semibold"
-                  >
-                    {f.q}
-                    <Plus className="h-5 w-5 shrink-0" aria-hidden="true" />
-                  </button>
-                  {openFaq === i && <p className={`pb-5 ${muted}`}>{f.a}</p>}
+              <div className="max-w-xl md:col-span-5 md:justify-self-end hero-rise" style={{ animationDelay: '100ms' }}>
+                <p className={`text-base leading-7 sm:text-lg sm:leading-8 ${muted}`}>RivinityADS connects advertisers building campaigns with publishers preparing the places they can appear.</p>
+                <div className="mt-6 flex flex-col gap-3 min-[420px]:flex-row">
+                  <Link href="/signup" className={primaryBtn}>Create a campaign <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+                  <Link href="/publishers" className={secondaryBtn}>For publishers</Link>
                 </div>
-              ))}
+                <Link href="/campaigns/new/ai" className={`mt-4 inline-flex items-center gap-2 text-sm font-medium ${muted} transition-colors hover:text-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`}><span className={`inline-flex h-6 w-6 items-center justify-center border ${line}`}><ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" /></span>Start with the AI campaign assistant</Link>
+              </div>
+            </div>
+            <div className="mt-10 sm:mt-12 lg:mt-14" data-reveal>
+              <div className={`mb-3 flex flex-wrap items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] ${muted}`}><span>Campaign workspace / placement preview</span><span>Prototype interface / sample data</span></div>
+              <ProductShowcase />
+              <p className={`mt-3 text-right text-[10px] ${muted}`}>Illustrative interface and sample metrics. No live ad delivery or payments.</p>
             </div>
           </div>
         </section>
 
-        {/* Closing CTA */}
-        <section className={`border-t ${line}`}>
-          <div className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6">
-            <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">Start your first campaign</h2>
-            <p className={`mx-auto mt-4 max-w-md ${muted}`}>Explore RivinityADS with simulated data. No setup needed.</p>
-            <Link href="/signup" className={`${primaryBtn} mt-8`}>Get started</Link>
+        <section className={`border-b ${line}`}>
+          <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-12 lg:gap-14 lg:px-10 lg:py-24">
+            <div className="lg:col-span-5" data-reveal>
+              <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${accent}`}>A shared ecosystem</p>
+              <h2 className="mt-5 max-w-xl text-4xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-5xl">Two sides of advertising, connected by the placement.</h2>
+              <p className={`mt-5 max-w-md leading-7 ${muted}`}>A campaign needs a place to appear. A placement needs an ad to show. RivinityADS gives each side a dedicated workflow in one platform.</p>
+              <Link href="/advertisers" className={`mt-6 inline-flex items-center gap-2 text-sm font-semibold ${accent} hover:underline`}>Explore the platform <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
+            </div>
+            <div className="lg:col-span-7" data-reveal>
+              <div className={`grid border-y ${line} sm:grid-cols-[1fr_auto_1fr]`}>
+                <div className="py-6 sm:py-8"><div className="flex items-center gap-3"><span className={`flex h-10 w-10 items-center justify-center bg-[color:var(--soft)] ${accent}`}><Megaphone className="h-5 w-5" aria-hidden="true" /></span><span className="text-xs font-semibold uppercase tracking-[0.14em]">Advertiser</span></div><p className="mt-5 text-2xl font-semibold tracking-tight">Create the campaign.</p><p className={`mt-2 max-w-xs text-sm leading-6 ${muted}`}>Choose an objective, audience, budget and creative.</p></div>
+                <div className={`flex items-center border-y ${line} py-4 sm:border-x sm:border-y-0 sm:px-6 sm:py-0`}><div className="flex items-center gap-3 sm:flex-col"><span className="h-px w-8 bg-[color:var(--accent)] sm:h-8 sm:w-px" /><span className={`text-[10px] font-semibold uppercase tracking-[0.16em] ${accent}`}>Connect</span><span className="h-px w-8 bg-[color:var(--accent)] sm:h-8 sm:w-px" /></div></div>
+                <div className="py-6 sm:py-8 sm:pl-8"><div className="flex items-center gap-3"><span className={`flex h-10 w-10 items-center justify-center bg-[color:var(--soft)] ${accent}`}><Globe className="h-5 w-5" aria-hidden="true" /></span><span className="text-xs font-semibold uppercase tracking-[0.14em]">Publisher</span></div><p className="mt-5 text-2xl font-semibold tracking-tight">Prepare the placement.</p><p className={`mt-2 max-w-xs text-sm leading-6 ${muted}`}>Register a website, verify it and set up an ad position.</p></div>
+              </div>
+            </div>
           </div>
+        </section>
+
+        <section className="border-b border-[color:var(--line)] bg-[color:var(--soft)]">
+          <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-24">
+            <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+              <div className="lg:col-span-4" data-reveal>
+                <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${accent}`}>Choose your workflow</p>
+                <h2 className="mt-5 text-4xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-5xl">Built for the work you do.</h2>
+                <p className={`mt-5 max-w-sm leading-7 ${muted}`}>Campaign creation and website placements have different jobs. Start with the path that fits.</p>
+                <div className={`mt-8 inline-flex border ${line} p-1`} role="tablist" aria-label="Choose your side">
+                  {([['advertiser', "I'm an advertiser"], ['publisher', "I'm a publisher"]] as const).map(([key, label]) => <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => { setTab(key); setPage(0) }} className={`px-3 py-2.5 text-xs font-semibold transition-colors sm:px-4 sm:text-sm ${tab === key ? 'bg-[color:var(--accent)] text-[color:var(--accent-fg)]' : `${muted} hover:text-[color:var(--fg)]`}`}>{label}</button>)}
+                </div>
+              </div>
+              <div className="lg:col-span-8" data-reveal>
+                <div className="flex items-center justify-between border-b border-[color:var(--line)] pb-4"><p className={`text-xs font-semibold uppercase tracking-[0.14em] ${muted}`}>{tab === 'advertiser' ? 'Campaign workflow' : 'Publisher workflow'}</p><div className="flex items-center gap-3"><span className={`text-xs tabular-nums ${muted}`}>{page + 1} / 2</span><button type="button" aria-label="Previous" disabled={page === 0} onClick={() => setPage(0)} className={`flex h-9 w-9 items-center justify-center border ${line} transition-colors hover:text-[color:var(--accent)] disabled:opacity-35`}><ArrowLeft className="h-4 w-4" aria-hidden="true" /></button><button type="button" aria-label="Next" disabled={page === 1} onClick={() => setPage(1)} className={`flex h-9 w-9 items-center justify-center border ${line} transition-colors hover:text-[color:var(--accent)] disabled:opacity-35`}><ArrowRight className="h-4 w-4" aria-hidden="true" /></button></div></div>
+                <div className="grid gap-x-8 md:grid-cols-2">
+                  {visible.map(({ icon: Icon, title, text }, index) => <Link key={title} href={tab === 'advertiser' ? '/advertisers' : '/publishers'} className={`group flex gap-4 border-b ${line} py-5 transition-colors hover:border-[color:var(--accent)]`}><span className={`pt-0.5 font-mono text-xs ${accent}`}>0{page * 3 + index + 1}</span><span className="min-w-0 flex-1"><span className="flex items-center justify-between gap-3"><span className="text-base font-semibold">{title}</span><Icon className={`h-4 w-4 shrink-0 ${muted} transition-colors group-hover:text-[color:var(--accent)]`} aria-hidden="true" /></span><span className={`mt-1 block text-sm leading-6 ${muted}`}>{text}</span></span></Link>)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className={`border-b ${line}`}>
+          <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-24">
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end" data-reveal><div><p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${accent}`}>Formats for different placements</p><h2 className="mt-5 max-w-3xl text-4xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-5xl">The shape of the ad depends on where it lives.</h2></div><Link href="/ad-formats" className={`inline-flex shrink-0 items-center gap-2 text-sm font-semibold ${accent} hover:underline`}>See all formats <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></div>
+            <div className={`mt-10 grid border-t ${line} sm:grid-cols-2 lg:grid-cols-5`} data-reveal>{formats.map((format, index) => <Link key={format.name} href="/ad-formats" className={`group border-b ${line} py-5 transition-colors hover:bg-[color:var(--soft)] sm:px-4 lg:border-b-0 lg:border-r lg:first:pl-0 lg:last:border-r-0`}><span className={`font-mono text-sm ${accent}`}>0{index + 1}</span><span className="ml-3 text-sm font-semibold">{format.name}</span><p className={`mt-3 text-sm leading-6 ${muted}`}>{format.text}</p><span className={`mt-5 inline-flex h-10 w-10 items-center justify-center border ${line} text-lg transition-colors group-hover:border-[color:var(--accent)] group-hover:text-[color:var(--accent)]`}>{format.mark}</span></Link>)}</div>
+          </div>
+        </section>
+
+        <section id="faq" className={`border-b ${line}`}>
+          <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-12 lg:gap-14 lg:px-10 lg:py-24">
+            <div className="lg:col-span-5" data-reveal><p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${accent}`}>Good to know</p><h2 className="mt-5 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">Questions, answered.</h2><p className={`mt-5 max-w-sm leading-7 ${muted}`}>Want to talk through a specific setup? <Link href="/support" className="underline decoration-[color:var(--line)] underline-offset-4 hover:text-[color:var(--fg)]">Contact support</Link>.</p></div>
+            <div className="lg:col-span-7" data-reveal>{faqs.map((faq, index) => <div key={faq.q} className={`border-t ${line} last:border-b`}><button type="button" aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)} className="flex w-full items-center justify-between gap-4 py-5 text-left font-semibold"><span>{faq.q}</span><Plus className={`h-5 w-5 shrink-0 transition-transform duration-200 ${openFaq === index ? 'rotate-45 text-[color:var(--accent)]' : muted}`} aria-hidden="true" /></button>{openFaq === index && <p className={`max-w-2xl pb-5 leading-7 ${muted}`}>{faq.a}</p>}</div>)}</div>
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden bg-[color:var(--accent)] text-[color:var(--accent-fg)]">
+          <div className="mx-auto grid max-w-[1440px] gap-8 px-4 py-14 sm:px-6 sm:py-16 md:grid-cols-12 md:items-end lg:px-10 lg:py-20" data-reveal><div className="md:col-span-8"><p className="text-[11px] font-semibold uppercase tracking-[0.18em] opacity-75">Make the connection</p><h2 className="mt-5 max-w-4xl text-4xl font-semibold leading-[0.95] tracking-[-0.05em] sm:text-6xl">Start with a campaign.<br className="hidden sm:block" /> Build toward its placement.</h2><p className="mt-5 max-w-xl leading-7 opacity-80">Explore the RivinityADS prototype with sample data. Create an advertiser account to get started.</p></div><div className="flex flex-col gap-3 sm:flex-row md:col-span-4 md:justify-end"><Link href="/signup" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[color:var(--bg)] px-5 py-3 text-sm font-semibold text-[color:var(--fg)] transition-opacity hover:opacity-90">Create a campaign <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link><Link href="/publishers" className="inline-flex min-h-12 items-center justify-center border border-current/40 px-5 py-3 text-sm font-semibold transition-colors hover:bg-black/5">For publishers</Link></div></div>
         </section>
       </main>
-
-      <footer className={`border-t ${line}`}>
-        <div className={`mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm sm:px-6 ${muted}`}>
-          <span>© 2026 RivinityADS</span>
-          <nav className="flex flex-wrap gap-5" aria-label="Footer">
-            <Link href="/advertisers">Advertisers</Link>
-            <Link href="/publishers">Publishers</Link>
-            <Link href="/ad-formats">Ad formats</Link>
-            <Link href="/support">Support</Link>
-          </nav>
-        </div>
-      </footer>
+      <footer className={`border-t ${line}`}><div className={`mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-4 py-7 text-sm sm:px-6 lg:px-10 ${muted}`}><span>© 2026 RivinityADS</span><nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Footer"><Link href="/advertisers" className="hover:text-[color:var(--fg)]">Advertisers</Link><Link href="/publishers" className="hover:text-[color:var(--fg)]">Publishers</Link><Link href="/ad-formats" className="hover:text-[color:var(--fg)]">Ad formats</Link><Link href="/support" className="hover:text-[color:var(--fg)]">Support</Link></nav></div></footer>
     </div>
   )
 }
