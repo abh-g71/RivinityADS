@@ -1,208 +1,332 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import Link from 'next/link'
-import type { LucideIcon } from 'lucide-react'
-import {
-  ArrowDownRight,
-  ArrowLeft,
-  ArrowRight,
-  Banknote,
-  BarChart3,
-  Code,
-  Eye,
-  Globe,
-  LayoutGrid,
-  MapPin,
-  Megaphone,
-  Menu,
-  Moon,
-  Plus,
-  ShieldCheck,
-  SlidersHorizontal,
-  Sun,
-  Wallet,
-  X,
-} from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Menu, Moon, Plus, Sun, X } from 'lucide-react'
 
-const themes = {
+/* THEME: change the landing page colors here and nowhere else. */
+const THEMES = {
   dark: {
-    '--bg': '#101C27',
-    '--fg': '#F3F2ED',
-    '--muted': '#AEBBC0',
-    '--line': '#354650',
-    '--card': '#162631',
-    '--surface-muted': '#20343D',
-    '--accent': '#83B8B5',
-    '--accent-fg': '#102329',
-    '--navbg': '#101C27',
-    '--soft': '#1B303A',
+    '--bg': '#0B1020',
+    '--surface': '#111831',
+    '--line': 'rgba(255,255,255,0.1)',
+    '--fg': '#F5F7FA',
+    '--muted': '#9AA4B2',
+    '--accent': '#8B98FF',
+    '--solid': '#4F63F0',
   },
   light: {
-    '--bg': '#F4F2EB',
-    '--fg': '#172631',
-    '--muted': '#586A70',
-    '--line': '#D2DAD7',
-    '--card': '#FFFEFA',
-    '--surface-muted': '#E7ECE8',
-    '--accent': '#2E7180',
-    '--accent-fg': '#FFFFFF',
-    '--navbg': '#F4F2EB',
-    '--soft': '#EDF0EB',
+    '--bg': '#FFFFFF',
+    '--surface': '#F6F7F9',
+    '--line': '#E4E7EC',
+    '--fg': '#101828',
+    '--muted': '#5B6676',
+    '--accent': '#3B4FE0',
+    '--solid': '#3B4FE0',
   },
 }
 
-const muted = 'text-[color:var(--muted)]'
-const accent = 'text-[color:var(--accent)]'
-const line = 'border-[color:var(--line)]'
-const card = 'bg-[color:var(--card)]'
-const primaryBtn = 'inline-flex min-h-12 items-center justify-center gap-2 bg-[color:var(--accent)] px-5 py-3 text-sm font-semibold text-[color:var(--accent-fg)] transition-colors duration-200 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bg)]'
-const secondaryBtn = `inline-flex min-h-12 items-center justify-center gap-2 border ${line} px-5 py-3 text-sm font-semibold transition-colors duration-200 hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`
+const MUTED = 'text-[color:var(--muted)]'
+const ACCENT = 'text-[color:var(--accent)]'
+const BORDER = 'border-[color:var(--line)]'
+const SURFACE = 'bg-[color:var(--surface)]'
+const SOLID = 'bg-[color:var(--solid)]'
+const BTN_PRIMARY = `inline-flex items-center justify-center rounded-lg ${SOLID} px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bg)]`
+const BTN_OUTLINE = `inline-flex items-center justify-center rounded-lg border ${BORDER} ${SURFACE} px-5 py-3 text-sm font-semibold transition-colors hover:border-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`
 
-const navLinks = [
+/* ---------- Content ---------- */
+const NAV = [
   { label: 'Advertisers', href: '/advertisers' },
   { label: 'Publishers', href: '/publishers' },
   { label: 'Ad formats', href: '/ad-formats' },
   { label: 'FAQ', href: '#faq' },
 ]
 
-type Feature = { icon: LucideIcon; title: string; text: string }
-const cards: Record<'advertiser' | 'publisher', Feature[]> = {
+const POINTS = [
+  { title: 'A console for each side', text: 'Advertisers and publishers each get their own workspace.' },
+  { title: 'Four short steps', text: 'Goal, audience, budget, ad. One screen each.' },
+  { title: 'Describe it or fill it in', text: 'Type what you want to promote, or use the manual steps.' },
+  { title: 'Pick places, not only cities', text: 'Countries, cities, PIN codes or a radius on the map.' },
+  { title: 'Preview before you publish', text: 'See the ad in Feed, Story and Banner sizes.' },
+  { title: 'Numbers in one place', text: 'Spend, impressions, clicks and results for every campaign.' },
+]
+
+type Kind = 'steps' | 'places' | 'sizes' | 'budget' | 'formats' | 'bars' | 'site' | 'token' | 'placement' | 'code' | 'line' | 'payout'
+
+const CARDS: Record<'advertiser' | 'publisher', { title: string; text: string; kind: Kind }[]> = {
   advertiser: [
-    { icon: Megaphone, title: 'Create a campaign', text: 'Choose a goal and move through a short guided setup.' },
-    { icon: MapPin, title: 'Choose where it shows', text: 'Set cities, regions, countries, PIN codes or a radius.' },
-    { icon: Eye, title: 'Preview every size', text: 'Check Feed, Story and Banner creative as you build.' },
-    { icon: Wallet, title: 'Set a budget', text: 'Choose a daily budget and review sample estimates.' },
-    { icon: LayoutGrid, title: 'Pick an ad format', text: 'Explore Banner, Native, Popunder, Push and Social Bar.' },
-    { icon: BarChart3, title: 'Review results', text: 'Campaign reporting is shown with sample data.' },
+    { title: 'Create a campaign', text: 'Four short steps from goal to ad.', kind: 'steps' },
+    { title: 'Choose where it shows', text: 'Add as many places as you need.', kind: 'places' },
+    { title: 'Preview every size', text: 'Check the ad before it goes live.', kind: 'sizes' },
+    { title: 'Set a daily budget', text: 'Spend what you planned, in ₹.', kind: 'budget' },
+    { title: 'Pick an ad format', text: 'Banner, Native, Popunder, Push or Social bar.', kind: 'formats' },
+    { title: 'Track results', text: 'See what each campaign delivers.', kind: 'bars' },
   ],
   publisher: [
-    { icon: Globe, title: 'Add your website', text: 'Register a site to prepare its advertising placements.' },
-    { icon: ShieldCheck, title: 'Verify ownership', text: 'Confirm that the website belongs to you.' },
-    { icon: LayoutGrid, title: 'Create a placement', text: 'Choose a format and where it belongs on your site.' },
-    { icon: Code, title: 'Add the code', text: 'Copy the placement snippet for your website.' },
-    { icon: BarChart3, title: 'Review activity', text: 'See placement impressions and clicks in the console.' },
-    { icon: Banknote, title: 'Manage payout details', text: 'Payout setup is shown in the publisher console.' },
+    { title: 'Add your website', text: 'Tell us which site will show ads.', kind: 'site' },
+    { title: 'Verify ownership', text: 'Add one line to prove the site is yours.', kind: 'token' },
+    { title: 'Create a placement', text: 'Choose where on the page ads appear.', kind: 'placement' },
+    { title: 'Copy the ad code', text: 'Paste one snippet into your page.', kind: 'code' },
+    { title: 'Track earnings', text: 'Impressions, clicks and revenue by day.', kind: 'line' },
+    { title: 'See your payouts', text: 'Payout details are sample data for now.', kind: 'payout' },
   ],
 }
 
-const formats = [
-  { name: 'Banner', mark: '▰', text: 'A display placement shown within page content.' },
-  { name: 'Native', mark: '▤', text: 'An ad styled to fit alongside surrounding content.' },
-  { name: 'Popunder', mark: '↗', text: 'A page that opens behind the active browser window.' },
-  { name: 'Push Notification', mark: '▣', text: 'A brief message delivered as a browser notification.' },
-  { name: 'Social Bar', mark: '━', text: 'An interactive, floating ad placement on a page.' },
+const FAQS = [
+  { q: 'What is RivinityADS?', a: 'An ad network. Advertisers launch campaigns, and publishers earn from the ads shown on their websites.' },
+  { q: 'How do I create my first ad?', a: 'Choose a goal, set the audience and budget, then add your ad. You can also describe it to the assistant.' },
+  { q: 'How do I earn as a publisher?', a: 'Add and verify your website, create a placement, then paste the ad code into your page.' },
+  { q: 'Which ad formats are available?', a: 'Banner, Native, Popunder, Push and Social bar.' },
+  { q: 'Is this a live product?', a: 'Not yet. This is a prototype with sample data. Real ad delivery and payments are not connected.' },
 ]
 
-const faqs = [
-  { q: 'What is RivinityADS?', a: 'A platform where advertisers create campaigns and publishers prepare website advertising placements.' },
-  { q: 'How do I create my first campaign?', a: 'Choose a campaign goal, set its audience and budget, then prepare the ad. You can use the guided manual flow or start with the AI assistant.' },
-  { q: 'How do I get started as a publisher?', a: 'Add your website, verify ownership, create a placement and add its code to your site.' },
-  { q: 'Which ad formats are available?', a: 'The product includes Banner, Native, Popunder, Push and Social Bar formats.' },
-  { q: 'Are the numbers on this page live?', a: 'No. This homepage uses sample data. Live ad delivery and payments are not active.' },
-]
+/* ---------- Small pieces ---------- */
+function Logo() {
+  return (
+    <svg viewBox="0 0 24 24" className={`h-6 w-6 ${ACCENT}`} fill="currentColor" aria-hidden="true">
+      <rect x="3" y="12" width="4" height="9" rx="1" />
+      <rect x="10" y="7" width="4" height="14" rx="1" />
+      <rect x="17" y="3" width="4" height="18" rx="1" />
+    </svg>
+  )
+}
 
+function Chip({ children }: { children: ReactNode }) {
+  return <span className={`rounded-md border ${BORDER} px-2 py-1 text-xs`}>{children}</span>
+}
+
+function Snippet({ kind }: { kind: Kind }) {
+  switch (kind) {
+    case 'steps':
+      return (
+        <ul className="w-full space-y-1.5 text-xs">
+          {['Goal', 'Audience', 'Budget', 'Ad'].map((s, i) => (
+            <li key={s} className="flex items-center gap-2">
+              <span className={`flex h-4 w-4 items-center justify-center rounded-full border ${BORDER} ${i < 2 ? `${SOLID} text-white` : ''}`}>
+                {i < 2 && <Check className="h-3 w-3" aria-hidden="true" />}
+              </span>
+              <span className={i < 2 ? '' : MUTED}>{s}</span>
+            </li>
+          ))}
+        </ul>
+      )
+    case 'places':
+      return (
+        <div className="flex flex-wrap gap-1.5">
+          {['India', 'Pune', '110001', '10 km'].map((c) => <Chip key={c}>{c}</Chip>)}
+        </div>
+      )
+    case 'sizes':
+      return (
+        <div className="flex items-end gap-3">
+          {[['Feed', 'h-14 w-14'], ['Story', 'h-20 w-11'], ['Banner', 'h-6 w-24']].map(([n, c]) => (
+            <div key={n} className={`flex items-center justify-center rounded border ${BORDER} text-[10px] ${MUTED} ${c}`}>{n}</div>
+          ))}
+        </div>
+      )
+    case 'budget':
+      return (
+        <div className="w-full">
+          <p className="font-mono text-sm">₹500 / day</p>
+          <div className="relative mt-3 h-1 rounded bg-[color:var(--line)]">
+            <div className={`h-1 w-2/5 rounded ${SOLID}`} />
+            <span className={`absolute left-[40%] top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ${SOLID}`} />
+          </div>
+        </div>
+      )
+    case 'formats':
+      return (
+        <div className="flex flex-wrap gap-1.5">
+          {['Banner', 'Native', 'Popunder', 'Push', 'Social bar'].map((c) => <Chip key={c}>{c}</Chip>)}
+        </div>
+      )
+    case 'bars':
+      return (
+        <div className="flex h-14 w-full items-end gap-1.5" aria-hidden="true">
+          {[30, 45, 38, 60, 52, 72].map((h, i) => <div key={i} className={`flex-1 rounded-sm ${SOLID}`} style={{ height: `${h}%` }} />)}
+        </div>
+      )
+    case 'site':
+      return (
+        <div className="flex w-full items-center gap-2 text-xs">
+          <span className={`flex-1 rounded-md border ${BORDER} px-3 py-2 font-mono ${MUTED}`}>yourwebsite.com</span>
+          <span className={`rounded-md ${SOLID} px-3 py-2 font-semibold text-white`}>Add</span>
+        </div>
+      )
+    case 'token':
+      return <code className={`w-full rounded-md border ${BORDER} px-3 py-2 font-mono text-xs`}>rivinity-verify=7f3a91c2</code>
+    case 'placement':
+      return (
+        <div className={`flex w-full items-center justify-between rounded-md border ${BORDER} px-3 py-2 text-xs`}>
+          Sidebar · 300×250
+          <ChevronDown className="h-4 w-4" aria-hidden="true" />
+        </div>
+      )
+    case 'code':
+      return (
+        <pre className={`w-full overflow-hidden rounded-md border ${BORDER} p-2 font-mono text-[11px] leading-4 ${MUTED}`}>{`<script async
+  src=".../tag.js"
+  data-slot="demo"></script>`}</pre>
+      )
+    case 'line':
+      return (
+        <svg viewBox="0 0 120 50" className={`h-14 w-full ${ACCENT}`} preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="0,40 20,32 40,36 60,22 80,26 100,14 120,10" fill="none" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+        </svg>
+      )
+    case 'payout':
+      return (
+        <div className="w-full text-xs">
+          {[['Method', 'UPI'], ['Status', 'Sample'], ['Minimum', 'Set later']].map(([k, v]) => (
+            <div key={k} className={`flex justify-between border-b ${BORDER} py-1.5 last:border-0`}>
+              <span className={MUTED}>{k}</span>
+              <span>{v}</span>
+            </div>
+          ))}
+        </div>
+      )
+  }
+}
+
+/* ---------- Product panel (sample data, drawn with HTML) ---------- */
+function ProductPanel() {
+  const rows = [
+    { name: 'Diwali sale · Delhi', status: 'Active', dot: 'bg-green-500', spend: '₹6,200', ctr: '2.8%' },
+    { name: 'Salon bookings · Pune', status: 'Active', dot: 'bg-green-500', spend: '₹4,150', ctr: '2.1%' },
+    { name: 'App launch · India', status: 'Paused', dot: 'bg-amber-500', spend: '₹5,900', ctr: '1.7%' },
+    { name: 'Event tickets · Mumbai', status: 'Draft', dot: 'bg-slate-400', spend: '₹0', ctr: '—' },
+  ]
+  return (
+    <div className={`overflow-hidden rounded-xl border ${BORDER} ${SURFACE}`}>
+      <div className={`flex items-center justify-between border-b ${BORDER} px-4 py-2.5`}>
+        <div className="flex gap-1.5" aria-hidden="true">
+          {[0, 1, 2].map((i) => <span key={i} className="h-2.5 w-2.5 rounded-full bg-[color:var(--line)]" />)}
+        </div>
+        <span className={`text-xs ${MUTED}`}>Sample data</span>
+        <span className="w-10" />
+      </div>
+      <div className="grid md:grid-cols-[180px_1fr]">
+        <aside className={`hidden border-r ${BORDER} p-3 text-sm md:block`}>
+          {['Home', 'Campaigns', 'Reports', 'Billing', 'Support'].map((n) => (
+            <div key={n} className={`rounded-md px-3 py-2 ${n === 'Campaigns' ? 'bg-[color:var(--fg)] font-medium text-[color:var(--bg)]' : MUTED}`}>{n}</div>
+          ))}
+        </aside>
+        <div className="min-w-0 p-4 sm:p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold">Campaigns</h2>
+            <span className={`rounded-md ${SOLID} px-3 py-1.5 text-xs font-semibold text-white`}>Create</span>
+          </div>
+          <dl className="mt-4 grid grid-cols-3 gap-4">
+            {[['Spend', '₹16,250'], ['Clicks', '6,214'], ['CTR', '2.31%']].map(([k, v]) => (
+              <div key={k}>
+                <dt className={`text-xs ${MUTED}`}>{k}</dt>
+                <dd className="mt-1 font-mono text-lg">{v}</dd>
+              </div>
+            ))}
+          </dl>
+          <div className={`mt-4 rounded-lg border ${BORDER} p-3`}>
+            <p className={`text-xs ${MUTED}`}>Clicks, last 7 days</p>
+            <svg viewBox="0 0 300 100" preserveAspectRatio="none" className={`mt-2 h-24 w-full ${ACCENT}`} aria-label="Line chart of clicks over seven days">
+              {[20, 50, 80].map((y) => <line key={y} x1="0" x2="300" y1={y} y2={y} stroke="currentColor" strokeOpacity="0.15" strokeDasharray="3 4" vectorEffect="non-scaling-stroke" />)}
+              <polyline points="0,63 50,51 100,57 150,38 200,46 250,29 300,23" fill="none" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+            </svg>
+            <div className={`mt-1 flex justify-between text-[10px] ${MUTED}`}>
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => <span key={d}>{d}</span>)}
+            </div>
+          </div>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[420px] text-left text-sm">
+              <thead className={`text-xs ${MUTED}`}>
+                <tr>
+                  <th className="py-2 font-medium">Name</th>
+                  <th className="py-2 font-medium">Status</th>
+                  <th className="py-2 text-right font-medium">Spend</th>
+                  <th className="py-2 text-right font-medium">CTR</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.name} className={`border-t ${BORDER}`}>
+                    <td className="py-2.5">{r.name}</td>
+                    <td className="py-2.5">
+                      <span className="inline-flex items-center gap-2">
+                        <span className={`h-2 w-2 rounded-full ${r.dot}`} aria-hidden="true" />
+                        {r.status}
+                      </span>
+                    </td>
+                    <td className="py-2.5 text-right font-mono">{r.spend}</td>
+                    <td className="py-2.5 text-right font-mono">{r.ctr}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Nav ---------- */
 function Nav({ dark, onToggle }: { dark: boolean; onToggle: () => void }) {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
-    <header className="sticky top-0 z-40 border-b border-[color:var(--line)] bg-[color:var(--navbg)] text-[color:var(--fg)]">
-      <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
-        <div className="flex min-w-0 items-center gap-8">
-          <Link href="/" className="flex shrink-0 items-center gap-2.5 text-base font-bold tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]">
-            <span className="flex h-8 w-8 items-center justify-center bg-[color:var(--accent)] text-sm font-bold text-[color:var(--accent-fg)]">R</span>
-            <span>Rivinity<span className="ml-0.5 font-medium tracking-[0.08em]">ADS</span></span>
+    <header className={`sticky top-0 z-40 border-b ${scrolled ? `${BORDER} bg-[color:var(--bg)]` : 'border-transparent'}`}>
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
+            <Logo />
+            RivinityADS
           </Link>
-          <nav className="hidden items-center gap-7 md:flex" aria-label="Main">
-            {navLinks.map((item) => <Link key={item.label} href={item.href} className={`text-sm font-medium ${muted} transition-colors duration-200 hover:text-[color:var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`}>{item.label}</Link>)}
+          <nav className="hidden items-center gap-6 md:flex" aria-label="Main">
+            {NAV.map((l) => (
+              <Link key={l.label} href={l.href} className={`text-sm ${MUTED} transition-colors hover:text-[color:var(--fg)]`}>{l.label}</Link>
+            ))}
           </nav>
         </div>
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-          <button type="button" onClick={onToggle} aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'} className={`flex h-10 w-10 items-center justify-center ${muted} transition-colors hover:text-[color:var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`}>
-            {dark ? <Sun className="h-[18px] w-[18px]" aria-hidden="true" /> : <Moon className="h-[18px] w-[18px]" aria-hidden="true" />}
+        <div className="flex items-center gap-1 sm:gap-3">
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
+            className={`flex h-9 w-9 items-center justify-center rounded-lg ${MUTED} hover:text-[color:var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`}
+          >
+            {dark ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
           </button>
-          <Link href="/login" className="hidden min-h-10 items-center px-2 text-sm font-medium transition-colors hover:text-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] sm:inline-flex">Sign in</Link>
-          <Link href="/signup" className="hidden min-h-10 items-center justify-center bg-[color:var(--accent)] px-4 text-sm font-semibold text-[color:var(--accent-fg)] transition-colors hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] sm:inline-flex">Get started</Link>
-          <button type="button" className="flex h-10 w-10 items-center justify-center md:hidden" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} onClick={() => setOpen(!open)}>
+          <Link href="/login" className="hidden px-2 text-sm font-medium sm:inline">Sign in</Link>
+          <Link href="/signup" className={`hidden rounded-lg ${SOLID} px-4 py-2 text-sm font-semibold text-white hover:opacity-90 sm:inline-flex`}>Get started</Link>
+          <button
+            type="button"
+            className="flex h-9 w-9 items-center justify-center md:hidden"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
             {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
           </button>
         </div>
       </div>
-      {open && <div className="border-t border-[color:var(--line)] px-4 pb-5 md:hidden"><nav className="mx-auto flex max-w-[1440px] flex-col py-2" aria-label="Mobile">
-        {[...navLinks, { label: 'Sign in', href: '/login' }, { label: 'Get started', href: '/signup' }].map((item) => <Link key={item.label} href={item.href} onClick={() => setOpen(false)} className="border-b border-[color:var(--line)] px-1 py-3 text-sm font-medium transition-colors hover:text-[color:var(--accent)] last:border-b-0">{item.label}</Link>)}
-      </nav></div>}
+      {open && (
+        <nav className={`border-t ${BORDER} bg-[color:var(--bg)] px-4 pb-3 md:hidden`} aria-label="Mobile">
+          {[...NAV, { label: 'Sign in', href: '/login' }, { label: 'Get started', href: '/signup' }].map((l) => (
+            <Link key={l.label} href={l.href} onClick={() => setOpen(false)} className="block rounded-lg px-2 py-3 text-sm font-medium">{l.label}</Link>
+          ))}
+        </nav>
+      )}
     </header>
   )
 }
 
-function AdPreview({ size, onSizeChange }: { size: 'Feed' | 'Story' | 'Banner'; onSizeChange: (size: 'Feed' | 'Story' | 'Banner') => void }) {
-  const shape = { Feed: 'aspect-[1.45/1] w-full max-w-[18rem]', Story: 'aspect-[9/15] w-32', Banner: 'aspect-[5/1] w-full max-w-[22rem]' }[size]
-  return (
-    <div className="min-w-0">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div><p className={`text-[10px] font-semibold uppercase tracking-[0.16em] ${accent}`}>Publisher placement</p><h3 className="mt-1 text-sm font-semibold">Ad preview</h3></div>
-        <div className={`flex border ${line}`} role="tablist" aria-label="Ad preview size">
-          {(['Feed', 'Story', 'Banner'] as const).map((format) => <button key={format} type="button" role="tab" aria-selected={size === format} onClick={() => onSizeChange(format)} className={`px-2.5 py-2 text-[11px] font-medium transition-colors duration-200 ${size === format ? 'bg-[color:var(--accent)] text-[color:var(--accent-fg)]' : `${muted} hover:bg-[color:var(--surface-muted)]`}`}>{format}</button>)}
-        </div>
-      </div>
-      <div className="flex min-h-[16rem] items-center justify-center bg-[color:var(--surface-muted)] p-5 sm:min-h-[18rem]">
-        <div key={size} className={`${shape} flex items-center justify-center overflow-hidden border border-[color:var(--line)] bg-[color:var(--card)] p-4 text-left animate-preview-in ${size === 'Story' ? 'flex-col text-center' : 'flex-row gap-3'}`}>
-          <div className={`flex shrink-0 items-center justify-center bg-[color:var(--soft)] text-sm font-semibold ${accent} ${size === 'Story' ? 'mb-3 h-10 w-10' : 'h-12 w-12'}`}>N&amp;C</div>
-          <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-wide">North &amp; Co.</p>
-            <p className="mt-1 text-sm font-semibold leading-snug text-[color:var(--fg)]">New season, made for everyday</p>
-            {size !== 'Banner' && <span className="mt-3 inline-flex bg-[color:var(--accent)] px-2.5 py-1.5 text-[10px] font-semibold text-[color:var(--accent-fg)]">Shop collection</span>}
-          </div>
-        </div>
-      </div>
-      <div className={`mt-3 flex items-center justify-between border-t ${line} pt-3 text-[11px] ${muted}`}><span>Illustrative creative</span><span>Sample data</span></div>
-    </div>
-  )
-}
-
-function ProductShowcase() {
-  const [size, setSize] = useState<'Feed' | 'Story' | 'Banner'>('Feed')
-  return (
-    <div className={`grid overflow-hidden border ${line} ${card} xl:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.75fr)]`}>
-      <div className="min-w-0 p-4 sm:p-6 lg:p-8">
-        <div className={`flex flex-wrap items-center justify-between gap-3 border-b ${line} pb-4 sm:pb-5`}>
-          <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center bg-[color:var(--accent)] text-sm font-bold text-[color:var(--accent-fg)]">R</span><div><p className="text-[10px] font-semibold uppercase tracking-[0.15em]">RivinityADS / Campaigns</p><h2 className="mt-0.5 text-base font-semibold">Spring collection</h2></div></div>
-          <span className={`border ${line} px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] ${muted}`}>Sample workspace</span>
-        </div>
-        <div className={`grid grid-cols-2 gap-4 border-b ${line} py-5 sm:grid-cols-4 sm:gap-6 sm:py-6`}>
-          {[
-            { label: 'Spend', value: 'INR 3,240', note: 'of INR 5,000' },
-            { label: 'Impressions', value: '48,260', note: 'sample total' },
-            { label: 'Clicks', value: '1,284', note: 'sample total' },
-            { label: 'Click-through rate', value: '2.66%', note: 'sample average' },
-          ].map((metric) => <div key={metric.label} className="min-w-0"><p className={`text-[11px] font-medium ${muted}`}>{metric.label}</p><p className="mt-1 truncate text-lg font-semibold tracking-tight tabular-nums sm:text-xl">{metric.value}</p><p className={`mt-1 text-[10px] ${muted}`}>{metric.note}</p></div>)}
-        </div>
-        <div className="grid gap-6 border-b border-[color:var(--line)] py-5 sm:grid-cols-[minmax(0,1.65fr)_minmax(12rem,0.75fr)] sm:gap-8 sm:py-6">
-          <section aria-label="Sample campaign performance">
-            <div className="flex items-start justify-between gap-2"><div><h3 className="text-sm font-semibold">Campaign performance</h3><p className={`mt-1 text-xs ${muted}`}>Daily clicks / last 7 days</p></div><span className={`text-[10px] font-medium uppercase tracking-[0.1em] ${muted}`}>Sample</span></div>
-            <div className="mt-4 flex h-32 gap-3">
-              <div className={`flex flex-col justify-between pb-5 text-[10px] ${muted}`} aria-hidden="true"><span>400</span><span>200</span><span>0</span></div>
-              <div className="relative min-w-0 flex-1"><div className="absolute inset-0 flex flex-col justify-between pb-5" aria-hidden="true"><span className={`border-t ${line}`} /><span className={`border-t ${line}`} /><span className={`border-t ${line}`} /></div>
-                <svg viewBox="0 0 420 100" preserveAspectRatio="none" className="relative h-[calc(100%-1.25rem)] w-full" aria-hidden="true"><path className="chart-stroke" d="M4 82C38 78 51 60 80 66S122 55 150 59 188 36 216 45 251 48 279 36 318 32 347 24 387 29 416 9" fill="none" stroke="var(--accent)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" /><circle cx="416" cy="9" r="4" fill="var(--accent)" /></svg>
-                <div className={`absolute inset-x-0 bottom-0 flex justify-between text-[10px] ${muted}`} aria-hidden="true"><span>Mon</span><span>Wed</span><span>Fri</span><span>Sun</span></div>
-              </div>
-            </div>
-          </section>
-          <section className={`border-t ${line} pt-4 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0`} aria-label="Sample audience and budget settings">
-            <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-semibold">Audience &amp; budget</h3><SlidersHorizontal className={`h-4 w-4 ${muted}`} aria-hidden="true" /></div>
-            <dl className={`mt-4 space-y-3 text-xs ${muted}`}><div className="flex items-start justify-between gap-3"><dt>Location</dt><dd className="text-right font-medium text-[color:var(--fg)]">Pune, India / 10 km</dd></div><div className="flex items-start justify-between gap-3"><dt>Audience</dt><dd className="text-right font-medium text-[color:var(--fg)]">Ages 21-45 / Shopping</dd></div><div className="flex items-start justify-between gap-3"><dt>Daily budget</dt><dd className="text-right font-medium text-[color:var(--fg)]">INR 500</dd></div></dl>
-            <div className={`mt-4 h-1 overflow-hidden ${line}`}><div className="h-full w-[64.8%] bg-[color:var(--accent)]" /></div><p className={`mt-1 text-right text-[9px] ${muted}`}>Illustrative budget pacing</p>
-          </section>
-        </div>
-        <section className="pt-5 sm:pt-6" aria-label="Sample campaign list"><div className="mb-2 flex items-center justify-between gap-2"><h3 className="text-sm font-semibold">Campaigns</h3><span className={`text-[10px] ${muted}`}>Workspace preview</span></div>
-          <div className="overflow-x-auto"><table className="w-full min-w-[320px] text-left text-xs"><thead className={muted}><tr><th className="py-2 font-medium">Campaign</th><th className="py-2 font-medium">Status</th><th className="py-2 text-right font-medium">Spend</th></tr></thead><tbody className={`divide-y ${line}`}><tr><td className="py-3 font-medium">Spring collection</td><td className="py-3"><span className="mr-2 inline-block h-2 w-2 bg-[color:var(--accent)]" />Active</td><td className="py-3 text-right tabular-nums">INR 3,240</td></tr><tr><td className="py-3 font-medium">Weekend offers</td><td className="py-3"><span className="mr-2 inline-block h-2 w-2 bg-[color:var(--muted)]" />Paused</td><td className="py-3 text-right tabular-nums">INR 1,860</td></tr></tbody></table></div>
-        </section>
-      </div>
-      <aside className={`border-t ${line} p-4 sm:p-6 lg:p-8 xl:border-l xl:border-t-0`}><AdPreview size={size} onSizeChange={setSize} /></aside>
-    </div>
-  )
-}
-
+/* ---------- Page ---------- */
 export function HomePage() {
   const [dark, setDark] = useState(true)
   const [tab, setTab] = useState<'advertiser' | 'publisher'>('advertiser')
@@ -211,133 +335,190 @@ export function HomePage() {
 
   useEffect(() => {
     const id = requestAnimationFrame(() => {
-      try { setDark(localStorage.getItem('landing-theme') !== 'light') } catch {}
+      try {
+        setDark(localStorage.getItem('landing-theme') !== 'light')
+      } catch {}
     })
     return () => cancelAnimationFrame(id)
-  }, [])
-
-  useEffect(() => {
-    const elements = document.querySelectorAll<HTMLElement>('[data-reveal]')
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
-      elements.forEach((element) => element.classList.add('is-visible'))
-      return
-    }
-    const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible')
-        observer.unobserve(entry.target)
-      }
-    }), { threshold: 0.12 })
-    elements.forEach((element) => observer.observe(element))
-    return () => observer.disconnect()
   }, [])
 
   function toggleTheme() {
     const next = !dark
     setDark(next)
-    try { localStorage.setItem('landing-theme', next ? 'dark' : 'light') } catch {}
+    try {
+      localStorage.setItem('landing-theme', next ? 'dark' : 'light')
+    } catch {}
   }
 
-  const vars = (dark ? themes.dark : themes.light) as unknown as CSSProperties
-  const visible = cards[tab].slice(page * 3, page * 3 + 3)
+  const vars = (dark ? THEMES.dark : THEMES.light) as unknown as CSSProperties
+  const visible = CARDS[tab].slice(page * 3, page * 3 + 3)
 
   return (
-    <div style={vars} className="min-h-screen overflow-x-clip bg-[color:var(--bg)] text-[color:var(--fg)] transition-colors duration-200">
-      <style>{`
-        @keyframes home-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes preview-in { from { opacity: .5; transform: translateY(5px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes chart-draw { to { stroke-dashoffset: 0; } }
-        .hero-rise { animation: home-rise .7s cubic-bezier(.2,.7,.2,1) both; }
-        .animate-preview-in { animation: preview-in .24s ease-out both; }
-        .chart-stroke { stroke-dasharray: 560; stroke-dashoffset: 560; animation: chart-draw 1.35s .25s ease-out forwards; }
-        .reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
-        .reveal.is-visible { opacity: 1; transform: translateY(0); }
-        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } .reveal { opacity: 1; transform: none; } }
-      `}</style>
+    <div style={vars} className="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)]">
       <Nav dark={dark} onToggle={toggleTheme} />
+
       <main>
-        <section className={`relative border-b ${line}`}>
-          <div className="mx-auto max-w-[1440px] px-4 pb-10 pt-10 sm:px-6 sm:pb-14 sm:pt-14 lg:px-10 lg:pb-12 lg:pt-16">
-            <div className="grid items-end gap-8 md:grid-cols-12 md:gap-10">
-              <div className="md:col-span-7 hero-rise">
-                <p className={`mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] ${accent}`}>One ecosystem / two connected sides</p>
-                <h1 className="max-w-4xl text-[clamp(3.25rem,8vw,7.4rem)] font-semibold leading-[0.88] tracking-[-0.065em]">Campaigns meet<br /><span className={accent}>their placement.</span></h1>
+        {/* Hero */}
+        <section className="mx-auto max-w-6xl px-4 pb-14 pt-16 text-center sm:px-6 sm:pt-24">
+          <h1 className="mx-auto max-w-4xl text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+            Run ads in minutes.
+            <br />
+            Earn from your website.
+          </h1>
+          <p className={`mx-auto mt-6 max-w-xl text-lg leading-8 ${MUTED}`}>
+            RivinityADS is an ad network. Advertisers launch campaigns, and publishers earn from the ads on their sites.
+          </p>
+
+          <div className="mx-auto mt-10 flex max-w-4xl flex-col gap-3 lg:flex-row">
+            <Link
+              href="/campaigns/new/ai"
+              className={`flex flex-1 items-center gap-3 rounded-lg border ${BORDER} ${SURFACE} px-4 py-3 text-left text-sm transition-colors hover:border-[color:var(--accent)]`}
+            >
+              <span className={`font-mono ${ACCENT}`} aria-hidden="true">›</span>
+              <span className="min-w-0 flex-1 truncate">Promote my clothing store in Delhi, ₹500 a day</span>
+              <span className={`inline-flex items-center gap-1 rounded-md ${SOLID} px-2.5 py-1 text-xs font-semibold text-white`}>
+                Try it <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </span>
+            </Link>
+            <Link href="/signup" className={BTN_PRIMARY}>Start advertising</Link>
+            <Link href="/signup" className={BTN_OUTLINE}>Start earning</Link>
+          </div>
+          <p className={`mt-4 text-xs ${MUTED}`}>The assistant is a demo · All numbers on this page are sample data</p>
+        </section>
+
+        {/* Product */}
+        <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
+          <ProductPanel />
+        </section>
+
+        {/* What is */}
+        <section className={`border-t ${BORDER}`}>
+          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2">
+            <div>
+              <h2 className="text-4xl font-semibold tracking-tight">What is RivinityADS?</h2>
+              <p className={`mt-4 max-w-md text-lg leading-8 ${MUTED}`}>
+                Advertisers create a campaign in a few short steps. Publishers add a website and get paid for the ads that run on it.
+              </p>
+              <Link href="/advertisers" className="mt-6 inline-flex items-center gap-2 font-semibold hover:underline">
+                Read more <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+            <ol>
+              {POINTS.map((p, i) => (
+                <li key={p.title} className={`flex gap-5 border-t ${BORDER} py-5 first:border-t-0 lg:first:border-t`}>
+                  <span className={`font-mono text-sm ${ACCENT}`}>{String(i + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3 className="text-lg font-semibold">{p.title}</h3>
+                    <p className={`mt-1 ${MUTED}`}>{p.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* What can you do */}
+        <section className={`border-t ${BORDER}`}>
+          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+            <h2 className="text-4xl font-semibold tracking-tight">What can you do?</h2>
+            <p className={`mt-4 text-lg ${MUTED}`}>Pick your side to see the steps.</p>
+
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+              <div className={`inline-flex rounded-lg border ${BORDER} p-1`} role="tablist" aria-label="Choose your side">
+                {([['advertiser', 'Advertiser'], ['publisher', 'Publisher']] as const).map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    role="tab"
+                    aria-selected={tab === key}
+                    onClick={() => {
+                      setTab(key)
+                      setPage(0)
+                    }}
+                    className={`rounded-md px-4 py-2 text-sm font-semibold ${tab === key ? `${SOLID} text-white` : MUTED}`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
-              <div className="max-w-xl md:col-span-5 md:justify-self-end hero-rise" style={{ animationDelay: '100ms' }}>
-                <p className={`text-base leading-7 sm:text-lg sm:leading-8 ${muted}`}>RivinityADS connects advertisers building campaigns with publishers preparing the places they can appear.</p>
-                <div className="mt-6 flex flex-col gap-3 min-[420px]:flex-row">
-                  <Link href="/signup" className={primaryBtn}>Create a campaign <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
-                  <Link href="/publishers" className={secondaryBtn}>For publishers</Link>
+              <div className="flex items-center gap-3">
+                <span className={`font-mono text-sm ${MUTED}`}>{page + 1} / 2</span>
+                <button type="button" aria-label="Previous" disabled={page === 0} onClick={() => setPage(0)} className={`flex h-10 w-10 items-center justify-center rounded-full border ${BORDER} disabled:opacity-40`}>
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <button type="button" aria-label="Next" disabled={page === 1} onClick={() => setPage(1)} className={`flex h-10 w-10 items-center justify-center rounded-full border ${BORDER} disabled:opacity-40`}>
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
+              {visible.map((c) => (
+                <Link
+                  key={c.title}
+                  href={tab === 'advertiser' ? '/advertisers' : '/publishers'}
+                  className={`rounded-xl border ${BORDER} ${SURFACE} p-5 transition-colors hover:border-[color:var(--accent)]`}
+                >
+                  <div className={`flex h-32 items-center rounded-lg border ${BORDER} bg-[color:var(--bg)] p-4`}>
+                    <Snippet kind={c.kind} />
+                  </div>
+                  <h3 className="mt-5 text-lg font-semibold">{c.title}</h3>
+                  <p className={`mt-1 ${MUTED}`}>{c.text}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className={`scroll-mt-16 border-t ${BORDER}`}>
+          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2">
+            <div>
+              <h2 className="text-4xl font-semibold tracking-tight">FAQ</h2>
+              <p className={`mt-4 text-lg ${MUTED}`}>
+                Something else? <Link href="/support" className="underline">Contact support</Link>.
+              </p>
+            </div>
+            <div>
+              {FAQS.map((f, i) => (
+                <div key={f.q} className={`border-t ${BORDER} last:border-b`}>
+                  <button
+                    type="button"
+                    aria-expanded={openFaq === i}
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                    className="flex w-full items-center justify-between gap-4 py-5 text-left font-semibold"
+                  >
+                    {f.q}
+                    <Plus className={`h-5 w-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-45' : ''}`} aria-hidden="true" />
+                  </button>
+                  {openFaq === i && <p className={`pb-5 ${MUTED}`}>{f.a}</p>}
                 </div>
-                <Link href="/campaigns/new/ai" className={`mt-4 inline-flex items-center gap-2 text-sm font-medium ${muted} transition-colors hover:text-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`}><span className={`inline-flex h-6 w-6 items-center justify-center border ${line}`}><ArrowDownRight className="h-3.5 w-3.5" aria-hidden="true" /></span>Start with the AI campaign assistant</Link>
-              </div>
-            </div>
-            <div className="mt-10 sm:mt-12 lg:mt-14" data-reveal>
-              <div className={`mb-3 flex flex-wrap items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] ${muted}`}><span>Campaign workspace / placement preview</span><span>Prototype interface / sample data</span></div>
-              <ProductShowcase />
-              <p className={`mt-3 text-right text-[10px] ${muted}`}>Illustrative interface and sample metrics. No live ad delivery or payments.</p>
+              ))}
             </div>
           </div>
         </section>
 
-        <section className={`border-b ${line}`}>
-          <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-12 lg:gap-14 lg:px-10 lg:py-24">
-            <div className="lg:col-span-5" data-reveal>
-              <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${accent}`}>A shared ecosystem</p>
-              <h2 className="mt-5 max-w-xl text-4xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-5xl">Two sides of advertising, connected by the placement.</h2>
-              <p className={`mt-5 max-w-md leading-7 ${muted}`}>A campaign needs a place to appear. A placement needs an ad to show. RivinityADS gives each side a dedicated workflow in one platform.</p>
-              <Link href="/advertisers" className={`mt-6 inline-flex items-center gap-2 text-sm font-semibold ${accent} hover:underline`}>Explore the platform <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link>
-            </div>
-            <div className="lg:col-span-7" data-reveal>
-              <div className={`grid border-y ${line} sm:grid-cols-[1fr_auto_1fr]`}>
-                <div className="py-6 sm:py-8"><div className="flex items-center gap-3"><span className={`flex h-10 w-10 items-center justify-center bg-[color:var(--soft)] ${accent}`}><Megaphone className="h-5 w-5" aria-hidden="true" /></span><span className="text-xs font-semibold uppercase tracking-[0.14em]">Advertiser</span></div><p className="mt-5 text-2xl font-semibold tracking-tight">Create the campaign.</p><p className={`mt-2 max-w-xs text-sm leading-6 ${muted}`}>Choose an objective, audience, budget and creative.</p></div>
-                <div className={`flex items-center border-y ${line} py-4 sm:border-x sm:border-y-0 sm:px-6 sm:py-0`}><div className="flex items-center gap-3 sm:flex-col"><span className="h-px w-8 bg-[color:var(--accent)] sm:h-8 sm:w-px" /><span className={`text-[10px] font-semibold uppercase tracking-[0.16em] ${accent}`}>Connect</span><span className="h-px w-8 bg-[color:var(--accent)] sm:h-8 sm:w-px" /></div></div>
-                <div className="py-6 sm:py-8 sm:pl-8"><div className="flex items-center gap-3"><span className={`flex h-10 w-10 items-center justify-center bg-[color:var(--soft)] ${accent}`}><Globe className="h-5 w-5" aria-hidden="true" /></span><span className="text-xs font-semibold uppercase tracking-[0.14em]">Publisher</span></div><p className="mt-5 text-2xl font-semibold tracking-tight">Prepare the placement.</p><p className={`mt-2 max-w-xs text-sm leading-6 ${muted}`}>Register a website, verify it and set up an ad position.</p></div>
-              </div>
-            </div>
+        {/* Closing */}
+        <section className={`border-t ${BORDER}`}>
+          <div className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6">
+            <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">Start your first campaign</h2>
+            <p className={`mx-auto mt-4 max-w-md ${MUTED}`}>Explore the prototype with sample data.</p>
+            <Link href="/signup" className={`${BTN_PRIMARY} mt-8`}>Get started</Link>
           </div>
-        </section>
-
-        <section className="border-b border-[color:var(--line)] bg-[color:var(--soft)]">
-          <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-24">
-            <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
-              <div className="lg:col-span-4" data-reveal>
-                <p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${accent}`}>Choose your workflow</p>
-                <h2 className="mt-5 text-4xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-5xl">Built for the work you do.</h2>
-                <p className={`mt-5 max-w-sm leading-7 ${muted}`}>Campaign creation and website placements have different jobs. Start with the path that fits.</p>
-                <div className={`mt-8 inline-flex border ${line} p-1`} role="tablist" aria-label="Choose your side">
-                  {([['advertiser', "I'm an advertiser"], ['publisher', "I'm a publisher"]] as const).map(([key, label]) => <button key={key} type="button" role="tab" aria-selected={tab === key} onClick={() => { setTab(key); setPage(0) }} className={`px-3 py-2.5 text-xs font-semibold transition-colors sm:px-4 sm:text-sm ${tab === key ? 'bg-[color:var(--accent)] text-[color:var(--accent-fg)]' : `${muted} hover:text-[color:var(--fg)]`}`}>{label}</button>)}
-                </div>
-              </div>
-              <div className="lg:col-span-8" data-reveal>
-                <div className="flex items-center justify-between border-b border-[color:var(--line)] pb-4"><p className={`text-xs font-semibold uppercase tracking-[0.14em] ${muted}`}>{tab === 'advertiser' ? 'Campaign workflow' : 'Publisher workflow'}</p><div className="flex items-center gap-3"><span className={`text-xs tabular-nums ${muted}`}>{page + 1} / 2</span><button type="button" aria-label="Previous" disabled={page === 0} onClick={() => setPage(0)} className={`flex h-9 w-9 items-center justify-center border ${line} transition-colors hover:text-[color:var(--accent)] disabled:opacity-35`}><ArrowLeft className="h-4 w-4" aria-hidden="true" /></button><button type="button" aria-label="Next" disabled={page === 1} onClick={() => setPage(1)} className={`flex h-9 w-9 items-center justify-center border ${line} transition-colors hover:text-[color:var(--accent)] disabled:opacity-35`}><ArrowRight className="h-4 w-4" aria-hidden="true" /></button></div></div>
-                <div className="grid gap-x-8 md:grid-cols-2">
-                  {visible.map(({ icon: Icon, title, text }, index) => <Link key={title} href={tab === 'advertiser' ? '/advertisers' : '/publishers'} className={`group flex gap-4 border-b ${line} py-5 transition-colors hover:border-[color:var(--accent)]`}><span className={`pt-0.5 font-mono text-xs ${accent}`}>0{page * 3 + index + 1}</span><span className="min-w-0 flex-1"><span className="flex items-center justify-between gap-3"><span className="text-base font-semibold">{title}</span><Icon className={`h-4 w-4 shrink-0 ${muted} transition-colors group-hover:text-[color:var(--accent)]`} aria-hidden="true" /></span><span className={`mt-1 block text-sm leading-6 ${muted}`}>{text}</span></span></Link>)}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className={`border-b ${line}`}>
-          <div className="mx-auto max-w-[1440px] px-4 py-16 sm:px-6 sm:py-20 lg:px-10 lg:py-24">
-            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end" data-reveal><div><p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${accent}`}>Formats for different placements</p><h2 className="mt-5 max-w-3xl text-4xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-5xl">The shape of the ad depends on where it lives.</h2></div><Link href="/ad-formats" className={`inline-flex shrink-0 items-center gap-2 text-sm font-semibold ${accent} hover:underline`}>See all formats <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link></div>
-            <div className={`mt-10 grid border-t ${line} sm:grid-cols-2 lg:grid-cols-5`} data-reveal>{formats.map((format, index) => <Link key={format.name} href="/ad-formats" className={`group border-b ${line} py-5 transition-colors hover:bg-[color:var(--soft)] sm:px-4 lg:border-b-0 lg:border-r lg:first:pl-0 lg:last:border-r-0`}><span className={`font-mono text-sm ${accent}`}>0{index + 1}</span><span className="ml-3 text-sm font-semibold">{format.name}</span><p className={`mt-3 text-sm leading-6 ${muted}`}>{format.text}</p><span className={`mt-5 inline-flex h-10 w-10 items-center justify-center border ${line} text-lg transition-colors group-hover:border-[color:var(--accent)] group-hover:text-[color:var(--accent)]`}>{format.mark}</span></Link>)}</div>
-          </div>
-        </section>
-
-        <section id="faq" className={`border-b ${line}`}>
-          <div className="mx-auto grid max-w-[1440px] gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-12 lg:gap-14 lg:px-10 lg:py-24">
-            <div className="lg:col-span-5" data-reveal><p className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${accent}`}>Good to know</p><h2 className="mt-5 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">Questions, answered.</h2><p className={`mt-5 max-w-sm leading-7 ${muted}`}>Want to talk through a specific setup? <Link href="/support" className="underline decoration-[color:var(--line)] underline-offset-4 hover:text-[color:var(--fg)]">Contact support</Link>.</p></div>
-            <div className="lg:col-span-7" data-reveal>{faqs.map((faq, index) => <div key={faq.q} className={`border-t ${line} last:border-b`}><button type="button" aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)} className="flex w-full items-center justify-between gap-4 py-5 text-left font-semibold"><span>{faq.q}</span><Plus className={`h-5 w-5 shrink-0 transition-transform duration-200 ${openFaq === index ? 'rotate-45 text-[color:var(--accent)]' : muted}`} aria-hidden="true" /></button>{openFaq === index && <p className={`max-w-2xl pb-5 leading-7 ${muted}`}>{faq.a}</p>}</div>)}</div>
-          </div>
-        </section>
-
-        <section className="relative overflow-hidden bg-[color:var(--accent)] text-[color:var(--accent-fg)]">
-          <div className="mx-auto grid max-w-[1440px] gap-8 px-4 py-14 sm:px-6 sm:py-16 md:grid-cols-12 md:items-end lg:px-10 lg:py-20" data-reveal><div className="md:col-span-8"><p className="text-[11px] font-semibold uppercase tracking-[0.18em] opacity-75">Make the connection</p><h2 className="mt-5 max-w-4xl text-4xl font-semibold leading-[0.95] tracking-[-0.05em] sm:text-6xl">Start with a campaign.<br className="hidden sm:block" /> Build toward its placement.</h2><p className="mt-5 max-w-xl leading-7 opacity-80">Explore the RivinityADS prototype with sample data. Create an advertiser account to get started.</p></div><div className="flex flex-col gap-3 sm:flex-row md:col-span-4 md:justify-end"><Link href="/signup" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[color:var(--bg)] px-5 py-3 text-sm font-semibold text-[color:var(--fg)] transition-opacity hover:opacity-90">Create a campaign <ArrowRight className="h-4 w-4" aria-hidden="true" /></Link><Link href="/publishers" className="inline-flex min-h-12 items-center justify-center border border-current/40 px-5 py-3 text-sm font-semibold transition-colors hover:bg-black/5">For publishers</Link></div></div>
         </section>
       </main>
-      <footer className={`border-t ${line}`}><div className={`mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-4 px-4 py-7 text-sm sm:px-6 lg:px-10 ${muted}`}><span>© 2026 RivinityADS</span><nav className="flex flex-wrap gap-x-5 gap-y-2" aria-label="Footer"><Link href="/advertisers" className="hover:text-[color:var(--fg)]">Advertisers</Link><Link href="/publishers" className="hover:text-[color:var(--fg)]">Publishers</Link><Link href="/ad-formats" className="hover:text-[color:var(--fg)]">Ad formats</Link><Link href="/support" className="hover:text-[color:var(--fg)]">Support</Link></nav></div></footer>
+
+      <footer className={`border-t ${BORDER}`}>
+        <div className={`mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm sm:px-6 ${MUTED}`}>
+          <span>© 2026 RivinityADS</span>
+          <nav className="flex flex-wrap gap-5" aria-label="Footer">
+            <Link href="/advertisers">Advertisers</Link>
+            <Link href="/publishers">Publishers</Link>
+            <Link href="/ad-formats">Ad formats</Link>
+            <Link href="/support">Support</Link>
+          </nav>
+        </div>
+      </footer>
     </div>
   )
 }
