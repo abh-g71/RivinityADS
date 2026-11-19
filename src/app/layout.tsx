@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 import { MotionConfig } from "motion/react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Onest } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const onest = Onest({
+  variable: "--font-onest",
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
 });
 
@@ -23,7 +19,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${onest.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <MotionConfig reducedMotion="user">{children}</MotionConfig>
