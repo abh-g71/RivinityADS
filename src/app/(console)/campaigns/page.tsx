@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { ArrowUpDown, MoreHorizontal, Search, X } from 'lucide-react'
 import {
   Dialog,
@@ -77,6 +78,9 @@ const columns: { key: ColumnKey; label: string }[] = [
   { key: 'country', label: 'Country' },
   { key: 'adUnit', label: 'Ad unit' },
 ]
+
+// Only the essentials show by default so the table fits on one screen.
+const defaultColumns: ColumnKey[] = ['name', 'status', 'budget', 'impressions', 'ctr', 'spend']
 
 const currency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -188,7 +192,7 @@ export default function CampaignsPage() {
   const [adUnit, setAdUnit] = useState('')
   const [applied, setApplied] = useState({ dateRange: 'all', country: '', adUnit: '' })
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false)
-  const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>(columns.map((column) => column.key))
+  const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>(defaultColumns)
   const [sortKey, setSortKey] = useState<ColumnKey>('name')
   const [sortAscending, setSortAscending] = useState(true)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -411,18 +415,30 @@ export default function CampaignsPage() {
     const delivery = deliveryFor(item, itemsById)
     switch (key) {
       case 'name':
-        return item.entity === 'ad'
-          ? <span className="font-medium text-navy-900">{item.name}</span>
-          : (
-            <button
-              type="button"
-              onClick={() => drillInto(item)}
-              className="rounded-sm text-left font-semibold text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-              aria-label={`View ${item.entity === 'campaign' ? 'ad sets' : 'ads'} for ${item.name}`}
-            >
-              {item.name}
-            </button>
-          )
+        return (
+          <div className="min-w-0">
+            {item.entity === 'campaign' ? (
+              <Link
+                href={`/campaigns/${item.id}`}
+                className="rounded-sm font-semibold text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              >
+                {item.name}
+              </Link>
+            ) : item.entity === 'ad-set' ? (
+              <button
+                type="button"
+                onClick={() => drillInto(item)}
+                className="rounded-sm text-left font-semibold text-brand-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                aria-label={`View ads for ${item.name}`}
+              >
+                {item.name}
+              </button>
+            ) : (
+              <span className="font-medium text-navy-900">{item.name}</span>
+            )}
+            <p className="mt-0.5 font-mono text-xs text-slate-500">{item.id}</p>
+          </div>
+        )
       case 'id': return <span className="font-mono text-xs">{item.id}</span>
       case 'parent': return item.parentId ?? '—'
       case 'status': {
@@ -501,7 +517,7 @@ export default function CampaignsPage() {
         description="Manage campaign delivery and review mock performance across campaigns, ad sets, and ads."
       />
 
-      <Card className="mt-6 space-y-4 p-4 sm:p-5">
+      <Card className="mt-4 space-y-4 p-4">
         <div className="flex flex-wrap items-end gap-3">
           <label className="relative min-w-[min(100%,16rem)] flex-1">
             <span className="mb-1.5 block text-sm font-medium text-slate-700">Search</span>
@@ -547,25 +563,30 @@ export default function CampaignsPage() {
           <Button type="button" variant="outline" onClick={() => setMoreFiltersOpen((open) => !open)} aria-expanded={moreFiltersOpen}>
             {moreFiltersOpen ? 'Hide filters' : 'More filters'}
           </Button>
-          <div className="w-full sm:w-44">
-            <Select
-              label="Bulk action"
-              value={bulkAction}
-              onChange={(event) => setBulkAction(event.target.value as BulkAction)}
-              options={[
-                { value: '', label: 'Bulk actions' },
-                { value: 'turn-on', label: 'Turn on' },
-                { value: 'turn-off', label: 'Turn off' },
-                { value: 'duplicate', label: 'Duplicate' },
-                { value: 'delete', label: 'Delete' },
-              ]}
-            />
-          </div>
-          <Button type="button" variant="outline" onClick={applyBulkAction} disabled={!bulkAction || selectedIds.length === 0}>
-            Apply action
-          </Button>
           <Button type="button" variant="outline" onClick={exportCsv}>Export CSV</Button>
         </div>
+
+        {selectedIds.length > 0 && (
+          <div className="flex flex-wrap items-end gap-3 border-t border-slate-200 pt-4">
+            <p className="pb-3 text-sm font-medium text-slate-700">{selectedIds.length} selected</p>
+            <div className="w-full sm:w-44">
+              <Select
+                label="Bulk action"
+                value={bulkAction}
+                onChange={(event) => setBulkAction(event.target.value as BulkAction)}
+                options={[
+                  { value: '', label: 'Choose action' },
+                  { value: 'turn-on', label: 'Turn on' },
+                  { value: 'turn-off', label: 'Turn off' },
+                  { value: 'duplicate', label: 'Duplicate' },
+                  { value: 'delete', label: 'Delete' },
+                ]}
+              />
+            </div>
+            <Button type="button" onClick={applyBulkAction} disabled={!bulkAction}>Apply action</Button>
+            <Button type="button" variant="ghost" onClick={() => { setSelectedIds([]); setBulkAction('') }}>Clear selection</Button>
+          </div>
+        )}
 
         {moreFiltersOpen && (
           <div className="grid gap-3 border-t border-slate-200 pt-4 sm:grid-cols-2">
@@ -605,11 +626,11 @@ export default function CampaignsPage() {
         </div>
       )}
 
-      <Tabs value={tab} onValueChange={changeTab} className="mt-6">
+      <Tabs value={tab} onValueChange={changeTab} className="mt-4">
         <TabsList aria-label="Campaign hierarchy" className="w-full justify-start overflow-x-auto rounded-none border-b border-slate-200 bg-transparent p-0">
-          <TabsTrigger value="campaigns" className="rounded-t-xl px-4 py-3 data-[state=active]:text-brand-700">Campaigns</TabsTrigger>
-          <TabsTrigger value="ad-sets" className="rounded-t-xl px-4 py-3 data-[state=active]:text-brand-700">Ad Sets</TabsTrigger>
-          <TabsTrigger value="ads" className="rounded-t-xl px-4 py-3 data-[state=active]:text-brand-700">Ads</TabsTrigger>
+          <TabsTrigger value="campaigns" className="rounded-t-md px-4 py-3 data-[state=active]:text-brand-700">Campaigns</TabsTrigger>
+          <TabsTrigger value="ad-sets" className="rounded-t-md px-4 py-3 data-[state=active]:text-brand-700">Ad Sets</TabsTrigger>
+          <TabsTrigger value="ads" className="rounded-t-md px-4 py-3 data-[state=active]:text-brand-700">Ads</TabsTrigger>
         </TabsList>
         {(['campaigns', 'ad-sets', 'ads'] as ManagerTab[]).map((currentTab) => (
           <TabsContent key={currentTab} value={currentTab} className="mt-4">
@@ -617,10 +638,10 @@ export default function CampaignsPage() {
               <>
                 <Card className="overflow-hidden">
                   <div className="overflow-x-auto">
-                    <table className="w-full min-w-[1500px] text-left text-sm" aria-label={`${currentTab} manager`}>
-                      <thead className="sticky top-0 z-10 border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <table className="w-full min-w-[760px] text-left text-sm" aria-label={`${currentTab} manager`}>
+                      <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                         <tr>
-                          <th scope="col" className="px-4 py-3">
+                          <th scope="col" className="w-10 px-3 py-3">
                             <input
                               type="checkbox"
                               aria-label="Select all rows on this page"
@@ -629,13 +650,13 @@ export default function CampaignsPage() {
                               className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
                             />
                           </th>
-                          <th scope="col" className="whitespace-nowrap px-4 py-3">On / Off</th>
+                          <th scope="col" className="whitespace-nowrap px-3 py-3">On / Off</th>
                           {activeColumns.map((column) => (
                             <th
                               key={column.key}
                               scope="col"
                               aria-sort={sortKey === column.key ? (sortAscending ? 'ascending' : 'descending') : 'none'}
-                              className="whitespace-nowrap px-4 py-3"
+                              className="whitespace-nowrap px-3 py-3"
                             >
                               <button type="button" onClick={() => handleSort(column.key)} className="inline-flex items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
                                 {column.label}
@@ -643,7 +664,7 @@ export default function CampaignsPage() {
                               </button>
                             </th>
                           ))}
-                          <th scope="col" className="px-4 py-3"><span className="sr-only">Row actions</span></th>
+                          <th scope="col" className="w-12 px-3 py-3"><span className="sr-only">Row actions</span></th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -651,7 +672,7 @@ export default function CampaignsPage() {
                           const delivery = deliveryFor(item, itemsById)
                           return (
                             <tr key={item.id} className="hover:bg-slate-50">
-                              <td className="px-4 py-3">
+                              <td className="px-3 py-3">
                                 <input
                                   type="checkbox"
                                   aria-label={`Select ${item.entity} ${item.name}`}
@@ -663,7 +684,7 @@ export default function CampaignsPage() {
                                   className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
                                 />
                               </td>
-                              <td className="px-4 py-3">
+                              <td className="px-3 py-3">
                                 <Switch
                                   checked={item.enabled}
                                   onCheckedChange={(checked) => toggleItem(item, checked)}
@@ -671,13 +692,13 @@ export default function CampaignsPage() {
                                 />
                               </td>
                               {activeColumns.map((column) => (
-                                <td key={column.key} className="whitespace-nowrap px-4 py-3">
+                                <td key={column.key} className={`px-3 py-3 ${column.key === 'name' ? '' : 'whitespace-nowrap'}`}>
                                   {column.key === 'delivery' && delivery === 'Paused by campaign'
                                     ? <span aria-label="Paused by campaign">{renderCell(item, column.key)}</span>
                                     : renderCell(item, column.key)}
                                 </td>
                               ))}
-                              <td className="px-4 py-3">
+                              <td className="px-3 py-3">
                                 <DropdownMenu>
                                   <DropdownMenuTrigger
                                     className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
@@ -686,6 +707,17 @@ export default function CampaignsPage() {
                                     <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
+                                    {item.entity === 'campaign' && (
+                                      <DropdownMenuItem asChild>
+                                        <Link href={`/campaigns/${item.id}`}>View details</Link>
+                                      </DropdownMenuItem>
+                                    )}
+                                    {item.entity === 'campaign' && (
+                                      <DropdownMenuItem onSelect={() => drillInto(item)}>View ad sets</DropdownMenuItem>
+                                    )}
+                                    {item.entity === 'ad-set' && (
+                                      <DropdownMenuItem onSelect={() => drillInto(item)}>View ads</DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem onSelect={() => openEditor(item)}>Edit</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => duplicateItems([item.id])}>Duplicate</DropdownMenuItem>
                                     <DropdownMenuItem
@@ -703,11 +735,11 @@ export default function CampaignsPage() {
                       </tbody>
                       <tfoot className="border-t border-slate-200 bg-slate-50 font-semibold text-navy-900">
                         <tr>
-                          <td colSpan={2} className="px-4 py-3">Totals ({filteredRows.length})</td>
+                          <td colSpan={2} className="px-3 py-3">Totals ({filteredRows.length})</td>
                           {activeColumns.map((column) => (
-                            <td key={column.key} className="whitespace-nowrap px-4 py-3">{renderTotal(column.key)}</td>
+                            <td key={column.key} className="whitespace-nowrap px-3 py-3">{renderTotal(column.key)}</td>
                           ))}
-                          <td className="px-4 py-3" />
+                          <td className="px-3 py-3" />
                         </tr>
                       </tfoot>
                     </table>
