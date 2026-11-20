@@ -54,7 +54,7 @@ export function Select({
   const errorId = `${selectId}-error`
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className={cn('flex flex-col', compact ? 'gap-1' : 'gap-1.5')}>
       <label htmlFor={selectId} className={cn('text-sm font-medium text-foreground', labelClassName)}>
         {label}
       </label>
@@ -71,7 +71,7 @@ export function Select({
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
           onBlur={onBlur}
-        className={cn(`${compact ? 'h-9 py-1.5' : 'h-11'} w-full rounded-lg border-border bg-white text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-secondary disabled:text-muted-foreground`, className)}
+          className={cn(`${compact ? 'h-9 py-1.5' : 'h-11'} w-full rounded-lg border-border bg-white text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-secondary disabled:text-muted-foreground`, className)}
         >
           <SelectValue />
         </SelectTrigger>

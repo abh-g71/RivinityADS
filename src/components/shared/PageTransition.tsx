@@ -11,7 +11,6 @@ export function PageTransition({ pageKey, children }: { pageKey: string; childre
       <motion.div
         key={pageKey}
         className="flex min-h-0 flex-1 flex-col"
-        className="flex min-h-0 flex-1 flex-col"
         initial={reduceMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={reduceMotion ? { opacity: 1 } : { opacity: 0 }}

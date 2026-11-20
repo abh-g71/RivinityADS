@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, ArrowRight, Copy, FileImage, ImagePlus, Monitor, Smartphone, Upload, Video, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Copy, FileImage, ImagePlus, Monitor, Smartphone, Video, X } from 'lucide-react'
 import { ctaOptions, sampleCreatives } from './sample-data'
 import type { AdFormat, Creative, MediaAsset, PreviewMode, VariantKey } from './types'
 
