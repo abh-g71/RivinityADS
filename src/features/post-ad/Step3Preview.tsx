@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { CheckCircle2, Image, MapPin, Phone, User } from 'lucide-react'
+import { CheckCircle2, Image as ImageIcon, MapPin, Phone, User } from 'lucide-react'
 import { getPathLabels } from '../../data/postAd'
 import type { StepProps } from './types'
 
@@ -33,7 +33,7 @@ export function Step3Preview({ data }: StepProps) {
       <div className="mt-5 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <div>
           <div className={`flex aspect-video items-center justify-center rounded-lg ${tones[active]}`}>
-            <Image className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+            <ImageIcon className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
           </div>
           <div className="mt-3 grid grid-cols-4 gap-3">
             {tones.map((tone, i) => (

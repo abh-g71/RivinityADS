@@ -19,16 +19,6 @@ const durations: (number | 'ongoing')[] = [7, 14, 30, 'ongoing']
 
 type ReviewField = 'objective' | 'location' | 'age' | 'gender' | 'interests' | 'budget' | 'duration' | 'headline' | 'text' | 'cta' | 'url'
 
-function urlError(value: string) {
-  if (!value.trim()) return 'Add the website link people should open.'
-  try {
-    const url = new URL(value)
-    return url.protocol === 'https:' || url.protocol === 'http:' ? '' : 'Use a link that starts with https://.'
-  } catch {
-    return 'Enter a complete link, such as https://example.com.'
-  }
-}
-
 function audienceSummary(draft: CampaignDraft) {
   const firstPlace = draft.locations[0]?.name
   const places = !firstPlace ? 'No locations selected' : draft.locations.length > 1 ? `${firstPlace} and ${draft.locations.length - 1} more places` : firstPlace
@@ -153,16 +143,8 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [confirming, ready, review, step, published])
 
-  const missingGoal = !draft.objective
   const locationSummary = draft.locations.map((item) => item.label).join(' · ') || 'No locations selected'
   const missingLocation = draft.locations.length === 0
-  const headlineError = draft.headline.trim().length === 0
-    ? 'Add a short headline for your ad.'
-    : draft.headline.length > 40
-      ? 'Shorten the headline to 40 characters or fewer.'
-      : ''
-  const adTextError = draft.text.trim().length === 0 ? 'Add a short message to your ad.' : ''
-  const landingError = urlError(draft.url)
   const readiness = getObjectiveReadiness(draft)
   const canPublish = Boolean(draft.objective) && readiness.filter((item) => !item.warning).every((item) => item.ready)
   const totalBudget = draft.duration === 'ongoing' ? null : draft.dailyBudget * draft.duration
