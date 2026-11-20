@@ -5,7 +5,6 @@ const placeholderSlugs = new Set([
   'domains',
   'email-marketing',
   'notifications',
-  'ad-tester',
   'system-health',
 ])
 

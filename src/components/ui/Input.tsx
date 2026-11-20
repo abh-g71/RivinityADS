@@ -4,9 +4,10 @@ import type { InputHTMLAttributes } from 'react'
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label: string
   error?: string
+  errorTextClassName?: 'text-sm' | 'text-xs'
 }
 
-export function Input({ label, error, className = '', id, ...props }: InputProps) {
+export function Input({ label, error, errorTextClassName = 'text-xs', className = '', id, ...props }: InputProps) {
   const autoId = useId()
   const inputId = id ?? autoId
   const errorId = `${inputId}-error`
@@ -25,7 +26,7 @@ export function Input({ label, error, className = '', id, ...props }: InputProps
         } ${className}`}
         {...props}
       />
-      {error && <p id={errorId} className="text-xs text-danger-600">{error}</p>}
+      {error && <p id={errorId} className={`${errorTextClassName} text-danger-600`}>{error}</p>}
     </div>
   )
 }

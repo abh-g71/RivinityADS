@@ -98,7 +98,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
   if (complete) {
     return (
-      <Card className="!rounded-[20px] !border-0 !shadow-[0_1px_3px_rgba(0,0,0,0.10)] p-8">
+      <Card className="!rounded-2xl !border-black/10 !bg-white !shadow-[0_16px_40px_-16px_rgba(9,9,11,0.12)] p-8">
         <p className="text-sm font-semibold text-foreground">{isForgot ? 'Recovery request complete' : 'Password reset preview'}</p>
         <h1 className="mt-2 text-2xl font-bold text-foreground">{isForgot ? 'Check your inbox' : 'You’re all set'}</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
@@ -113,7 +113,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   }
 
   return (
-    <Card className="!rounded-[20px] !border-0 !shadow-[0_1px_3px_rgba(0,0,0,0.10)] p-8">
+    <Card className="!rounded-2xl !border-black/10 !bg-white !shadow-[0_16px_40px_-16px_rgba(9,9,11,0.12)] p-8">
       <p className="text-sm font-semibold text-foreground">RivinityADS</p>
       <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{heading}</h1>
       {!isLogin && <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -131,6 +131,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
             label="Name"
             name="name"
             autoComplete="name"
+            errorTextClassName="text-sm"
             value={name}
             onBlur={() => markTouched('name')}
             onChange={(event) => setName(event.target.value)}
@@ -144,6 +145,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           name="email"
           type="email"
           autoComplete="email"
+          errorTextClassName="text-sm"
           value={email}
           onBlur={() => markTouched('email')}
           onChange={(event) => setEmail(event.target.value)}
@@ -159,6 +161,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete={isSignup || isReset ? 'new-password' : 'current-password'}
+                errorTextClassName="text-sm"
                 value={password}
                 onBlur={() => markTouched('password')}
                 onChange={(event) => setPassword(event.target.value)}
@@ -177,7 +180,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
             {(isSignup || isReset) && (
               <div className="mt-3" aria-live="polite">
-                <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between text-sm">
                   <span className="font-medium text-foreground">Password strength</span>
                   <span className="text-muted-foreground">{['Add a password', 'Weak', 'Fair', 'Good', 'Strong'][getPasswordStrength(password)]}</span>
                 </div>
@@ -186,7 +189,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                     <span key={level} className={`h-1.5 rounded-full ${getPasswordStrength(password) > level ? 'bg-primary' : 'bg-border'}`} />
                   ))}
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">Use 8+ characters with a mix of letters, numbers, and symbols.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Use 8+ characters with a mix of letters, numbers, and symbols.</p>
               </div>
             )}
           </div>
@@ -200,6 +203,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
               name="confirmPassword"
               type={showConfirmPassword ? 'text' : 'password'}
               autoComplete="new-password"
+              errorTextClassName="text-sm"
               value={confirmPassword}
               onBlur={() => markTouched('confirmPassword')}
               onChange={(event) => setConfirmPassword(event.target.value)}
@@ -235,12 +239,12 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                   />
                   <span className={`block h-full rounded-md border p-3 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-ring ${role === option.id ? 'border-primary bg-secondary' : 'border-border hover:border-accent'}`}>
                     <span className="block text-sm font-semibold capitalize text-foreground">{option.title}</span>
-                    <span className="mt-1 block text-xs leading-5 text-muted-foreground">{option.description}</span>
+                    <span className="mt-1 block text-sm leading-5 text-muted-foreground">{option.description}</span>
                   </span>
                 </label>
               ))}
             </div>
-            {fieldError('role') && <p id="auth-role-error" className="mt-1 text-xs text-danger-600">{fieldError('role')}</p>}
+            {fieldError('role') && <p id="auth-role-error" className="mt-1 text-sm text-danger-600">{fieldError('role')}</p>}
           </fieldset>
         )}
 
@@ -250,7 +254,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           </div>
         )}
 
-        <Button type="submit" className="!w-full !rounded-[12px]" disabled={loading} aria-busy={loading}>
+        <Button type="submit" className="!w-full !rounded-[12px] !bg-[#09090B] !text-white hover:!bg-zinc-800" disabled={loading} aria-busy={loading}>
           {loading ? 'Please wait…' : isSignup ? 'Create account' : isLogin ? 'Continue to workspace' : isForgot ? 'Preview recovery' : 'Save new password'}
         </Button>
 
