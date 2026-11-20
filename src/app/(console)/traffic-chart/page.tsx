@@ -37,8 +37,8 @@ function TrafficBarChart({ rows }: { rows: TrafficSample[] }) {
             <g key={row.id}>
               <title>{`${row.country}: ${row.dailyImpressions} mock daily impressions`}</title>
               <rect x={x} y={y} width={barWidth} height={height} rx="8" className="fill-brand-600" />
-              <text x={x + barWidth / 2} y={y - 7} textAnchor="middle" className="fill-foreground text-xs">{row.dailyImpressions}</text>
-              <text x={x + barWidth / 2} y="196" textAnchor="middle" className="fill-slate-600 text-xs">{row.country}</text>
+              <text x={x + barWidth / 2} y={y - 7} textAnchor="middle" className="fill-foreground text-sm">{row.dailyImpressions}</text>
+              <text x={x + barWidth / 2} y="196" textAnchor="middle" className="fill-slate-600 text-sm">{row.country}</text>
             </g>
           )
         })}
@@ -91,7 +91,7 @@ export default function TrafficChartPage() {
           <Select label="Country" value={country} onChange={(event) => setCountry(event.target.value)} options={[{ value: '', label: 'Any country' }, ...advertiserCountries.map((value) => ({ value, label: value }))]} />
           <Select label="OS" value={os} onChange={(event) => setOs(event.target.value)} options={[{ value: '', label: 'Any OS' }, ...['Android', 'iOS', 'Windows', 'macOS'].map((value) => ({ value, label: value }))]} />
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">Country narrows this mock sample. Traffic type, device, and OS are illustrative only because those dimensions are not included in the mock data. No live inventory lookup is performed.</p>
+        <p className="mt-3 text-sm text-muted-foreground">Country narrows this mock sample. Traffic type, device, and OS are illustrative only because those dimensions are not included in the mock data. No live inventory lookup is performed.</p>
       </Card>
 
       <section aria-label="Mock traffic samples" className="mt-6">
@@ -100,7 +100,7 @@ export default function TrafficChartPage() {
             <Card className="p-4 sm:p-5">
               <h2 className="mb-3 text-lg font-semibold text-foreground">Daily impressions by country</h2>
               <TrafficBarChart rows={visibleRows} />
-              <p className="mt-2 text-xs text-muted-foreground">Illustrative mock figures only; not a forecast or live delivery estimate.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Illustrative mock figures only; not a forecast or live delivery estimate.</p>
             </Card>
             {illustrativeFilters && <p className="text-sm text-muted-foreground">Selected illustrative filter values are not applied to the mock rows.</p>}
             <DataTable label="Mock traffic chart" columns={columns} rows={visibleRows} />

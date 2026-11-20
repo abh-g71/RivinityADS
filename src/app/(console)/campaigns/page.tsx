@@ -98,6 +98,7 @@ function createInitialItems(): CampaignManagerItem[] {
     enabled: campaign.status !== 'Paused' && campaign.status !== 'Draft',
     status: campaign.status,
     budget: campaign.totalBudget,
+    dailyBudget: campaign.dailyBudget,
     impressions: campaign.impressions,
     clicks: campaign.clicks,
     ctr: campaign.ctr,
@@ -139,9 +140,18 @@ function statusFor(item: CampaignManagerItem): CampaignStatus {
 function statusTone(status: CampaignStatus) {
   if (status === 'Active') return 'success'
   if (status === 'Pending') return 'warning'
-  if (status === 'Draft') return 'brand'
   return 'neutral'
 }
+
+type ManagerView = 'table' | 'board'
+type LifecycleColumn = { status: CampaignStatus; title: string; dotClass: string }
+
+const lifecycleColumns: LifecycleColumn[] = [
+  { status: 'Draft', title: 'Draft', dotClass: 'bg-zinc-400' },
+  { status: 'Pending', title: 'In Review', dotClass: 'bg-amber-500' },
+  { status: 'Active', title: 'Active', dotClass: 'bg-emerald-500' },
+  { status: 'Paused', title: 'Paused', dotClass: 'bg-zinc-400' },
+]
 
 function isWithinDateRange(date: string, range: string) {
   if (range === 'all') return true
@@ -171,7 +181,7 @@ function getSortValue(
     case 'parent': return item.parentId ?? ''
     case 'status': return statusFor(item)
     case 'delivery': return delivery
-    case 'budget': return currencyAmount(item.budget)
+    case 'budget': return currencyAmount(item.dailyBudget ?? item.budget)
     case 'impressions': return item.impressions
     case 'clicks': return item.clicks
     case 'ctr': return Number.parseFloat(item.ctr) || 0
@@ -186,6 +196,7 @@ export default function CampaignsPage() {
   const toast = useToast()
   const [items, setItems] = useState(createInitialItems)
   const [tab, setTab] = useState<ManagerTab>('campaigns')
+  const [managerView, setManagerView] = useState<ManagerView>('table')
   const [search, setSearch] = useState('')
   const [dateRange, setDateRange] = useState('all')
   const [country, setCountry] = useState('')
@@ -201,6 +212,9 @@ export default function CampaignsPage() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [editingItem, setEditingItem] = useState<CampaignManagerItem | null>(null)
+  const [inspectorId, setInspectorId] = useState<string | null>(null)
+  const [inspectorBudget, setInspectorBudget] = useState('')
+  const [inspectorStatus, setInspectorStatus] = useState<CampaignStatus>('Active')
   const [editName, setEditName] = useState('')
   const [editCountry, setEditCountry] = useState('')
   const [editAdUnit, setEditAdUnit] = useState('')
@@ -244,6 +258,40 @@ export default function CampaignsPage() {
   const pageRows = filteredRows.slice((page - 1) * pageSize, page * pageSize)
   const selectedOnPage = pageRows.length > 0 && pageRows.every((row) => selectedIds.includes(row.id))
   const activeColumns = columns.filter((column) => visibleColumns.includes(column.key))
+  const inspectorItem = inspectorId ? itemsById.get(inspectorId) : undefined
+
+  function openInspector(item: CampaignManagerItem) {
+    if (item.entity !== 'campaign') return
+    setInspectorId(item.id)
+    setInspectorBudget(String(currencyAmount(item.dailyBudget ?? item.budget)))
+    setInspectorStatus(statusFor(item))
+  }
+
+  function updateCampaignStatus(item: CampaignManagerItem, status: CampaignStatus) {
+    updateItem(item.id, { status, enabled: status === 'Active' })
+  }
+
+  function applyInspectorChanges() {
+    if (!inspectorItem) return
+    const dailyBudget = Number(inspectorBudget)
+    if (!Number.isFinite(dailyBudget) || dailyBudget < 0) return
+    updateItem(inspectorItem.id, {
+      dailyBudget: currency.format(dailyBudget),
+      status: inspectorStatus,
+      enabled: inspectorStatus === 'Active',
+    })
+    toast({ title: 'Campaign updated', description: 'Budget and status were updated in this manager view.', variant: 'success' })
+  }
+
+  function formatFor(item: CampaignManagerItem) {
+    if (/video/i.test(item.adUnit)) return 'Video'
+    if (/native/i.test(item.adUnit)) return 'Native'
+    return 'Display'
+  }
+
+  function reachFor(item: CampaignManagerItem) {
+    return Math.max(item.impressions * 3, 18000).toLocaleString('en-IN')
+  }
 
   function applyFilters() {
     setApplied({ dateRange, country, adUnit })
@@ -418,12 +466,9 @@ export default function CampaignsPage() {
         return (
           <div className="min-w-0">
             {item.entity === 'campaign' ? (
-              <Link
-                href={`/campaigns/${item.id}`}
-                className="rounded-sm font-semibold text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
+              <button type="button" onClick={() => openInspector(item)} className="rounded-sm text-left font-semibold text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 {item.name}
-              </Link>
+              </button>
             ) : item.entity === 'ad-set' ? (
               <button
                 type="button"
@@ -436,18 +481,18 @@ export default function CampaignsPage() {
             ) : (
               <span className="font-medium text-foreground">{item.name}</span>
             )}
-            <p className="mt-0.5 font-mono text-xs text-muted-foreground">{item.id}</p>
+            <p className="mt-0.5 font-mono text-sm text-muted-foreground">{item.id}</p>
           </div>
         )
-      case 'id': return <span className="font-mono text-xs">{item.id}</span>
+      case 'id': return <span className="font-mono text-sm">{item.id}</span>
       case 'parent': return item.parentId ?? '—'
       case 'status': {
         const status = statusFor(item)
-        return <Badge tone={statusTone(status)}>{status}</Badge>
+        return <Badge tone={statusTone(status)}>{status === 'Pending' ? 'In Review' : status}</Badge>
       }
       case 'delivery':
         return <span className={delivery === 'Active' ? 'font-medium text-success-600' : 'text-muted-foreground'}>{delivery}</span>
-      case 'budget': return item.budget
+      case 'budget': return item.entity === 'campaign' && item.dailyBudget ? item.dailyBudget : item.budget
       case 'impressions': return item.impressions.toLocaleString('en-IN')
       case 'clicks': return item.clicks.toLocaleString('en-IN')
       case 'ctr': return item.ctr
@@ -462,7 +507,7 @@ export default function CampaignsPage() {
     const sum = (pick: (item: CampaignManagerItem) => number) => filteredRows.reduce((total, item) => total + pick(item), 0)
     switch (key) {
       case 'name': return ''
-      case 'budget': return currency.format(sum((item) => currencyAmount(item.budget)))
+      case 'budget': return currency.format(sum((item) => currencyAmount(item.dailyBudget ?? item.budget)))
       case 'impressions': return sum((item) => item.impressions).toLocaleString('en-IN')
       case 'clicks': return sum((item) => item.clicks).toLocaleString('en-IN')
       case 'ctr': {
@@ -510,14 +555,14 @@ export default function CampaignsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl">
+    <div className="mx-auto flex h-full min-h-0 w-full max-w-7xl flex-col">
       <PageHeader
         breadcrumbs={[{ label: 'Advertiser workspace', href: '/dashboard' }, { label: 'Campaign manager' }]}
         title="Campaign manager"
         description="Manage campaign delivery and review mock performance across campaigns, ad sets, and ads."
       />
 
-      <Card className="mt-4 space-y-4 p-4">
+      <Card className="mt-3 shrink-0 space-y-3 border-black/10 p-3">
         <div className="flex flex-wrap items-end gap-3">
           <label className="relative min-w-[min(100%,16rem)] flex-1">
             <span className="mb-1.5 block text-sm font-medium text-foreground">Search</span>
@@ -564,6 +609,13 @@ export default function CampaignsPage() {
             {moreFiltersOpen ? 'Hide filters' : 'More filters'}
           </Button>
           <Button type="button" variant="outline" onClick={exportCsv}>Export CSV</Button>
+          {tab === 'campaigns' && <div role="group" aria-label="Campaign view" className="inline-flex h-11 items-center rounded-lg border border-black/10 bg-white p-1">
+            {(['table', 'board'] as ManagerView[]).map((view) => (
+              <button key={view} type="button" aria-pressed={managerView === view} onClick={() => setManagerView(view)} className={`h-9 rounded-md px-3 text-sm font-medium capitalize transition-colors ${managerView === view ? 'bg-[#09090B] text-white' : 'text-zinc-700 hover:bg-zinc-100'}`}>
+                {view === 'table' ? 'Table' : 'Board'}
+              </button>
+            ))}
+          </div>}
         </div>
 
         {selectedIds.length > 0 && (
@@ -616,7 +668,7 @@ export default function CampaignsPage() {
           <Button
             type="button"
             variant="ghost"
-            className="px-2 py-1 text-xs"
+            className="px-2 py-1 text-sm"
             onClick={() => { setParentFilter(null); setPage(1) }}
             aria-label="Remove parent filter"
           >
@@ -626,20 +678,53 @@ export default function CampaignsPage() {
         </div>
       )}
 
-      <Tabs value={tab} onValueChange={changeTab} className="mt-4">
-        <TabsList aria-label="Campaign hierarchy" className="w-full justify-start overflow-x-auto rounded-none border-b border-border bg-transparent p-0">
-          <TabsTrigger value="campaigns" className="rounded-t-md px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-white">Campaigns</TabsTrigger>
-          <TabsTrigger value="ad-sets" className="rounded-t-md px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-white">Ad Sets</TabsTrigger>
-          <TabsTrigger value="ads" className="rounded-t-md px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-white">Ads</TabsTrigger>
+      <Tabs value={tab} onValueChange={changeTab} className="mt-3 flex min-h-0 flex-1 flex-col">
+        <TabsList aria-label="Campaign hierarchy" className="w-full shrink-0 justify-start overflow-x-auto rounded-none border-b border-black/10 bg-white/70 p-0">
+          <TabsTrigger value="campaigns" className="rounded-t-md px-4 py-3 text-zinc-700 data-[state=active]:bg-[#09090B] data-[state=active]:text-white">Campaigns</TabsTrigger>
+          <TabsTrigger value="ad-sets" className="rounded-t-md px-4 py-3 text-zinc-700 data-[state=active]:bg-[#09090B] data-[state=active]:text-white">Ad Sets</TabsTrigger>
+          <TabsTrigger value="ads" className="rounded-t-md px-4 py-3 text-zinc-700 data-[state=active]:bg-[#09090B] data-[state=active]:text-white">Ads</TabsTrigger>
         </TabsList>
         {(['campaigns', 'ad-sets', 'ads'] as ManagerTab[]).map((currentTab) => (
-          <TabsContent key={currentTab} value={currentTab} className="mt-4">
-            {tab === currentTab && filteredRows.length > 0 ? (
+          <TabsContent key={currentTab} value={currentTab} className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden">
+            {tab === currentTab && filteredRows.length > 0 && currentTab === 'campaigns' && managerView === 'board' ? (
+              <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 md:grid-cols-2 md:grid-rows-2 xl:grid-cols-4 xl:grid-rows-1">
+                {lifecycleColumns.map((column) => {
+                  const columnItems = filteredRows.filter((item) => statusFor(item) === column.status)
+                  return (
+                    <section key={column.status} aria-label={`${column.title} campaigns`} className="flex min-h-0 min-w-0 flex-col">
+                      <header className="flex h-11 shrink-0 items-center justify-between rounded-t-xl border border-black/10 bg-white px-4">
+                        <h2 className="flex items-center gap-2 text-sm font-semibold text-zinc-950"><span className={`size-2 rounded-full ${column.dotClass}`} />{column.title}</h2>
+                        <span className="rounded-full border border-black/10 px-2 py-0.5 font-mono text-sm tabular-nums text-zinc-700">{columnItems.length}</span>
+                      </header>
+                      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto rounded-b-xl border-x border-b border-black/10 bg-white/50 p-3">
+                        {columnItems.map((item) => (
+                          <article key={item.id} onClick={() => openInspector(item)} className="cursor-pointer rounded-xl border border-black/10 bg-white p-4 transition-colors hover:border-black/30">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0"><h3 className="truncate text-sm font-semibold text-zinc-950"><button type="button" onClick={(event) => { event.stopPropagation(); openInspector(item) }} className="text-left hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950">{item.name}</button></h3><p className="mt-1 font-mono text-sm tabular-nums text-zinc-600">{item.id}</p></div>
+                              <Badge tone={statusTone(statusFor(item))}>{column.title}</Badge>
+                            </div>
+                            <div className="mt-3 flex items-center justify-between gap-2"><span className="rounded-full border border-black/10 px-2 py-1 text-sm text-zinc-700">{formatFor(item)}</span><span className="font-mono text-sm tabular-nums text-zinc-700">{currency.format(currencyAmount(item.dailyBudget ?? item.budget))}/day</span></div>
+                            <div className="mt-3 flex items-center justify-between gap-2 border-t border-black/10 pt-3"><span className="text-sm text-zinc-600">Spend</span><span className="font-mono text-sm tabular-nums text-zinc-950">{item.spend}</span></div>
+                            <div className="mt-3 flex items-center justify-between gap-2" onClick={(event) => event.stopPropagation()}>
+                              <select aria-label={`Move ${item.name} to status`} value={statusFor(item)} onChange={(event) => updateCampaignStatus(item, event.target.value as CampaignStatus)} className="h-10 min-w-0 flex-1 rounded-md border border-black/10 bg-white px-2 text-sm text-zinc-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950">
+                                <option value="Draft">Draft</option><option value="Pending">In Review</option><option value="Active">Active</option><option value="Paused">Paused</option>
+                              </select>
+                              <Switch checked={item.enabled} disabled={statusFor(item) === 'Draft' || statusFor(item) === 'Pending'} onCheckedChange={(checked) => toggleItem(item, checked)} aria-label={`Turn ${item.enabled ? 'off' : 'on'} ${item.name}`} />
+                            </div>
+                          </article>
+                        ))}
+                        {columnItems.length === 0 && <p className="p-3 text-sm text-zinc-600">No campaigns</p>}
+                      </div>
+                    </section>
+                  )
+                })}
+              </div>
+            ) : tab === currentTab && filteredRows.length > 0 ? (
               <>
-                <Card className="overflow-hidden">
-                  <div className="overflow-x-auto">
+                <Card className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                  <div className="min-h-0 flex-1 overflow-auto">
                     <table className="w-full min-w-[760px] text-left text-sm" aria-label={`${currentTab} manager`}>
-                      <thead className="border-b border-border bg-secondary text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      <thead className="sticky top-0 z-10 border-b border-border bg-secondary text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                         <tr>
                           <th scope="col" className="w-10 px-3 py-3">
                             <input
@@ -671,8 +756,8 @@ export default function CampaignsPage() {
                         {pageRows.map((item) => {
                           const delivery = deliveryFor(item, itemsById)
                           return (
-                            <tr key={item.id} className="hover:bg-muted">
-                              <td className="px-3 py-3">
+                            <tr key={item.id} onClick={() => openInspector(item)} onKeyDown={(event) => { if (event.key === 'Enter') openInspector(item) }} tabIndex={item.entity === 'campaign' ? 0 : undefined} className={`${item.entity === 'campaign' ? 'cursor-pointer' : ''} hover:bg-muted focus-visible:outline-none focus-visible:bg-zinc-50`}>
+                              <td className="px-3 py-3" onClick={(event) => event.stopPropagation()}>
                                 <input
                                   type="checkbox"
                                   aria-label={`Select ${item.entity} ${item.name}`}
@@ -684,7 +769,7 @@ export default function CampaignsPage() {
                                   className="h-4 w-4 rounded border-border text-foreground focus:ring-ring"
                                 />
                               </td>
-                              <td className="px-3 py-3">
+                              <td className="px-3 py-3" onClick={(event) => event.stopPropagation()}>
                                 <Switch
                                   checked={item.enabled}
                                   onCheckedChange={(checked) => toggleItem(item, checked)}
@@ -698,7 +783,7 @@ export default function CampaignsPage() {
                                     : renderCell(item, column.key)}
                                 </td>
                               ))}
-                              <td className="px-3 py-3">
+                              <td className="px-3 py-3" onClick={(event) => event.stopPropagation()}>
                                 <DropdownMenu>
                                   <DropdownMenuTrigger
                                     className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -745,7 +830,7 @@ export default function CampaignsPage() {
                     </table>
                   </div>
                 </Card>
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+                <div className="mt-3 flex shrink-0 flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
                   <p aria-live="polite">
                     Showing {filteredRows.length ? (page - 1) * pageSize + 1 : 0}–{Math.min(page * pageSize, filteredRows.length)} of {filteredRows.length} mock {currentTab}
                   </p>
@@ -772,14 +857,65 @@ export default function CampaignsPage() {
         ))}
       </Tabs>
 
+      <Sheet open={Boolean(inspectorItem)} onOpenChange={(open) => { if (!open) setInspectorId(null) }}>
+        <SheetContent side="right" className="w-full gap-0 border-l border-black/10 bg-white p-0 shadow-2xl sm:max-w-md">
+          {inspectorItem && <>
+            <div className="border-b border-black/10 p-5 pr-14">
+              <div className="flex flex-wrap items-center gap-2"><Badge tone={statusTone(statusFor(inspectorItem))}>{statusFor(inspectorItem) === 'Pending' ? 'In Review' : statusFor(inspectorItem)}</Badge><span className="font-mono text-sm tabular-nums text-zinc-600">{inspectorItem.id}</span></div>
+              <SheetTitle className="mt-3 block text-xl text-zinc-950">{inspectorItem.name}</SheetTitle>
+              <SheetDescription className="mt-1">Campaign inspector · mock account data</SheetDescription>
+            </div>
+            <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-5">
+              <section aria-labelledby="inspector-targeting-title">
+                <h2 id="inspector-targeting-title" className="text-sm font-semibold text-zinc-950">Targeting summary</h2>
+                <dl className="mt-3 grid grid-cols-2 gap-3">
+                  <div className="rounded-lg border border-black/10 p-3"><dt className="text-sm text-zinc-600">Location</dt><dd className="mt-1 text-sm font-medium text-zinc-950">{inspectorItem.country} · 25 km radius</dd></div>
+                  <div className="rounded-lg border border-black/10 p-3"><dt className="text-sm text-zinc-600">Format</dt><dd className="mt-1 text-sm font-medium text-zinc-950">{formatFor(inspectorItem)}</dd></div>
+                  <div className="col-span-2 rounded-lg border border-black/10 p-3"><dt className="text-sm text-zinc-600">Estimated reach</dt><dd className="mt-1 font-mono text-sm font-medium tabular-nums text-zinc-950">{reachFor(inspectorItem)} people</dd></div>
+                </dl>
+              </section>
+
+              <section aria-labelledby="inspector-financials-title">
+                <h2 id="inspector-financials-title" className="text-sm font-semibold text-zinc-950">Financials</h2>
+                <dl className="mt-3 divide-y divide-black/10 rounded-lg border border-black/10 px-3">
+                  <div className="flex items-center justify-between gap-3 py-3"><dt className="text-sm text-zinc-600">Daily budget</dt><dd className="font-mono text-sm tabular-nums text-zinc-950">{currency.format(currencyAmount(inspectorItem.dailyBudget ?? inspectorItem.budget))}</dd></div>
+                  <div className="flex items-center justify-between gap-3 py-3"><dt className="text-sm text-zinc-600">Spend to date</dt><dd className="font-mono text-sm tabular-nums text-zinc-950">{currency.format(currencyAmount(inspectorItem.spend))}</dd></div>
+                  <div className="flex items-center justify-between gap-3 py-3"><dt className="text-sm text-zinc-600">Platform fee</dt><dd className="font-mono text-sm tabular-nums text-zinc-950">{currency.format(0)}</dd></div>
+                </dl>
+              </section>
+
+              <section aria-labelledby="inspector-edit-title">
+                <h2 id="inspector-edit-title" className="text-sm font-semibold text-zinc-950">Quick edit</h2>
+                <div className="mt-3 space-y-3">
+                  <label htmlFor="inspector-daily-budget" className="block text-sm font-medium text-zinc-800">Daily budget (₹)
+                    <input id="inspector-daily-budget" type="number" min="0" step="0.01" value={inspectorBudget} onChange={(event) => setInspectorBudget(event.target.value)} className="mt-1.5 h-11 w-full rounded-lg border border-black/10 bg-white px-3 font-mono text-sm tabular-nums text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950" />
+                  </label>
+                  <label htmlFor="inspector-status" className="block text-sm font-medium text-zinc-800">Status
+                    <select id="inspector-status" value={inspectorStatus} onChange={(event) => setInspectorStatus(event.target.value as CampaignStatus)} className="mt-1.5 h-11 w-full rounded-lg border border-black/10 bg-white px-3 text-sm text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950">
+                      <option value="Draft">Draft</option><option value="Pending">In Review</option><option value="Active">Active</option><option value="Paused">Paused</option>
+                    </select>
+                  </label>
+                  <Button type="button" onClick={applyInspectorChanges} className="w-full bg-[#09090B] text-white hover:bg-zinc-800">Apply changes</Button>
+                </div>
+              </section>
+
+              <div className="mt-auto flex flex-col gap-2 border-t border-black/10 pt-4">
+                <Link href={`/campaigns/${inspectorItem.id}`} className="inline-flex min-h-11 items-center justify-center rounded-lg bg-[#09090B] px-4 text-sm font-semibold text-white hover:bg-zinc-800">Open full details →</Link>
+                <Link href="/ad-tester" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-black/10 bg-white px-4 text-sm font-medium text-zinc-900 hover:bg-zinc-50">Open in Ad Tester</Link>
+              </div>
+            </div>
+          </>}
+        </SheetContent>
+      </Sheet>
+
       <Sheet open={Boolean(editingItem)} onOpenChange={(open) => { if (!open) setEditingItem(null) }}>
         <SheetContent side="right" className="w-full gap-0 border-l border-border bg-white p-0 sm:max-w-md">
-          <div className="border-b border-border p-6">
+          <div className="border-b border-border p-4">
             <SheetTitle className="text-lg text-foreground">Edit {editingItem?.entity ?? 'item'}</SheetTitle>
             <SheetDescription className="mt-2">Changes apply to this mock manager view only.</SheetDescription>
           </div>
           {editingItem && (
-            <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-6">
+            <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
               <label className="flex flex-col gap-1.5 text-sm font-medium text-foreground">
                 Name
                 <input
@@ -790,7 +926,7 @@ export default function CampaignsPage() {
                   aria-describedby={editNameTouched && !editName.trim() ? 'edit-name-error' : undefined}
                   className="h-11 rounded-lg border border-border px-3 text-sm text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
-                {editNameTouched && !editName.trim() && <span id="edit-name-error" role="alert" className="text-xs text-danger-600">Enter a name.</span>}
+                {editNameTouched && !editName.trim() && <span id="edit-name-error" role="alert" className="text-sm text-danger-600">Enter a name.</span>}
               </label>
               <Select
                 label="Country"

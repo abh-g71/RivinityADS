@@ -50,7 +50,7 @@ export function PhotoUpload() {
           setDragging(false)
           addFiles(e.dataTransfer.files)
         }}
-        className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
+        className={`rounded-lg border-2 border-dashed p-3 text-center transition-colors ${
           dragging ? 'border-accent bg-secondary' : 'border-border'
         }`}
       >
@@ -62,7 +62,7 @@ export function PhotoUpload() {
         >
           Choose files
         </button>
-        <p className="mt-2 text-xs text-muted-foreground">Up to 8 images</p>
+        <p className="mt-2 text-sm text-muted-foreground">Up to 8 images</p>
         <input
           ref={inputRef}
           type="file"
@@ -77,7 +77,7 @@ export function PhotoUpload() {
       </div>
 
       {photos.length > 0 && (
-        <ul className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
+        <ul className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4">
           {photos.map((p) => (
             <li key={p.id} className="group relative aspect-square overflow-hidden rounded-lg border border-border">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -86,7 +86,7 @@ export function PhotoUpload() {
                 type="button"
                 onClick={() => remove(p.id)}
                 aria-label={`Remove ${p.name}`}
-                className="absolute right-1 top-1 h-6 w-6 rounded-full bg-primary/80 text-xs text-white hover:bg-primary"
+                className="absolute right-1 top-1 h-6 w-6 rounded-full bg-primary/80 text-sm text-white hover:bg-primary"
               >
                 ✕
               </button>

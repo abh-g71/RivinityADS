@@ -23,10 +23,10 @@ export default function FinancePage() {
         action={<Link href="/add-funds" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Add funds</Link>}
       />
 
-      <Card className="mt-6 max-w-md p-6">
+      <Card className="mt-4 max-w-md p-4">
         <p className="text-sm font-medium text-muted-foreground">Balance</p>
         <p className="mt-2 text-3xl font-bold text-foreground">₹0.00</p>
-        <p className="mt-2 text-xs text-muted-foreground">Mock balance only.</p>
+        <p className="mt-2 text-sm text-muted-foreground">Mock balance only.</p>
       </Card>
 
       <section aria-labelledby="transactions-heading" className="mt-8">

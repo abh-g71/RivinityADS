@@ -18,7 +18,7 @@ export function Navbar() {
     <div className="landing-navbar-wrap">
       <header className="landing-navbar">
         <Link href="/" className="landing-brand" aria-label="RivinityADS home">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#221632] text-sm font-bold text-white" aria-hidden="true">R</span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#09090B] text-sm font-bold text-white" aria-hidden="true">R</span>
           <span>RivinityADS</span>
         </Link>
 

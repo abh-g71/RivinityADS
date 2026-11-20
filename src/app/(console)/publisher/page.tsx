@@ -103,7 +103,7 @@ const CARD = 'rounded-lg border border-border bg-white p-4'
 function Trend({ value }: { value: number }) {
   const up = value >= 0
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${up ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-medium ${up ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
       {up ? <ArrowUpRight className="h-3 w-3" aria-hidden="true" /> : <ArrowDownRight className="h-3 w-3" aria-hidden="true" />}
       {Math.abs(value).toFixed(1)}%
     </span>
@@ -114,7 +114,7 @@ function Tabs<T extends string | number>({ items, value, onChange, label }: { it
     <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-muted p-0.5">
       {items.map((it) => (
         <button key={String(it)} type="button" role="tab" aria-selected={value === it} onClick={() => onChange(it)}
-          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>
+          className={`rounded px-3 py-1.5 text-sm font-medium transition-colors ${value === it ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>
           {typeof it === 'number' ? `${it} days` : it}
         </button>
       ))}
@@ -170,7 +170,7 @@ function Donut({ parts }: { parts: { name: string; value: number; color: string 
           ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-xs text-muted-foreground">Total</p>
+          <p className="text-sm text-muted-foreground">Total</p>
           <p className="text-lg font-semibold tabular-nums text-foreground"><Count value={total} format={inr} /></p>
         </div>
       </div>
@@ -263,7 +263,7 @@ export default function PublisherDashboardPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs text-muted-foreground">Publisher / Home</p>
+          <p className="text-sm text-muted-foreground">Publisher / Home</p>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Home</h1>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -294,12 +294,12 @@ export default function PublisherDashboardPage() {
             <section className={CARD} aria-label={metric}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Tabs label="Metric" items={['Earnings', 'Impressions', 'Clicks'] as Metric[]} value={metric} onChange={setMetric} />
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#ACBCFF]" aria-hidden="true" />This period</span>
                   <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-border" aria-hidden="true" />Previous</span>
                 </div>
               </div>
-              <p className="mt-3 text-xl font-semibold tabular-nums text-foreground">{money ? inr(total) : num(total)} <span className="text-xs font-normal text-muted-foreground">in the last {range} days</span></p>
+              <p className="mt-3 text-xl font-semibold tabular-nums text-foreground">{money ? inr(total) : num(total)} <span className="text-sm font-normal text-muted-foreground">in the last {range} days</span></p>
               <div className="mt-2"><LineChart key={`${metric}-${range}`} cur={cur} prev={prev} labels={labels} money={money} /></div>
             </section>
           </Reveal>
@@ -315,7 +315,7 @@ export default function PublisherDashboardPage() {
               <div className="mt-3 h-1.5 w-full rounded-full bg-muted">
                 <div className="h-1.5 rounded-full bg-progress" style={{ width: on ? `${payoutPct}%` : '0%', transition: 'width 800ms ease-out' }} />
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">{payoutPct}% of the minimum payout. {inr(PAYOUT_MIN - totalEarn)} to go.</p>
+              <p className="mt-2 text-sm text-muted-foreground">{payoutPct}% of the minimum payout. {inr(PAYOUT_MIN - totalEarn)} to go.</p>
             </section>
           </Reveal>
           <Reveal delay={460}>
@@ -325,14 +325,14 @@ export default function PublisherDashboardPage() {
                 {inReview && (
                   <li className="flex items-center gap-3 py-3">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground"><Clock className="h-4 w-4" aria-hidden="true" /></span>
-                    <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-foreground">{inReview.name} is in review</p><p className="text-xs text-muted-foreground">Usually a day or two</p></div>
-                    <Link href="/publisher/websites" className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted">View</Link>
+                    <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-foreground">{inReview.name} is in review</p><p className="text-sm text-muted-foreground">Usually a day or two</p></div>
+                    <Link href="/publisher/websites" className="shrink-0 rounded-full border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted">View</Link>
                   </li>
                 )}
                 <li className="flex items-center gap-3 py-3">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground"><Wallet className="h-4 w-4" aria-hidden="true" /></span>
-                  <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-foreground">Add a payout method</p><p className="text-xs text-muted-foreground">Needed to get paid</p></div>
-                  <Link href="/publisher/payments" className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted">Add</Link>
+                  <div className="min-w-0 flex-1"><p className="truncate text-sm font-medium text-foreground">Add a payout method</p><p className="text-sm text-muted-foreground">Needed to get paid</p></div>
+                  <Link href="/publisher/payments" className="shrink-0 rounded-full border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted">Add</Link>
                 </li>
               </ul>
             </section>
@@ -364,7 +364,7 @@ export default function PublisherDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[560px] text-left text-sm">
               <thead>
-                <tr className="border-y border-border text-xs text-muted-foreground">
+                <tr className="border-y border-border text-sm text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Website</th>
                   <th className="px-3 py-3 font-medium">Status</th>
                   <th className="px-3 py-3 text-right font-medium">Impressions</th>

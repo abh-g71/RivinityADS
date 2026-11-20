@@ -26,7 +26,7 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
   return (
     <TooltipProvider>
       <ToastProvider>
-        <div className="min-h-screen bg-background">
+        <div className="flex min-h-screen bg-[var(--page)] lg:h-dvh lg:overflow-hidden">
           <Sidebar
             role={role}
             isOpen={menuOpen}
@@ -34,13 +34,13 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
             onClose={() => setMenuOpen(false)}
             onToggleCollapse={() => setSidebarCollapsed((collapsed) => !collapsed)}
           />
-          <div className={sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'}>
+          <div className="flex min-w-0 flex-1 flex-col lg:h-full lg:overflow-hidden">
             <TopBar
               role={role}
               onMenuClick={() => setMenuOpen(true)}
               onLogout={() => router.push('/login')}
             />
-            <main className="console-scrollbar min-h-[calc(100vh-5.5rem)] p-4 sm:p-6 lg:p-5">
+            <main className="console-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto p-3 lg:p-4">
               <ConsoleRoleProvider role={role}>
                 <PageTransition pageKey={pathname}>{children}</PageTransition>
               </ConsoleRoleProvider>

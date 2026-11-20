@@ -79,10 +79,10 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-20 flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 border-b border-border bg-white px-3 py-2 sm:px-6 md:h-16 md:flex-nowrap md:py-0">
+    <header className="sticky top-0 z-20 flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1 border-b border-black/10 bg-white px-3 py-1 sm:px-4 md:h-12 md:flex-nowrap md:py-0">
       <Button
         variant="ghost"
-        className="h-10 w-10 shrink-0 px-0"
+        className="h-9 w-9 shrink-0 px-0"
         onClick={onMenuClick}
         aria-label="Open menu"
       >
@@ -107,7 +107,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
           placeholder="Search pages, e.g. reports, add funds"
           aria-label="Search pages"
           autoComplete="off"
-          className="h-10 w-full rounded-lg border border-border bg-muted pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-9 w-full rounded-lg border border-border bg-muted pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         {open && (
           <div className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-lg border border-border bg-white p-1" role="listbox" aria-label="Search results">
@@ -121,7 +121,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
                 className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span>{p.label}</span>
-                <span className="text-xs text-muted-foreground">{p.section}</span>
+                <span className="text-sm text-muted-foreground">{p.section}</span>
               </button>
             )) : <p className="px-3 py-3 text-sm text-muted-foreground">No pages match &ldquo;{query}&rdquo;.</p>}
           </div>
@@ -131,13 +131,13 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
       <div className="flex min-w-0 shrink-0 items-center gap-1 lg:gap-3">
         {role === 'advertiser' && (
           <>
-            <ButtonLink href="/campaigns/new" aria-label="Create Campaign" className="shrink-0 px-2 py-2 text-xs sm:px-3 sm:text-sm">
+            <ButtonLink href="/campaigns/new" aria-label="Create Campaign" className="shrink-0 px-2 py-1.5 text-sm sm:px-3">
               <span className="lg:hidden">New</span>
               <span className="hidden lg:inline">Create Campaign</span>
             </ButtonLink>
             <Link
               href="/add-funds"
-              className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-border px-2 py-2 text-sm font-semibold text-foreground hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
+              className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-border px-2 py-1.5 text-sm font-semibold text-foreground hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:px-3"
               aria-label={`Mock advertiser balance ${balance}. Add funds`}
             >
               <span className="hidden lg:inline">{balance}</span>
@@ -153,7 +153,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
           >
             <Bell className="h-5 w-5" aria-hidden="true" />
             {unreadCount > 0 && (
-              <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-danger-600 px-1 text-[10px] font-semibold leading-4 text-white">
+              <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-danger-600 px-1 text-sm font-semibold leading-4 text-white">
                 {unreadCount}
               </span>
             )}
@@ -164,7 +164,7 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
               <DropdownMenuItem
                 disabled={!unreadCount}
                 onSelect={markAllAsRead}
-                className="text-xs text-foreground"
+                className="text-sm text-foreground"
               >
                 Mark all as read
               </DropdownMenuItem>
@@ -182,8 +182,8 @@ export function TopBar({ role, onMenuClick, onLogout }: TopBarProps) {
                 />
                 <span className="min-w-0">
                   <span className="block font-medium text-foreground">{notification.title}</span>
-                  <span className="mt-1 block text-xs text-muted-foreground">{notification.description}</span>
-                  <span className="mt-1 block text-xs text-muted-foreground">{notification.time}</span>
+                  <span className="mt-1 block text-sm text-muted-foreground">{notification.description}</span>
+                  <span className="mt-1 block text-sm text-muted-foreground">{notification.time}</span>
                 </span>
               </DropdownMenuItem>
             ))}

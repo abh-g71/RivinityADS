@@ -100,7 +100,7 @@ function NavigationContent({
   const groups = getNavGroups(role)
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       <div className={`flex items-center ${isCollapsed ? 'flex-col gap-3' : 'justify-between gap-2'}`}>
         <Link
           href="/"
@@ -126,12 +126,12 @@ function NavigationContent({
         )}
       </div>
 
-      <nav className="mt-6 flex flex-col gap-4" aria-label={`${role} navigation`}>
+      <nav className="mt-6 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto" aria-label={`${role} navigation`}>
         {groups.map((group, index) => (
           <div key={group.title ?? index}>
             {group.title && (isCollapsed
               ? <div className="mx-3 mb-2 border-t border-border" aria-hidden="true" />
-              : <p className="mb-1 px-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{group.title}</p>)}
+              : <p className="mb-1 px-3 text-sm font-medium uppercase tracking-wider text-muted-foreground">{group.title}</p>)}
             <ul className="flex flex-col gap-0.5">
               {group.items.map((item) => <li key={item.id}>{renderNavigationLink(item)}</li>)}
             </ul>
@@ -152,7 +152,7 @@ function NavigationContent({
           {!isCollapsed && (
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{roleLabel(role)} workspace</p>
-              <p className="truncate text-xs text-muted-foreground">Simulated workspace</p>
+              <p className="truncate text-sm text-muted-foreground">Simulated workspace</p>
             </div>
           )}
         </div>
@@ -208,7 +208,7 @@ export function Sidebar({
 }: SidebarProps) {
   return (
     <>
-      <aside className={`console-scrollbar fixed inset-y-0 left-0 z-30 hidden overflow-y-auto border-r border-border bg-sidebar px-3 py-6 text-sidebar-foreground transition-[width] duration-200 lg:block ${isCollapsed ? 'w-20' : 'w-64'}`}>
+      <aside className={`console-scrollbar sticky top-0 z-30 hidden h-full shrink-0 overflow-hidden border-r border-black/10 bg-white px-3 py-4 text-sidebar-foreground transition-[width] duration-200 lg:block ${isCollapsed ? 'w-20' : 'w-64'}`}>
         <NavigationContent
           role={role}
           onClose={onClose}
@@ -218,7 +218,7 @@ export function Sidebar({
         />
       </aside>
       <Sheet open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
-        <SheetContent side="left" className="console-scrollbar w-64 overflow-y-auto border-r border-border bg-sidebar px-3 py-6 text-sidebar-foreground sm:max-w-64">
+        <SheetContent side="left" className="console-scrollbar w-64 overflow-y-auto border-r border-black/10 bg-white px-3 py-6 text-sidebar-foreground sm:max-w-64">
           <SheetTitle className="sr-only">Console navigation</SheetTitle>
           <NavigationContent
             role={role}

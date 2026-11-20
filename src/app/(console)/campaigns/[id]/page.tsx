@@ -71,7 +71,7 @@ export default function CampaignDetailPage() {
           <div>
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">{campaign.name}</h1>
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-2.5 py-1 text-xs font-medium text-foreground">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-2.5 py-1 text-sm font-medium text-foreground">
                 <span className={`h-2 w-2 rounded-full ${DOT[status]}`} aria-hidden="true" />{status}
               </span>
             </div>
@@ -117,7 +117,7 @@ export default function CampaignDetailPage() {
               <div className="mt-3 h-2 w-full rounded-full bg-muted">
                 <div className="h-2 rounded-full bg-progress" style={{ width: `${Math.min(100, usedPct)}%` }} />
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">{usedPct}% used · {campaign.budgetLeft} left</p>
+              <p className="mt-2 text-sm text-muted-foreground">{usedPct}% used · {campaign.budgetLeft} left</p>
             </section>
           </div>
 
@@ -144,9 +144,9 @@ export default function CampaignDetailPage() {
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground"><t.icon className="h-4 w-4" aria-hidden="true" /></span>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-foreground">{t.title}</p>
-                        <p className="text-xs text-muted-foreground">{t.meta}</p>
+                        <p className="text-sm text-muted-foreground">{t.meta}</p>
                       </div>
-                      <Link href={t.href} className="shrink-0 rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted">{t.cta}</Link>
+                      <Link href={t.href} className="shrink-0 rounded-full border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted">{t.cta}</Link>
                     </li>
                   ))}
                 </ul>
@@ -159,12 +159,12 @@ export default function CampaignDetailPage() {
       {tab !== 'Overview' && (
         <section className="overflow-hidden rounded-lg border border-border bg-white" aria-label={tab}>
           {(tab === 'Ad sets' ? adSets : ads).length === 0 ? (
-            <p className="p-6 text-sm text-muted-foreground">No {tab.toLowerCase()} yet for this campaign.</p>
+            <p className="p-4 text-sm text-muted-foreground">No {tab.toLowerCase()} yet for this campaign.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[520px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-border text-xs text-muted-foreground">
+                  <tr className="border-b border-border text-sm text-muted-foreground">
                     <th className="px-4 py-3 font-medium">Name</th>
                     <th className="px-3 py-3 font-medium">ID</th>
                     <th className="px-3 py-3 font-medium">Status</th>
@@ -175,7 +175,7 @@ export default function CampaignDetailPage() {
                   {(tab === 'Ad sets' ? adSets : ads).map((r) => (
                     <tr key={r.id} className="border-b border-border last:border-0">
                       <td className="px-4 py-3 font-medium text-foreground">{r.name}</td>
-                      <td className="px-3 py-3 font-mono text-xs text-muted-foreground">{r.id}</td>
+                      <td className="px-3 py-3 font-mono text-sm text-muted-foreground">{r.id}</td>
                       <td className="px-3 py-3"><span className="inline-flex items-center gap-2 text-foreground"><span className={`h-2 w-2 rounded-full ${DOT[r.status]}`} aria-hidden="true" />{r.status}</span></td>
                       <td className="px-4 py-3 text-foreground">{r.adUnit}</td>
                     </tr>

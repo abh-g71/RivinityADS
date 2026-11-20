@@ -30,9 +30,9 @@ export function Step3Preview({ data }: StepProps) {
         Check your ad. Click Continue if everything looks right, or Back to edit.
       </p>
 
-      <div className="mt-5 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+      <div className="mt-3 grid gap-3 lg:grid-cols-[1.4fr_1fr]">
         <div>
-          <div className={`flex aspect-video items-center justify-center rounded-lg ${tones[active]}`}>
+          <div className={`flex aspect-video max-h-56 items-center justify-center rounded-lg ${tones[active]}`}>
             <ImageIcon className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
           </div>
           <div className="mt-3 grid grid-cols-4 gap-3">
@@ -54,7 +54,7 @@ export function Step3Preview({ data }: StepProps) {
             {data.description.trim() || 'No description added.'}
           </p>
 
-          <table className="mt-5 w-full overflow-hidden rounded-lg border border-border text-sm">
+          <table className="mt-3 w-full overflow-hidden rounded-lg border border-border text-sm">
             <tbody>
               {specs.map(([label, value]) => (
                 <tr key={label} className="border-b border-border last:border-0">
@@ -68,19 +68,19 @@ export function Step3Preview({ data }: StepProps) {
           </table>
         </div>
 
-        <aside className="h-fit rounded-lg border border-border p-5">
+        <aside className="h-fit rounded-lg border border-border p-3.5">
           <p className="text-2xl font-bold text-foreground">{price}</p>
-          <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" aria-hidden="true" /> Your city
           </p>
 
-          <div className="mt-5 flex items-center gap-3 border-t border-border pt-5">
+          <div className="mt-3 flex items-center gap-3 border-t border-border pt-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
               <User className="h-4 w-4" aria-hidden="true" />
             </span>
             <div>
               <p className="text-sm font-medium">Seller name</p>
-              <p className="flex items-center gap-1 text-xs text-muted-foreground">
+              <p className="flex items-center gap-1 text-sm text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" /> Verified seller
               </p>
             </div>

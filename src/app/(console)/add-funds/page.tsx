@@ -46,9 +46,9 @@ export default function AddFundsPage() {
         action={<Link href="/finance" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-border bg-white px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">View finance</Link>}
       />
 
-      <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-        <div className="space-y-6">
-          <Card className="p-5 sm:p-6">
+      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+        <div className="space-y-4">
+          <Card className="p-4">
             <h2 className="text-lg font-semibold text-foreground">Payment method</h2>
             {mockPaymentGroups.map((group) => (
               <fieldset key={group.title} className="mt-5">
@@ -74,14 +74,14 @@ export default function AddFundsPage() {
                 </div>
               </fieldset>
             ))}
-            {touched && !method && <p className="mt-3 text-xs text-danger-600" role="alert">Choose a payment method.</p>}
+            {touched && !method && <p className="mt-3 text-sm text-danger-600" role="alert">Choose a payment method.</p>}
             <div className="mt-5 rounded-lg bg-secondary p-4 text-sm text-muted-foreground">
               <p>Deposit limits: <span className="font-medium">set by platform</span></p>
               <p className="mt-1">Fees: <span className="font-medium">set by platform</span></p>
             </div>
           </Card>
 
-          <Card className="p-5 sm:p-6">
+          <Card className="p-4">
             <h2 className="text-lg font-semibold text-foreground">Amount</h2>
             <Input
               id="funding-amount"
@@ -107,11 +107,11 @@ export default function AddFundsPage() {
           </Card>
         </div>
 
-        <div className="space-y-5 lg:sticky lg:top-24">
-          <Card className="p-5 sm:p-6">
+        <div className="space-y-4 lg:sticky lg:top-20">
+          <Card className="p-4">
             <h2 className="text-lg font-semibold text-foreground">Account details</h2>
             <p className="mt-1 text-sm text-muted-foreground">Editable demo information for invoice preview only.</p>
-            <div className="mt-4 space-y-4">
+            <div className="mt-3 space-y-3">
               <Select
                 id="invoice-account-type"
                 label="Account type"
@@ -126,7 +126,7 @@ export default function AddFundsPage() {
             </div>
           </Card>
 
-          <Card className="flex items-center justify-between gap-4 p-5">
+          <Card className="flex items-center justify-between gap-4 p-4">
             <div>
               <h2 className="font-semibold text-foreground">Verification</h2>
               <p className="mt-1 text-sm text-muted-foreground">Mock account status</p>

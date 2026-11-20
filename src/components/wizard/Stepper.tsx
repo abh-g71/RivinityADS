@@ -58,7 +58,7 @@ export const Stepper = ({ steps, current }: StepperProps) => {
               </span>
 
               <span
-                className={`mt-2 text-xs ${
+                className={`mt-1 text-sm ${
                   active || done
                     ? 'font-medium text-foreground'
                     : 'text-muted-foreground'

@@ -16,10 +16,10 @@ export default function AdFormatsPage() {
       <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
         <header className="py-16 text-center sm:py-20">
           <Badge tone="brand">Ad formats</Badge>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-zinc-950 sm:text-5xl">
             Choose a format that fits
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-900/80">
             Explore common ad placements and consider what suits your campaign or website.
           </p>
         </header>

@@ -5,16 +5,16 @@
   --font-sans: var(--font-outfit);
   --font-mono: var(--font-outfit);
   color-scheme: light;
-  --background: #D5D8E3;
+  --background: #7ECBF9;
   --foreground: #282828;
-  --page: #D5D8E3;
+  --page: #7ECBF9;
   --radius: 1.25rem;
   --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
   --card: #ffffff;
   --card-foreground: var(--foreground);
   --popover: #ffffff;
   --popover-foreground: var(--foreground);
-  --primary: #282828;
+  --primary: #09090B;
   --primary-foreground: #ffffff;
   --secondary: #f6f8fc;
   --secondary-foreground: #282828;
@@ -35,7 +35,7 @@
   --chart-5: #5A5F73;
   --sidebar: #ffffff;
   --sidebar-foreground: #282828;
-  --sidebar-primary: #282828;
+  --sidebar-primary: #09090B;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f6f8fc;
   --sidebar-accent-foreground: #282828;
@@ -99,13 +99,12 @@ body {
 
 /* Public navigation palette, scoped to the active public navbar. */
 .landing-navbar-wrap {
-  --landing-mint: #9afcce;
   --landing-ink: #09090B;
-  --landing-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
   position: sticky;
-  top: 1rem;
+  top: 0;
   z-index: 40;
-  padding: 1rem 1rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  background: #7ECBF9;
 }
 
 .landing-navbar {
@@ -114,21 +113,19 @@ body {
   align-items: center;
   gap: 1.25rem;
   width: min(100%, 1200px);
-  min-height: 68px;
+  min-height: 64px;
   margin: 0 auto;
   padding: 0.65rem 1rem 0.65rem 1.25rem;
-  border-radius: 999px;
-  background: #fff;
-  box-shadow: var(--landing-shadow);
+  background: #7ECBF9;
 }
 
 .landing-nav-links { display: flex; align-items: center; justify-content: center; gap: clamp(1rem, 2.4vw, 2.25rem); }
 .landing-nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
 .landing-brand { display: inline-flex; align-items: center; gap: 0.6rem; color: var(--landing-ink); font-weight: 700; white-space: nowrap; }
-.landing-nav-link { color: #615a6e; font-size: 0.875rem; font-weight: 500; transition: color 150ms ease; white-space: nowrap; }
+.landing-nav-link { color: #0F172A; font-size: 0.875rem; font-weight: 500; transition: color 150ms ease; white-space: nowrap; }
 .landing-nav-link:hover { color: #09090B; }
 .landing-nav-signin { color: var(--landing-ink); font-size: 0.875rem; font-weight: 600; white-space: nowrap; }
-.landing-nav-cta { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; border-radius: 999px; background: var(--landing-mint); padding: 0 1.2rem; color: var(--landing-ink); font-size: 0.875rem; font-weight: 700; white-space: nowrap; }
+.landing-nav-cta { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; border-radius: 999px; background: #09090B; padding: 0 1.2rem; color: #fff; font-size: 0.875rem; font-weight: 700; white-space: nowrap; }
 .landing-menu-button { display: none; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; color: var(--landing-ink); }
 .landing-mobile-menu { display: none; }
 
@@ -136,12 +133,12 @@ body {
   .landing-navbar { grid-template-columns: 1fr auto; min-height: 60px; }
   .landing-nav-links, .landing-nav-actions { display: none; }
   .landing-menu-button { display: inline-flex; }
-  .landing-mobile-menu { display: flex; flex-direction: column; gap: 0.25rem; width: min(100%, 1200px); margin: 0.5rem auto 0; border-radius: 20px; background: #fff; padding: 0.75rem; box-shadow: var(--landing-shadow); }
+  .landing-mobile-menu { display: flex; flex-direction: column; gap: 0.25rem; width: min(100%, 1200px); margin: 0 auto; border: 1px solid rgba(0, 0, 0, 0.1); border-top: 0; background: #fff; padding: 0.75rem; }
   .landing-mobile-menu a { border-radius: 12px; padding: 0.75rem; }
 }
 
 @media (max-width: 480px) {
-  .landing-navbar-wrap { top: 0.5rem; padding: 0.5rem 0.65rem 0; }
+  .landing-navbar-wrap { top: 0; padding: 0; }
   .landing-navbar { padding-left: 1rem; }
 }
 
@@ -218,7 +215,7 @@ html {
 
 @media print {
   body {
-    background: var(--background) !important;
+    background: var(--page) !important;
     color: var(--foreground) !important;
   }
 

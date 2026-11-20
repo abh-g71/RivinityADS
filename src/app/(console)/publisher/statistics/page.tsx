@@ -53,7 +53,7 @@ function ImpressionsLineChart({ rows }: { rows: PublisherStatisticsRow[] }) {
           <g key={row.id}>
             <title>{`${row.date}: ${row.impressions.toLocaleString('en-IN')} mock impressions`}</title>
             <circle cx={x} cy={y} r="5" className="fill-brand-600" />
-            <text x={x} y={height - 8} textAnchor="middle" className="fill-slate-600 text-xs">{row.date}</text>
+            <text x={x} y={height - 8} textAnchor="middle" className="fill-slate-600 text-sm">{row.date}</text>
           </g>
         ))}
       </svg>
@@ -97,7 +97,7 @@ export default function PublisherStatisticsPage() {
   ]
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-4">
       <PageHeader
         breadcrumbs={[{ label: 'Publisher', href: '/publisher' }, { label: 'Statistics' }]}
         title="Statistics"

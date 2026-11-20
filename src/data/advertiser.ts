@@ -87,6 +87,7 @@ export type CampaignManagerItem = {
   enabled: boolean
   status: CampaignStatus
   budget: string
+  dailyBudget?: string
   impressions: number
   clicks: number
   ctr: string

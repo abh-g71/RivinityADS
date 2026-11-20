@@ -79,7 +79,7 @@ export default function PublisherPlacementsPage() {
         action={<Link href="#create-placement" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Create placement</Link>}
       />
 
-      <Card id="create-placement" className="mt-6 p-5 sm:p-6">
+      <Card id="create-placement" className="mt-4 p-4">
         <h2 className="text-lg font-semibold text-foreground">Create placement</h2>
         <form className="mt-5 grid gap-5 lg:grid-cols-2" onSubmit={createPlacement} noValidate>
           <Select
@@ -129,7 +129,7 @@ export default function PublisherPlacementsPage() {
                 </label>
               ))}
             </div>
-            {touched.format && formatError && <p id="placement-format-error" className="mt-1.5 text-xs text-danger-600" role="alert">{formatError}</p>}
+            {touched.format && formatError && <p id="placement-format-error" className="mt-1.5 text-sm text-danger-600" role="alert">{formatError}</p>}
           </fieldset>
 
           <Button type="submit" className="lg:col-span-2 lg:w-fit">Create placement</Button>
@@ -137,7 +137,7 @@ export default function PublisherPlacementsPage() {
       </Card>
 
       {adCode && (
-        <Card className="mt-6 p-5 sm:p-6">
+        <Card className="mt-4 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-foreground">Ad code</h2>
@@ -145,7 +145,7 @@ export default function PublisherPlacementsPage() {
             </div>
             <Button type="button" variant="outline" onClick={copyAdCode}>Copy</Button>
           </div>
-          <pre className="mt-4 overflow-x-auto rounded-lg bg-dark-card p-4 text-xs text-white">
+          <pre className="mt-4 overflow-x-auto rounded-lg bg-dark-card p-4 text-sm text-white">
             <code>{adCode}</code>
           </pre>
           {copyMessage && <p className="mt-2 text-sm text-muted-foreground" role="status">{copyMessage}</p>}

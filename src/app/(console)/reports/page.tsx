@@ -94,7 +94,7 @@ const CARD = 'rounded-lg border border-border bg-white p-4'
 function Trend({ value }: { value: number }) {
   const up = value >= 0
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${up ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-medium ${up ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
       {up ? <ArrowUpRight className="h-3 w-3" aria-hidden="true" /> : <ArrowDownRight className="h-3 w-3" aria-hidden="true" />}
       {Math.abs(value).toFixed(1)}%
     </span>
@@ -105,7 +105,7 @@ function Tabs<T extends string | number>({ items, value, onChange, label }: { it
     <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-muted p-0.5">
       {items.map((it) => (
         <button key={String(it)} type="button" role="tab" aria-selected={value === it} onClick={() => onChange(it)}
-          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>
+          className={`rounded px-3 py-1.5 text-sm font-medium transition-colors ${value === it ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>
           {typeof it === 'number' ? `${it} days` : it}
         </button>
       ))}
@@ -207,7 +207,7 @@ function Donut({ parts, centerLabel, total, format }: { parts: { name: string; v
           ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <p className="text-xs text-muted-foreground">{centerLabel}</p>
+          <p className="text-sm text-muted-foreground">{centerLabel}</p>
           <p className="text-lg font-semibold tabular-nums text-foreground"><Count value={total} format={format} /></p>
         </div>
       </div>
@@ -254,9 +254,9 @@ function Columns({ values }: { values: number[] }) {
     <div className="flex h-44 items-end justify-between gap-2" role="img" aria-label="Results by day of week">
       {values.map((v, i) => (
         <div key={days[i]} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
-          <span className="text-xs tabular-nums text-muted-foreground">{v}</span>
+          <span className="text-sm tabular-nums text-muted-foreground">{v}</span>
           <div className="w-full rounded-t" style={{ height: on ? `${(v / max) * 100}%` : '0%', background: i === best ? '#ACBCFF' : '#D9D9E2', transition: `height 700ms ease-out ${i * 60}ms`, minHeight: 2 }} />
-          <span className="text-xs text-muted-foreground">{days[i]}</span>
+          <span className="text-sm text-muted-foreground">{days[i]}</span>
         </div>
       ))}
     </div>
@@ -312,7 +312,7 @@ export default function ReportsPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs text-muted-foreground">Advertiser / Reports</p>
+          <p className="text-sm text-muted-foreground">Advertiser / Reports</p>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Reports</h1>
         </div>
         <button type="button" onClick={exportCsv} className="inline-flex items-center gap-2 rounded-md border border-border bg-white px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
@@ -343,7 +343,7 @@ export default function ReportsPage() {
         <section className={CARD} aria-label={`${t.label} over time`}>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-foreground">{t.label} over time</h2>
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#ACBCFF]" aria-hidden="true" />This period</span>
               {compare && <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-border" aria-hidden="true" />Previous period</span>}
             </div>
@@ -387,7 +387,7 @@ export default function ReportsPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead>
-                <tr className="border-y border-border text-xs text-muted-foreground">
+                <tr className="border-y border-border text-sm text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Campaign</th>
                   <th className="px-3 py-3 text-right font-medium">Impressions</th>
                   <th className="px-3 py-3 text-right font-medium">Clicks</th>
@@ -399,7 +399,7 @@ export default function ReportsPage() {
               <tbody>
                 {sorted.map((c) => (
                   <tr key={c.name} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3"><p className="font-medium text-foreground">{c.name}</p><p className="text-xs text-muted-foreground">{c.objective}</p></td>
+                    <td className="px-4 py-3"><p className="font-medium text-foreground">{c.name}</p><p className="text-sm text-muted-foreground">{c.objective}</p></td>
                     <td className="px-3 py-3 text-right tabular-nums">{num(c.impressions)}</td>
                     <td className="px-3 py-3 text-right tabular-nums">{num(c.clicks)}</td>
                     <td className="px-3 py-3 text-right tabular-nums">{((c.clicks / c.impressions) * 100).toFixed(2)}%</td>

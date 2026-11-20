@@ -94,7 +94,7 @@ export default function PublisherWebsitesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-4">
       <PageHeader
         breadcrumbs={[{ label: 'Publisher', href: '/publisher' }, { label: 'Websites' }]}
         title="Websites"
@@ -103,7 +103,7 @@ export default function PublisherWebsitesPage() {
       />
 
       {tipsVisible && (
-        <Card className="p-5 sm:p-6">
+        <Card className="p-4">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 className="font-semibold text-foreground">Three steps to prepare a site</h2>
@@ -139,7 +139,7 @@ export default function PublisherWebsitesPage() {
           placeholder="Search by domain"
         />
         {filteredWebsites.length ? filteredWebsites.map((website) => (
-          <Card key={website.id} className="p-5 sm:p-6">
+          <Card key={website.id} className="p-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
                 <h2 className="break-all font-semibold text-foreground">{website.domain}</h2>
@@ -195,9 +195,9 @@ export default function PublisherWebsitesPage() {
                       </div>
                       {codeIsActive && (
                         <div className="mt-3">
-                          <pre className="overflow-x-auto rounded-lg bg-dark-card p-3 text-xs text-white"><code>{activeCode.code}</code></pre>
-                          {copyMessages[key] && <p role="status" className="mt-2 text-xs text-muted-foreground">{copyMessages[key]}</p>}
-                          <p className="mt-2 text-xs text-muted-foreground">Preview only; no ads are delivered.</p>
+                          <pre className="overflow-x-auto rounded-lg bg-dark-card p-3 text-sm text-white"><code>{activeCode.code}</code></pre>
+                          {copyMessages[key] && <p role="status" className="mt-2 text-sm text-muted-foreground">{copyMessages[key]}</p>}
+                          <p className="mt-2 text-sm text-muted-foreground">Preview only; no ads are delivered.</p>
                         </div>
                       )}
                     </section>
@@ -214,8 +214,8 @@ export default function PublisherWebsitesPage() {
         )}
       </section>
 
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2">
-        <Card id="add-website" className="min-w-0 p-5 sm:p-6">
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
+        <Card id="add-website" className="min-w-0 p-4">
           <h2 className="text-lg font-semibold text-foreground">Add a website</h2>
           <form className="mt-4 space-y-4" onSubmit={handleAddWebsite} noValidate>
             <Input
@@ -246,21 +246,21 @@ export default function PublisherWebsitesPage() {
           </form>
         </Card>
 
-        <Card id="verify-website" className="min-w-0 p-5 sm:p-6">
+        <Card id="verify-website" className="min-w-0 p-4">
           <h2 className="text-lg font-semibold text-foreground">Verify ownership</h2>
           {selectedWebsite ? (
             <>
               <p className="mt-2 text-sm text-muted-foreground">
                 Add this mock verification tag to <span className="font-medium text-foreground">{selectedWebsite.domain}</span>:
               </p>
-              <pre className="mt-4 overflow-x-auto rounded-lg bg-dark-card p-4 text-xs text-white">
+              <pre className="mt-4 overflow-x-auto rounded-lg bg-dark-card p-4 text-sm text-white">
                 <code>{mockVerificationCode}</code>
               </pre>
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <Button type="button" onClick={verifySelectedWebsite} disabled={selectedWebsite.status === 'Verified'}>
                   {selectedWebsite.status === 'Verified' ? 'Verified' : 'Verify'}
                 </Button>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   {selectedWebsite.status === 'Verified' ? 'Mock verification complete.' : 'Demo only; no site check is performed.'}
                 </p>
               </div>

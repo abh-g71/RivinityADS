@@ -30,7 +30,7 @@ export default function AdminBillingPage() {
         <Card className="p-5">
           <p className="text-sm font-medium text-muted-foreground">Payment processing</p>
           <p className="mt-2 text-lg font-semibold text-foreground">Not connected</p>
-          <p className="mt-1 text-xs text-muted-foreground">No real account balances or payment data are available.</p>
+          <p className="mt-1 text-sm text-muted-foreground">No real account balances or payment data are available.</p>
         </Card>
       </StaggerGrid>
       <section aria-label="Billing records" className="mt-6">

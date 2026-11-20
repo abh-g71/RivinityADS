@@ -4,7 +4,7 @@ import { Navbar } from '@/components/landing/Navbar'
 
 export function PublicPageShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[var(--page)]">
       <Navbar />
       <main>{children}</main>
       <Footer />

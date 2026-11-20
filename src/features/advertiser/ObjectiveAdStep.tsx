@@ -36,19 +36,19 @@ function ObjectiveFieldView({ objective, field, draft, updateDraft, beginFieldEd
   if (field.kind === 'headline') return (
     <label className={labelClass} htmlFor="headline">{field.label}
       <input id="headline" value={draft.headline} maxLength={60} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateDraft((current) => ({ ...current, headline: event.target.value }))} className={inputClass} placeholder="A short headline" />
-      <span className="mt-1 block text-xs font-normal text-muted-foreground">{field.helper} {draft.headline.length}/40</span>
+      <span className="mt-1 block text-sm font-normal text-muted-foreground">{field.helper} {draft.headline.length}/40</span>
     </label>
   )
   if (field.kind === 'text') return (
     <label className={labelClass} htmlFor="ad-text">{field.label}
       <textarea id="ad-text" value={draft.text} maxLength={200} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateDraft((current) => ({ ...current, text: event.target.value }))} className="mt-2 min-h-24 w-full min-w-0 rounded-lg border border-border px-3 py-2 text-sm font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="What should people know?" />
-      <span className="mt-1 block text-xs font-normal text-muted-foreground">{field.helper} {draft.text.length}/125</span>
+      <span className="mt-1 block text-sm font-normal text-muted-foreground">{field.helper} {draft.text.length}/125</span>
     </label>
   )
   if (field.kind === 'image' || field.kind === 'video-image') return (
     <div>
       <span className={labelClass}>{field.label} <span className="font-normal text-muted-foreground">(optional)</span></span>
-      <p className="mt-1 text-xs text-muted-foreground">{field.helper}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{field.helper}</p>
       <input id="campaign-image" type="file" accept={field.kind === 'video-image' ? 'image/*,video/*' : 'image/*'} onChange={uploadImage} className="sr-only" />
       <div className="mt-2 flex min-w-0 flex-wrap items-center gap-3">
         <button ref={imageUploadButton} type="button" onClick={() => document.getElementById('campaign-image')?.click()} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border px-4 text-sm font-medium text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{draft.imageName ? 'Change image or video' : 'Add an image'} </button>
@@ -62,8 +62,8 @@ function ObjectiveFieldView({ objective, field, draft, updateDraft, beginFieldEd
     return (
       <label className={labelClass} htmlFor="website-url">{field.label}{field.required ? ' *' : ''}
         <input id="website-url" type="url" inputMode="url" value={draft.url} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateDraft((current) => ({ ...current, url: event.target.value }))} aria-invalid={field.required ? !isValidHttpsUrl(draft.url) : Boolean(error)} className={inputClass} placeholder="https://example.com" />
-        <span className="mt-1 block text-xs font-normal text-muted-foreground">{field.helper}</span>
-        {error && <span className="mt-1 block text-xs font-normal text-red-700">{error}</span>}
+        <span className="mt-1 block text-sm font-normal text-muted-foreground">{field.helper}</span>
+        {error && <span className="mt-1 block text-sm font-normal text-red-700">{error}</span>}
       </label>
     )
   }
@@ -72,7 +72,7 @@ function ObjectiveFieldView({ objective, field, draft, updateDraft, beginFieldEd
     return details?.objective === 'Get website visits' ? (
       <label className="flex items-start gap-3 rounded-lg border border-border p-3 text-sm text-foreground">
         <input type="checkbox" checked={details.trackingTags} onChange={(event) => updateDetails(updateDraft, details, { trackingTags: event.target.checked })} className="mt-1 accent-primary" />
-        <span><span className="block font-semibold">{field.label}</span><span className="mt-1 block text-xs text-muted-foreground">{field.helper}</span></span>
+        <span><span className="block font-semibold">{field.label}</span><span className="mt-1 block text-sm text-muted-foreground">{field.helper}</span></span>
       </label>
     ) : null
   }
@@ -87,7 +87,7 @@ function ObjectiveFieldView({ objective, field, draft, updateDraft, beginFieldEd
     return (
       <label className={labelClass} htmlFor={field.id}>{field.label}{field.required ? ' *' : ''}
         <input id={field.id} type={inputType} min={inputType === 'number' ? '0' : undefined} step={inputType === 'number' ? '0.01' : undefined} value={value} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateDetails(updateDraft, draft.objectiveDetails, { [key]: event.target.value })} className={inputClass} placeholder={field.kind === 'price' || field.kind === 'offer-price' ? '0.00' : undefined} />
-        <span className="mt-1 block text-xs font-normal text-muted-foreground">{field.helper}</span>
+        <span className="mt-1 block text-sm font-normal text-muted-foreground">{field.helper}</span>
       </label>
     )
   }
@@ -97,7 +97,7 @@ function ObjectiveFieldView({ objective, field, draft, updateDraft, beginFieldEd
     return (
       <label className={labelClass} htmlFor={field.id}>{field.label} *
         <input id={field.id} value={draft.objectiveDetails[key]} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateDetails(updateDraft, draft.objectiveDetails, { [key]: event.target.value })} className={inputClass} />
-        <span className="mt-1 block text-xs font-normal text-muted-foreground">{field.helper}</span>
+        <span className="mt-1 block text-sm font-normal text-muted-foreground">{field.helper}</span>
       </label>
     )
   }
@@ -108,7 +108,7 @@ function ObjectiveFieldView({ objective, field, draft, updateDraft, beginFieldEd
         <select id="cta" value={details.buttonText} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateDetails(updateDraft, details, { buttonText: event.target.value })} className={inputClass}>
           {campaignObjectiveConfigs[objective].buttonOptions.map((option) => <option key={option}>{option}</option>)}
         </select>
-        <span className="mt-1 block text-xs font-normal text-muted-foreground">{field.helper}</span>
+        <span className="mt-1 block text-sm font-normal text-muted-foreground">{field.helper}</span>
       </label>
     )
   }
@@ -142,7 +142,7 @@ function LeadFormBuilder({ form, updateDraft, beginFieldEdit, finishFieldEdit }:
       </label>
       <label htmlFor="lead-privacy-url" className="block text-sm font-medium text-foreground">Privacy policy URL *
         <input id="lead-privacy-url" type="url" inputMode="url" value={form.privacyPolicyUrl} onFocus={beginFieldEdit} onBlur={finishFieldEdit} onChange={(event) => updateForm((current) => ({ ...current, privacyPolicyUrl: event.target.value }))} aria-invalid={!isValidHttpsUrl(form.privacyPolicyUrl)} className={fieldInputClass} placeholder="https://example.com/privacy" />
-        {!isValidHttpsUrl(form.privacyPolicyUrl) && <span className="mt-1 block text-xs font-normal text-red-700">Enter a valid secure https:// privacy policy URL.</span>}
+        {!isValidHttpsUrl(form.privacyPolicyUrl) && <span className="mt-1 block text-sm font-normal text-red-700">Enter a valid secure https:// privacy policy URL.</span>}
       </label>
       <label className="block text-sm font-medium text-foreground">Thank-you message
         <textarea value={form.thankYouMessage} onChange={(event) => updateForm((current) => ({ ...current, thankYouMessage: event.target.value }))} className="mt-2 min-h-16 w-full rounded-lg border border-border p-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
@@ -171,7 +171,7 @@ function LeadFieldRow({ field, updateForm }: { field: LeadFormField; updateForm:
         {field.id === 'custom' ? 'Custom question' : field.label}
       </label>
       {field.id === 'custom' && field.enabled && <input aria-label="Custom lead form question" value={field.label} onChange={(event) => setField((current) => ({ ...current, label: event.target.value }))} className="h-9 w-full min-w-0 rounded-lg border border-border px-2 text-sm sm:w-48" placeholder="Your question" />}
-      {field.enabled && <label className="flex items-center gap-2 text-xs text-muted-foreground"><input type="checkbox" checked={field.required} onChange={(event) => setField((current) => ({ ...current, required: event.target.checked }))} className="accent-primary" />Required</label>}
+      {field.enabled && <label className="flex items-center gap-2 text-sm text-muted-foreground"><input type="checkbox" checked={field.required} onChange={(event) => setField((current) => ({ ...current, required: event.target.checked }))} className="accent-primary" />Required</label>}
     </div>
   )
 }

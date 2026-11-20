@@ -140,7 +140,7 @@ export default function SupportPage() {
     return (
       <div className="space-y-4">
         <div>
-          <p className="text-xs text-muted-foreground">Admin / Support</p>
+          <p className="text-sm text-muted-foreground">Admin / Support</p>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Support</h1>
         </div>
         <EmptyState title="Admin support queue" description="Review and reply to user tickets in the dedicated queue." />
@@ -152,7 +152,7 @@ export default function SupportPage() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-xs text-muted-foreground">{role[0].toUpperCase() + role.slice(1)} / Support</p>
+        <p className="text-sm text-muted-foreground">{role[0].toUpperCase() + role.slice(1)} / Support</p>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">Support</h1>
         <p className="mt-1 text-sm text-muted-foreground">Tickets are saved in this browser only. No real support team is connected.</p>
       </div>
@@ -165,15 +165,15 @@ export default function SupportPage() {
               <option value="">Choose a category</option>
               {categories.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
-            {categoryBad && <span role="alert" className="text-xs text-red-700">Choose a category.</span>}
+            {categoryBad && <span role="alert" className="text-sm text-red-700">Choose a category.</span>}
           </label>
           <label className="block text-sm font-medium text-foreground">Subject
             <input value={subject} onChange={(e) => setSubject(e.target.value)} aria-invalid={subjectBad} placeholder="Short summary" className={`${field} mt-1`} />
-            {subjectBad && <span role="alert" className="text-xs text-red-700">Enter a subject.</span>}
+            {subjectBad && <span role="alert" className="text-sm text-red-700">Enter a subject.</span>}
           </label>
           <label className="block text-sm font-medium text-foreground">Description
-            <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={5} aria-invalid={messageBad} placeholder="What happened? What did you expect?" className={`${field} mt-1`} />
-            {messageBad && <span role="alert" className="text-xs text-red-700">Write at least 10 characters.</span>}
+            <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} aria-invalid={messageBad} placeholder="What happened? What did you expect?" className={`${field} mt-1`} />
+            {messageBad && <span role="alert" className="text-sm text-red-700">Write at least 10 characters.</span>}
           </label>
           <div>
             <p className="text-sm font-medium text-foreground">Attachments <span className="font-normal text-muted-foreground">(optional, up to {MAX_FILES} files, {MAX_MB} MB each)</span></p>
@@ -181,7 +181,7 @@ export default function SupportPage() {
             <label htmlFor="attach" className="mt-1 inline-flex cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-muted">
               <Paperclip className="h-4 w-4" aria-hidden="true" /> Add files
             </label>
-            {fileError && <p role="alert" className="mt-1 text-xs text-red-700">{fileError}</p>}
+            {fileError && <p role="alert" className="mt-1 text-sm text-red-700">{fileError}</p>}
             {files.length > 0 && (
               <ul className="mt-2 space-y-1">
                 {files.map((f, i) => (
@@ -203,7 +203,7 @@ export default function SupportPage() {
               <div role="tablist" aria-label="Filter tickets" className="inline-flex rounded-md bg-muted p-0.5">
                 {(['All', 'Open', 'In progress', 'Resolved'] as const).map((f) => (
                   <button key={f} type="button" role="tab" aria-selected={filter === f} onClick={() => setFilter(f)}
-                    className={`rounded px-3 py-1.5 text-xs font-medium ${filter === f ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>{f}</button>
+                    className={`rounded px-3 py-1.5 text-sm font-medium ${filter === f ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>{f}</button>
                 ))}
               </div>
             </div>
@@ -216,9 +216,9 @@ export default function SupportPage() {
                     <button type="button" onClick={() => setSelectedId(t.id)} className={`flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-muted ${ticket?.id === t.id ? 'bg-secondary' : ''}`}>
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-medium text-foreground">{t.subject}</span>
-                        <span className="text-xs text-muted-foreground">{t.category} · {when(t.createdAt)}</span>
+                        <span className="text-sm text-muted-foreground">{t.category} · {when(t.createdAt)}</span>
                       </span>
-                      <span className="inline-flex shrink-0 items-center gap-2 text-xs text-foreground"><span className={`h-2 w-2 rounded-full ${DOT[t.status]}`} aria-hidden="true" />{t.status}</span>
+                      <span className="inline-flex shrink-0 items-center gap-2 text-sm text-foreground"><span className={`h-2 w-2 rounded-full ${DOT[t.status]}`} aria-hidden="true" />{t.status}</span>
                     </button>
                   </li>
                 ))}
@@ -231,21 +231,21 @@ export default function SupportPage() {
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <h2 className="text-base font-semibold text-foreground">{ticket.subject}</h2>
-                  <p className="text-xs text-muted-foreground">{ticket.category}</p>
+                  <p className="text-sm text-muted-foreground">{ticket.category}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-border px-2.5 py-1 text-xs font-medium text-foreground"><span className={`h-2 w-2 rounded-full ${DOT[ticket.status]}`} aria-hidden="true" />{ticket.status}</span>
-                  {ticket.status !== 'Resolved' && <button type="button" onClick={resolve} className="rounded-md border border-border px-3 py-1 text-xs font-medium text-foreground hover:bg-muted">Mark resolved</button>}
+                  <span className="inline-flex items-center gap-2 rounded-full border border-border px-2.5 py-1 text-sm font-medium text-foreground"><span className={`h-2 w-2 rounded-full ${DOT[ticket.status]}`} aria-hidden="true" />{ticket.status}</span>
+                  {ticket.status !== 'Resolved' && <button type="button" onClick={resolve} className="rounded-md border border-border px-3 py-1 text-sm font-medium text-foreground hover:bg-muted">Mark resolved</button>}
                 </div>
               </div>
               {ticket.files && ticket.files.length > 0 && (
-                <p className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><Paperclip className="h-3.5 w-3.5" aria-hidden="true" />{ticket.files.join(', ')}</p>
+                <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted-foreground"><Paperclip className="h-3.5 w-3.5" aria-hidden="true" />{ticket.files.join(', ')}</p>
               )}
               <ol className="mt-4 space-y-3 border-l border-border pl-4">
                 {(ticket.events ?? [{ who: 'You' as const, text: ticket.message, when: when(ticket.createdAt) }]).map((ev, i) => (
                   <li key={i} className="relative">
                     <span className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-muted-foreground" aria-hidden="true" />
-                    <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground">{ev.who}</span> · {ev.when}</p>
+                    <p className="text-sm text-muted-foreground"><span className="font-medium text-foreground">{ev.who}</span> · {ev.when}</p>
                     <p className="mt-0.5 whitespace-pre-wrap text-sm text-foreground">{ev.text}</p>
                   </li>
                 ))}

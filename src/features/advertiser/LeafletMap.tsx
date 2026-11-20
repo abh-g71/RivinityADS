@@ -126,12 +126,12 @@ export default function LeafletMap({ locations, onChange }: { locations: Campaig
       <label htmlFor="location-search" className="mb-1 block text-sm font-medium text-foreground">Add a location</label>
       <input id="location-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search a city, country or PIN code" autoComplete="off" className="h-11 w-full rounded-lg border border-border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
       {query && <div className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border bg-white p-1 shadow-sm" role="listbox" aria-label="Location suggestions">
-        {suggestions.map((item) => <button key={item.id} type="button" role="option" aria-selected="false" onClick={() => addLocation(item)} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><span className="block font-medium">{item.label}</span><span className="mt-0.5 block text-xs capitalize text-muted-foreground">{item.type === 'postal' ? 'PIN code' : item.type}</span></button>)}
+        {suggestions.map((item) => <button key={item.id} type="button" role="option" aria-selected="false" onClick={() => addLocation(item)} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><span className="block font-medium">{item.label}</span><span className="mt-0.5 block text-sm capitalize text-muted-foreground">{item.type === 'postal' ? 'PIN code' : item.type}</span></button>)}
         {!suggestions.length && /^\d{6}$/.test(query.trim()) && <button type="button" onClick={() => { addLocation(makePostalLocation(query.trim())) }} className="block min-h-10 w-full rounded-md px-3 py-2 text-left text-sm hover:bg-muted">Add PIN code {query.trim()}, India</button>}
         {!suggestions.length && !/^\d{6}$/.test(query.trim()) && <p className="p-3 text-sm text-muted-foreground">No matches in the sample list. Try a city, country or six-digit PIN.</p>}
       </div>}
     </div>
-    <p className="text-xs text-muted-foreground">Search a place, or click anywhere on the map to pick that point.</p>
+    <p className="text-sm text-muted-foreground">Search a place, or click anywhere on the map to pick that point.</p>
 
     <section aria-label="Selected locations">
       <h3 className="text-sm font-semibold text-foreground">Locations ({locations.length})</h3>
@@ -161,7 +161,7 @@ export default function LeafletMap({ locations, onChange }: { locations: Campaig
     </div>
     {activeRadius && <label className="block text-sm font-medium text-foreground" htmlFor="campaign-map-radius">Radius around {activeRadius.name}, {activeRadius.country}: {activeRadius.radiusKm ?? 10} km
       <input id="campaign-map-radius" type="range" min="1" max="50" value={activeRadius.radiusKm ?? 10} onChange={(event) => updateRadius(Number(event.target.value))} className="mt-2 w-full accent-primary" />
-      <span className="block text-xs font-normal text-muted-foreground">Radius can be set from 1 to 50 km.</span>
+      <span className="block text-sm font-normal text-muted-foreground">Radius can be set from 1 to 50 km.</span>
     </label>}
     <div className="space-y-2 rounded-lg border border-border p-3">
       <label htmlFor="pin-codes" className="block text-sm font-medium text-foreground">Add PIN codes</label>

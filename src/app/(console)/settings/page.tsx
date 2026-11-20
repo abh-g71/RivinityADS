@@ -155,7 +155,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-4">
       <PageHeader
         breadcrumbs={[{ label: role[0].toUpperCase() + role.slice(1) }, { label: 'Settings' }]}
         title={role === 'admin' ? 'Account settings' : 'Settings'}
@@ -172,7 +172,7 @@ export default function SettingsPage() {
         </div>
       ) : (
         <>
-          <Card id="profile-settings" className="p-5 sm:p-6">
+          <Card id="profile-settings" className="p-4">
             <form className="grid gap-4 sm:grid-cols-2" onSubmit={saveProfile} noValidate>
               <div className="sm:col-span-2">
                 <h2 className="text-lg font-semibold text-foreground">Profile</h2>
@@ -203,7 +203,7 @@ export default function SettingsPage() {
             </form>
           </Card>
 
-          <Card className="p-5 sm:p-6">
+          <Card className="p-4">
             <form className="grid gap-4 sm:grid-cols-3" onSubmit={savePassword} noValidate>
               <div className="sm:col-span-3">
                 <h2 className="text-lg font-semibold text-foreground">Password</h2>
@@ -245,7 +245,7 @@ export default function SettingsPage() {
             </form>
           </Card>
 
-          <Card className="space-y-5 p-5 sm:p-6">
+          <Card className="space-y-4 p-4">
             <div>
               <h2 className="text-lg font-semibold text-foreground">Notifications</h2>
               <p className="mt-1 text-sm text-muted-foreground">Choose which mock account notifications you want to see.</p>
@@ -269,7 +269,7 @@ export default function SettingsPage() {
             <Button type="button" onClick={saveNotifications}>Save notification preferences</Button>
           </Card>
 
-          <Card className="space-y-4 p-5 sm:p-6">
+          <Card className="space-y-3 p-4">
             <div>
               <h2 className="text-lg font-semibold text-foreground">API key</h2>
               <p className="mt-1 text-sm text-muted-foreground">The displayed key is a fake demo string. It cannot authorize API requests.</p>
@@ -285,7 +285,7 @@ export default function SettingsPage() {
               <Button type="button" variant="outline" onClick={copyApiKey} className="shrink-0"><Copy className="h-4 w-4" aria-hidden="true" />Copy</Button>
               <Button type="button" variant="outline" onClick={regenerateApiKey} className="shrink-0"><RefreshCw className="h-4 w-4" aria-hidden="true" />Regenerate demo key</Button>
             </div>
-            <p className="flex items-start gap-2 text-xs text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />Never paste a real secret into this prototype.</p>
+            <p className="flex items-start gap-2 text-sm text-muted-foreground"><Check className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />Never paste a real secret into this prototype.</p>
           </Card>
         </>
       )}

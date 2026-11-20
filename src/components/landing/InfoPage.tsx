@@ -14,17 +14,17 @@ export function InfoPage({ title, description, benefits, steps }: InfoPageProps)
     <div className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
       <section className="py-16 text-center sm:py-20">
         <Badge tone="brand">RivinityADS</Badge>
-        <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-bold tracking-tight text-zinc-950 sm:text-5xl">
           {title}
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-slate-900/80">
           {description}
         </p>
-        <ButtonLink href="/signup" className="mt-7">Get started</ButtonLink>
+        <ButtonLink href="/signup" className="mt-7 !bg-[#09090B] !text-white hover:!bg-zinc-800">Get started</ButtonLink>
       </section>
 
       <section aria-labelledby="benefits-heading" className="py-8">
-        <h2 id="benefits-heading" className="text-center text-2xl font-bold text-foreground">
+        <h2 id="benefits-heading" className="text-center text-2xl font-bold text-zinc-950">
           Built for your goals
         </h2>
         <div className="mt-7 grid gap-5 md:grid-cols-3">
@@ -38,7 +38,7 @@ export function InfoPage({ title, description, benefits, steps }: InfoPageProps)
       </section>
 
       <section aria-labelledby="steps-heading" className="py-12">
-        <h2 id="steps-heading" className="text-center text-2xl font-bold text-foreground">
+        <h2 id="steps-heading" className="text-center text-2xl font-bold text-zinc-950">
           How it works
         </h2>
         <ol className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -56,9 +56,9 @@ export function InfoPage({ title, description, benefits, steps }: InfoPageProps)
       </section>
 
       <section className="py-10 text-center">
-        <h2 className="text-2xl font-bold text-foreground">Ready to get started?</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Create an account to explore RivinityADS.</p>
-        <ButtonLink href="/signup" className="mt-5">Create your account</ButtonLink>
+        <h2 className="text-2xl font-bold text-zinc-950">Ready to get started?</h2>
+        <p className="mt-2 text-sm text-slate-900/80">Create an account to explore RivinityADS.</p>
+        <ButtonLink href="/signup" className="mt-5 !bg-[#09090B] !text-white hover:!bg-zinc-800">Create your account</ButtonLink>
       </section>
     </div>
   )

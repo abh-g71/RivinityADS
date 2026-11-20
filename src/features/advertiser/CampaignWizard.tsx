@@ -352,12 +352,12 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-10 lg:min-h-[calc(100vh-9rem)] lg:py-5">
+    <main className="mx-auto w-full max-w-5xl px-4 py-4 sm:px-6 lg:py-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link href="/campaigns/new" className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><ArrowLeft className="h-4 w-4" aria-hidden="true" />Exit setup</Link>
         <div className="flex items-center gap-3">
-          <Link href="/campaigns/new/ai" onClick={saveDraftNow} className="rounded-lg px-2 py-1 text-xs font-medium text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Switch to AI</Link>
-          <p className={`text-xs ${saveMessage === 'Could not save' ? 'text-red-700' : 'text-muted-foreground'}`} role="status">{saveMessage}</p>
+          <Link href="/campaigns/new/ai" onClick={saveDraftNow} className="rounded-lg px-2 py-1 text-sm font-medium text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Switch to AI</Link>
+          <p className={`text-sm ${saveMessage === 'Could not save' ? 'text-red-700' : 'text-muted-foreground'}`} role="status">{saveMessage}</p>
         </div>
       </div>
 
@@ -365,7 +365,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-semibold text-foreground">{review ? 'Review your campaign' : `Step ${step + 1} of 5`}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{review ? 'Check each detail before you publish.' : step === 0 ? 'About 2 minutes left' : step < 3 ? 'About 1 minute left' : 'Less than 1 minute left'}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{review ? 'Check each detail before you publish.' : step === 0 ? 'About 2 minutes left' : step < 3 ? 'About 1 minute left' : 'Less than 1 minute left'}</p>
           </div>
           <div className="flex gap-1.5" aria-label={`${review ? 5 : step + 1} of 5 steps complete`}>
             {campaignObjectives.map((goal, index) => <span key={goal.title} className={`h-1.5 w-8 rounded-full sm:w-12 ${index <= step ? 'bg-progress' : 'bg-border'}`} />)}
@@ -388,7 +388,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                     <button key={goal.title} type="button" onClick={() => chooseGoal(goal.title)} className={`min-h-28 rounded-lg border p-4 text-left transition hover:border-accent hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.objective === goal.title ? 'border-primary bg-secondary' : 'border-border'}`}>
                       <span className="block font-semibold text-foreground">{goal.title}</span>
                       <span className="mt-1 block text-sm text-muted-foreground">{goal.hint}</span>
-                      <span className="mt-2 block text-xs text-muted-foreground">Recommended · continue in 1 tap</span>
+                      <span className="mt-2 block text-sm text-muted-foreground">Recommended · continue in 1 tap</span>
                     </button>
                   ))}
                 </div>
@@ -401,26 +401,26 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 <div className="mt-5 space-y-5">
                   <div>
                     <p className="text-sm font-semibold text-foreground">Age range: {draft.ageMin}–{draft.ageMax}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">Choose an age range that fits your audience.</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Choose an age range that fits your audience.</p>
                     <div className="mt-3 grid grid-cols-2 gap-4">
-                      <label className="text-xs text-muted-foreground">From {draft.ageMin}
+                      <label className="text-sm text-muted-foreground">From {draft.ageMin}
                         <input aria-label="Minimum age" type="range" min="18" max={Math.max(18, draft.ageMax - 1)} value={draft.ageMin} onChange={(event) => setField('ageMin', Number(event.target.value))} className="mt-2 w-full accent-primary" />
                       </label>
-                      <label className="text-xs text-muted-foreground">To {draft.ageMax}
+                      <label className="text-sm text-muted-foreground">To {draft.ageMax}
                         <input aria-label="Maximum age" type="range" min={Math.min(65, draft.ageMin + 1)} max="65" value={draft.ageMax} onChange={(event) => setField('ageMax', Number(event.target.value))} className="mt-2 w-full accent-primary" />
                       </label>
                     </div>
                   </div>
                   <fieldset>
                     <legend className="text-sm font-semibold text-foreground">Gender</legend>
-                    <p className="mt-1 text-xs text-muted-foreground">Everyone is a broad starting point.</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Everyone is a broad starting point.</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {['Everyone', 'Men', 'Women'].map((gender) => <button key={gender} type="button" aria-pressed={draft.gender === gender} onClick={() => setField('gender', gender, true)} className={`min-h-10 rounded-lg border px-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.gender === gender ? 'border-primary bg-secondary text-foreground' : 'border-border text-foreground'}`}>{gender}</button>)}
                     </div>
                   </fieldset>
                   <fieldset>
                     <legend className="text-sm font-semibold text-foreground">Interests <span className="font-normal text-muted-foreground">(optional, choose up to 8)</span></legend>
-                    <p className="mt-1 text-xs text-muted-foreground">Choose topics that match the people you want to reach.</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Choose topics that match the people you want to reach.</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {interests.map((interest) => <button key={interest} type="button" aria-pressed={draft.interests.includes(interest)} onClick={() => toggleInterest(interest)} className={`min-h-10 rounded-lg border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.interests.includes(interest) ? 'border-primary bg-secondary text-foreground' : 'border-border text-foreground'}`}>{interest}</button>)}
                     </div>
@@ -443,11 +443,11 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 <div className="mt-5 rounded-lg border border-border bg-secondary p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-sm font-semibold text-foreground">Daily budget</p>
-                    <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-foreground">Recommended</span>
+                    <span className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-foreground">Recommended</span>
                   </div>
                   <p className="mt-2 text-3xl font-bold text-foreground">₹{draft.dailyBudget.toLocaleString('en-IN')}<span className="text-sm font-medium text-muted-foreground"> / day</span></p>
                   <input aria-label="Daily budget" type="range" min="200" max="10000" step="100" value={draft.dailyBudget} onFocus={beginFieldEdit} onPointerUp={finishFieldEdit} onKeyUp={finishFieldEdit} onChange={(event) => setField('dailyBudget', Number(event.target.value))} className="mt-4 w-full accent-primary" />
-                  <p className="mt-1 text-xs text-muted-foreground">This is the most you plan to spend each day.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">This is the most you plan to spend each day.</p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2" aria-label="Common daily budgets">
                   {[200, 500, 1000].map((amount) => <button key={amount} type="button" aria-pressed={draft.dailyBudget === amount} onClick={() => setField('dailyBudget', amount, true)} className={`min-h-10 rounded-lg border px-4 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.dailyBudget === amount ? 'border-primary bg-secondary text-foreground' : 'border-border text-foreground'}`}>₹{amount.toLocaleString('en-IN')}{amount === 500 ? ' · Recommended' : ''}</button>)}
@@ -455,13 +455,13 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                 <div className="mt-5 rounded-lg bg-secondary p-4">
                   <p className="text-sm font-semibold text-foreground">{campaignObjectives.find((item) => item.title === draft.objective)?.estimateLabels[0] ?? 'Estimated results'}</p>
                   <p className="mt-1 text-sm text-foreground">{draft.objective === 'Get leads' ? `${Math.max(1, Math.round(draft.dailyBudget / 250))}–${Math.max(2, Math.round(draft.dailyBudget / 100))} leads · Cost per lead ₹${Math.max(50, Math.round(draft.dailyBudget / 5))}` : draft.objective === 'Get sales' ? `${Math.max(1, Math.round(draft.dailyBudget / 500))}–${Math.max(2, Math.round(draft.dailyBudget / 200))} sales · Return on ad spend 1.8×` : draft.objective === 'Build awareness' ? `${Math.round(draft.dailyBudget * 20 * reachMultiplier).toLocaleString('en-IN')}–${Math.round(draft.dailyBudget * 45 * reachMultiplier).toLocaleString('en-IN')} people · ${draft.objectiveDetails.objective === 'Build awareness' ? draft.objectiveDetails.frequency : 3} times each` : `${(draft.dailyBudget * 2).toLocaleString('en-IN')}–${(draft.dailyBudget * 5).toLocaleString('en-IN')} visits`}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Estimated, sample data</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Estimated, sample data</p>
                 </div>
                 {draft.objective === 'Build awareness' && draft.objectiveDetails.objective === 'Build awareness' && <label className="mt-4 block text-sm font-medium text-foreground">Average frequency: {draft.objectiveDetails.frequency}<input aria-label="Average frequency" type="range" min="1" max="8" value={draft.objectiveDetails.frequency} onChange={(event) => updateDraft((current) => current.objectiveDetails.objective === 'Build awareness' ? { ...current, objectiveDetails: { ...current.objectiveDetails, frequency: Number(event.target.value) } } : current)} className="mt-2 w-full accent-primary" /></label>}
                 {draft.objective === 'Get sales' && <p className="mt-4 rounded-lg border border-border p-3 text-sm text-foreground">Conversion tracking: Mock status · ready to configure</p>}
                 <fieldset className="mt-5">
                   <legend className="text-sm font-semibold text-foreground">How long should it run?</legend>
-                  <p className="mt-1 text-xs text-muted-foreground">Choose a run time or keep the campaign running.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Choose a run time or keep the campaign running.</p>
                   <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {durations.map((duration) => <button key={duration} type="button" aria-pressed={draft.duration === duration} onClick={() => setField('duration', duration, true)} className={`min-h-11 rounded-lg border px-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${draft.duration === duration ? 'border-primary bg-secondary text-foreground' : 'border-border text-foreground'}`}>{duration === 'ongoing' ? 'Keep running' : `${duration} days`}</button>)}
                   </div>
@@ -504,13 +504,13 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {(['objective', 'location', 'age', 'gender', 'interests', 'budget', 'duration', 'headline', 'text', 'cta', 'url'] as ReviewField[]).map((field) => (
                 <div key={field} className="min-w-0 rounded-lg border border-border p-3">
-                  <p className="text-xs font-medium capitalize text-muted-foreground">{field === 'cta' ? 'Button text' : field === 'url' ? 'Website link' : field === 'text' ? 'Ad text' : field}</p>
+                  <p className="text-sm font-medium capitalize text-muted-foreground">{field === 'cta' ? 'Button text' : field === 'url' ? 'Website link' : field === 'text' ? 'Ad text' : field}</p>
                   {editing === field ? (
                     <div className="mt-1 flex gap-2">
                       {field === 'text'
                         ? <textarea autoFocus value={draft.text} onChange={(event) => updateReviewField(field, event.target.value)} className="min-h-20 w-full rounded-lg border border-border p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
                         : <input autoFocus aria-label={`Edit ${field}`} value={field === 'age' ? `${draft.ageMin}-${draft.ageMax}` : field === 'interests' ? draft.interests.join(', ') : field === 'budget' ? String(draft.dailyBudget) : field === 'duration' ? (draft.duration === 'ongoing' ? 'ongoing' : String(draft.duration)) : field === 'location' ? locationSummary : field === 'objective' ? draft.objective : field === 'gender' ? draft.gender : field === 'headline' ? draft.headline : field === 'cta' ? draft.cta : draft.url} onChange={(event) => updateReviewField(field, event.target.value)} className="h-10 min-w-0 flex-1 rounded-lg border border-border px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />}
-                      <button type="button" onClick={() => setEditing(null)} className="rounded-lg px-2 text-xs font-semibold text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Done</button>
+                      <button type="button" onClick={() => setEditing(null)} className="rounded-lg px-2 text-sm font-semibold text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Done</button>
                     </div>
                   ) : (
                     field === 'location'
@@ -527,7 +527,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
               <p className="mt-1 text-sm text-foreground">Exclude countries: {draft.excludedCountries.join(', ') || 'None'}</p>
               <p className="mt-1 text-sm text-foreground">Interests: {draft.interests.join(', ') || 'All interests'}</p>
             </section>
-            {draft.objectiveDetails.objective === 'Get leads' && <section className="mt-4 rounded-lg border border-border p-4"><h2 className="text-sm font-semibold text-foreground">Lead form: {draft.objectiveDetails.leadForm.name || 'Unnamed form'}</h2><p className="mt-2 text-sm text-muted-foreground">Fields: {draft.objectiveDetails.leadForm.fields.filter((field) => field.enabled).map((field) => `${field.label}${field.required ? ' (required)' : ''}`).join(', ') || 'No fields selected'}</p><p className="mt-1 break-all text-xs text-muted-foreground">Privacy policy: {draft.objectiveDetails.leadForm.privacyPolicyUrl || 'Not set'}</p></section>}
+            {draft.objectiveDetails.objective === 'Get leads' && <section className="mt-4 rounded-lg border border-border p-4"><h2 className="text-sm font-semibold text-foreground">Lead form: {draft.objectiveDetails.leadForm.name || 'Unnamed form'}</h2><p className="mt-2 text-sm text-muted-foreground">Fields: {draft.objectiveDetails.leadForm.fields.filter((field) => field.enabled).map((field) => `${field.label}${field.required ? ' (required)' : ''}`).join(', ') || 'No fields selected'}</p><p className="mt-1 break-all text-sm text-muted-foreground">Privacy policy: {draft.objectiveDetails.leadForm.privacyPolicyUrl || 'Not set'}</p></section>}
             {draft.objectiveDetails.objective === 'Get sales' && <section className="mt-4 rounded-lg border border-border p-4"><h2 className="text-sm font-semibold text-foreground">Product details</h2><p className="mt-2 text-sm text-muted-foreground">{draft.objectiveDetails.productName || 'Product name'} · ₹{draft.objectiveDetails.offerPrice || draft.objectiveDetails.price || '0'}{draft.objectiveDetails.offerPrice ? ` (regular ₹${draft.objectiveDetails.price})` : ''}</p></section>}
             {draft.objectiveDetails.objective === 'Build awareness' && <section className="mt-4 rounded-lg border border-border p-4"><h2 className="text-sm font-semibold text-foreground">Brand details</h2><p className="mt-2 text-sm text-muted-foreground">{draft.objectiveDetails.brandName || 'Brand name'} · {draft.objectiveDetails.tagline || 'Tagline'} · Frequency {draft.objectiveDetails.frequency}</p></section>}
             <p className="mt-4 rounded-lg bg-secondary p-3 text-sm text-foreground">
@@ -544,7 +544,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
                     <span className={`h-2.5 w-2.5 rounded-full ${item.ready ? 'bg-green-600' : item.warning ? 'bg-amber-500' : 'bg-red-600'}`} aria-hidden="true" />
                     {item.label}{!item.ready && item.warning ? ' · optional' : ''}
                   </span>
-                  {!item.ready && <button type="button" onClick={() => focusReadiness(item.key)} className="min-h-9 rounded-lg border border-border bg-white px-3 text-xs font-semibold text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Fix</button>}
+                  {!item.ready && <button type="button" onClick={() => focusReadiness(item.key)} className="min-h-9 rounded-lg border border-border bg-white px-3 text-sm font-semibold text-foreground hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Fix</button>}
                 </li>
               ))}
             </ul>
@@ -586,7 +586,7 @@ export function CampaignWizard({ templateId = '', startReview = false }: { templ
       )}
       {!review && (
         <div className="mt-4 text-center">
-          <button type="button" onClick={saveDraftNow} className="inline-flex min-h-10 items-center gap-1 rounded-lg px-3 text-xs font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Save draft now <ChevronDown className="h-3 w-3" aria-hidden="true" /></button>
+          <button type="button" onClick={saveDraftNow} className="inline-flex min-h-10 items-center gap-1 rounded-lg px-3 text-sm font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Save draft now <ChevronDown className="h-3 w-3" aria-hidden="true" /></button>
         </div>
       )}
     </main>
@@ -612,11 +612,11 @@ function CountryMultiSelect({ title, countries, selected, recommended, helper, o
         <label className="flex min-h-9 items-center gap-2 rounded-md px-2 text-sm text-foreground hover:bg-muted">
           <input type="checkbox" checked={selected.includes(country)} onChange={() => onToggle(country)} className="accent-primary" />
           <span className="min-w-0 flex-1">{country}</span>
-          {country === recommended && <span className="text-xs text-muted-foreground">Recommended</span>}
+          {country === recommended && <span className="text-sm text-muted-foreground">Recommended</span>}
         </label>
       </li>)}
-      {!filteredCountries.length && <li className="p-2 text-xs text-muted-foreground">No country matches that search.</li>}
+      {!filteredCountries.length && <li className="p-2 text-sm text-muted-foreground">No country matches that search.</li>}
     </ul>
-    <p className="mt-2 text-xs leading-5 text-muted-foreground">{helper}</p>
+    <p className="mt-2 text-sm leading-5 text-muted-foreground">{helper}</p>
   </div>
 }

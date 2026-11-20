@@ -83,22 +83,22 @@ export function PostAdWizard() {
   const isLast = step === stepLabels.length - 1
 
   return (
-    <div className="rounded-lg border border-border bg-secondary p-3 sm:p-6">
-      <Card className="mx-auto max-w-5xl p-5 sm:p-8">
+    <div className="mx-auto w-full max-w-5xl rounded-lg border border-border bg-secondary p-3.5">
+      <Card className="p-3.5">
         {finished ? (
              <SuccessScreen data={data} onRestart={restart} />
         ) : (
           <>
-            <p className="text-xs text-muted-foreground">
-              Home <span aria-hidden>›</span> <span className="text-foreground">Post Ad</span>
-            </p>
-            <h1 className="mt-1 text-2xl font-bold">Post Ad</h1>
+            <div className="flex items-center justify-between gap-3">
+              <div><p className="text-sm text-muted-foreground">Home <span aria-hidden>›</span> Post Ad</p><h1 className="text-xl font-semibold tracking-tight text-zinc-950">Post Ad</h1></div>
+              <p className="text-sm text-muted-foreground">Step {step + 1} of {stepLabels.length}</p>
+            </div>
 
-            <div className="mt-6">
+            <div className="mt-3">
               <Stepper steps={stepLabels} current={step} />
             </div>
 
-            <div className="mt-8 rounded-lg border border-border p-4 sm:p-6">
+            <div className="mt-3 rounded-lg border border-border p-3.5">
               {step === 0 && <Step1Category {...stepProps} />}
               {step === 1 && <Step2Details {...stepProps} />}
               {step === 2 && <Step3Preview {...stepProps} />}
@@ -106,7 +106,7 @@ export function PostAdWizard() {
               {step === 4 && <Step5Summary {...stepProps} />}
             </div>
 
-            <div className="mt-6 flex justify-between gap-3">
+            <div className="mt-3 flex justify-between gap-3">
               <Button variant="outline" disabled={step === 0} onClick={() => setStep(step - 1)}>
                 Back
               </Button>

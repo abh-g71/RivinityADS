@@ -12,15 +12,15 @@ type PageHeaderProps = {
 
 export function PageHeader({ breadcrumbs, title, description, action }: PageHeaderProps) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-4">
-      <div className="min-w-0">
-        <nav aria-label="Breadcrumb" className="mb-2">
-          <ol className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+    <header className="mb-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
+        <nav aria-label="Breadcrumb">
+          <ol className="flex flex-wrap items-center gap-2 text-sm text-slate-900/80">
             {breadcrumbs.map((crumb, index) => (
               <li key={`${crumb.label}-${index}`} className="flex items-center gap-2">
                 {index > 0 && <span aria-hidden="true">/</span>}
                 {crumb.href ? (
-                  <Link href={crumb.href} className="rounded-sm hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <Link href={crumb.href} className="rounded-sm hover:text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                     {crumb.label}
                   </Link>
                 ) : (
@@ -30,8 +30,8 @@ export function PageHeader({ breadcrumbs, title, description, action }: PageHead
             ))}
           </ol>
         </nav>
-        <h1 className="text-2xl font-bold text-foreground">{title}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+        <h1 className="text-xl font-semibold tracking-tight text-zinc-950">{title}</h1>
+        <p className="min-w-0 truncate text-sm text-slate-900/80">{description}</p>
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </header>

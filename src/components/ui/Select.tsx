@@ -20,6 +20,7 @@ type SelectProps = Pick<
 > & {
   label: string
   labelClassName?: string
+  compact?: boolean
   error?: string
   options: SelectOption[]
   onChange?: (event: SelectValueChange) => void
@@ -35,6 +36,7 @@ function toPrimitiveValue(value: string | undefined) {
 export function Select({
   label,
   labelClassName = '',
+  compact = false,
   error,
   options,
   className = '',
@@ -69,7 +71,7 @@ export function Select({
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : undefined}
           onBlur={onBlur}
-          className={cn('h-11 w-full rounded-lg border-border bg-white text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-secondary disabled:text-muted-foreground', className)}
+        className={cn(`${compact ? 'h-9 py-1.5' : 'h-11'} w-full rounded-lg border-border bg-white text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-secondary disabled:text-muted-foreground`, className)}
         >
           <SelectValue />
         </SelectTrigger>
@@ -81,7 +83,7 @@ export function Select({
           ))}
         </SelectContent>
       </PrimitiveSelect>
-      {error && <p id={errorId} className="text-xs text-danger-600" role="alert">{error}</p>}
+      {error && <p id={errorId} className="text-sm text-danger-600" role="alert">{error}</p>}
     </div>
   )
 }

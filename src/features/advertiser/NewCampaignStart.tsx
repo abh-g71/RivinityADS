@@ -23,7 +23,7 @@ export function NewCampaignStart() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:min-h-[calc(100vh-9rem)] lg:py-5">
+    <main className="mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 lg:py-4">
       
       <div className="mt-5 max-w-2xl lg:mt-4">
         <p className="text-sm font-semibold text-foreground">A simple way to get started</p>
@@ -67,7 +67,7 @@ export function NewCampaignStart() {
         <Link href="/campaigns/new/advanced" className="text-sm text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           Advanced setup
         </Link>
-        <span className="ml-2 text-xs text-muted-foreground">Open the full campaign form with additional settings.</span>
+        <span className="ml-2 text-sm text-muted-foreground">Open the full campaign form with additional settings.</span>
       </div>
     </main>
   )

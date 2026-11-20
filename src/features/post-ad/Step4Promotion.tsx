@@ -9,7 +9,7 @@ export function Step4Promotion({ data, update }: StepProps) {
       <h2 className="text-base font-semibold">Promote your ad</h2>
       <p className="mt-1 text-sm text-muted-foreground">Add power to your ad by selecting a promotion.</p>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
         {promotions.map((p) => {
           const selected = data.promotionId === p.id
           return (
@@ -18,7 +18,7 @@ export function Step4Promotion({ data, update }: StepProps) {
               type="button"
               aria-pressed={selected}
               onClick={() => update({ promotionId: p.id, skipPromo: false })}
-              className={`rounded-lg border-2 p-4 text-left transition-colors ${
+              className={`rounded-lg border-2 p-3 text-left transition-colors ${
                 selected ? 'border-primary bg-secondary' : 'border-border bg-white hover:border-border'
               }`}
             >

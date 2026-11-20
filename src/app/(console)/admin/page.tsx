@@ -88,7 +88,7 @@ const CARD = 'rounded-lg border border-border bg-white p-4'
 function Trend({ value }: { value: number }) {
   const up = value >= 0
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${up ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-sm font-medium ${up ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}`}>
       {up ? <ArrowUpRight className="h-3 w-3" aria-hidden="true" /> : <ArrowDownRight className="h-3 w-3" aria-hidden="true" />}
       {Math.abs(value).toFixed(1)}%
     </span>
@@ -99,7 +99,7 @@ function Tabs<T extends string | number>({ items, value, onChange, label }: { it
     <div role="tablist" aria-label={label} className="inline-flex rounded-md bg-muted p-0.5">
       {items.map((it) => (
         <button key={String(it)} type="button" role="tab" aria-selected={value === it} onClick={() => onChange(it)}
-          className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${value === it ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>
+          className={`rounded px-3 py-1.5 text-sm font-medium transition-colors ${value === it ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}>
           {typeof it === 'number' ? `${it} days` : it}
         </button>
       ))}
@@ -199,7 +199,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs text-muted-foreground">Admin / Dashboard</p>
+          <p className="text-sm text-muted-foreground">Admin / Dashboard</p>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">Dashboard</h1>
         </div>
         <Tabs label="Date range" items={[7, 30] as (7 | 30)[]} value={range} onChange={setRange} />
@@ -225,12 +225,12 @@ export default function AdminDashboardPage() {
             <section className={CARD} aria-label="Platform revenue">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-base font-semibold text-foreground">Platform revenue</h2>
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-2"><span className="h-0.5 w-4 bg-[#ACBCFF]" aria-hidden="true" />This period</span>
                   <span className="inline-flex items-center gap-2"><span className="h-0 w-4 border-t-2 border-dashed border-border" aria-hidden="true" />Previous</span>
                 </div>
               </div>
-              <p className="mt-3 text-xl font-semibold tabular-nums text-foreground">{inr(total)} <span className="text-xs font-normal text-muted-foreground">in the last {range} days</span></p>
+              <p className="mt-3 text-xl font-semibold tabular-nums text-foreground">{inr(total)} <span className="text-sm font-normal text-muted-foreground">in the last {range} days</span></p>
               <div className="mt-2"><LineChart key={range} cur={cur} prev={prev} labels={labels} /></div>
             </section>
           </Reveal>
@@ -257,7 +257,7 @@ export default function AdminDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[620px] text-left text-sm">
               <thead>
-                <tr className="border-y border-border text-xs text-muted-foreground">
+                <tr className="border-y border-border text-sm text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Item</th>
                   <th className="px-3 py-3 font-medium">Owner</th>
                   <th className="px-3 py-3 font-medium">Submitted</th>
@@ -267,17 +267,17 @@ export default function AdminDashboardPage() {
               <tbody>
                 {queue.map((q) => (
                   <tr key={q.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3"><p className="font-medium text-foreground">{q.name}</p><p className="text-xs text-muted-foreground">{q.kind}</p></td>
+                    <td className="px-4 py-3"><p className="font-medium text-foreground">{q.name}</p><p className="text-sm text-muted-foreground">{q.kind}</p></td>
                     <td className="px-3 py-3 text-foreground">{q.owner}</td>
                     <td className="px-3 py-3 text-foreground">{q.submitted}</td>
                     <td className="px-4 py-3">
                       {q.state === 'Pending' ? (
                         <div className="flex justify-end gap-2">
-                          <button type="button" onClick={() => decide(q.id, 'Approved')} className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary/90"><Check className="h-3.5 w-3.5" aria-hidden="true" />Approve</button>
-                          <button type="button" onClick={() => decide(q.id, 'Rejected')} className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"><X className="h-3.5 w-3.5" aria-hidden="true" />Reject</button>
+                          <button type="button" onClick={() => decide(q.id, 'Approved')} className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-white hover:bg-primary/90"><Check className="h-3.5 w-3.5" aria-hidden="true" />Approve</button>
+                          <button type="button" onClick={() => decide(q.id, 'Rejected')} className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted"><X className="h-3.5 w-3.5" aria-hidden="true" />Reject</button>
                         </div>
                       ) : (
-                        <p className="text-right text-xs font-medium text-muted-foreground"><span className={`mr-2 inline-block h-2 w-2 rounded-full ${q.state === 'Approved' ? 'bg-green-500' : 'bg-red-500'}`} aria-hidden="true" />{q.state}</p>
+                        <p className="text-right text-sm font-medium text-muted-foreground"><span className={`mr-2 inline-block h-2 w-2 rounded-full ${q.state === 'Approved' ? 'bg-green-500' : 'bg-red-500'}`} aria-hidden="true" />{q.state}</p>
                       )}
                     </td>
                   </tr>
@@ -296,7 +296,7 @@ export default function AdminDashboardPage() {
               {mockAdminActivity.map((a) => (
                 <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                   <span className="text-sm text-foreground">{a.description}</span>
-                  <span className="text-xs text-muted-foreground">{a.date}</span>
+                  <span className="text-sm text-muted-foreground">{a.date}</span>
                 </li>
               ))}
             </ul>

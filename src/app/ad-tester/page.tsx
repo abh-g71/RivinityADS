@@ -1,10 +1,11 @@
 import { AdTesterWorkspace } from '@/components/AdTester/AdTesterWorkspace'
+import { ConsoleLayout } from '@/layout/ConsoleLayout'
 
 export const metadata = {
   title: 'Ad Tester | RivinityADS',
-  description: 'Preview ad placements and run deterministic pre-flight creative checks.',
+  description: 'Preview creative across simulated ad placements.',
 }
 
 export default function AdTesterPage() {
-  return <AdTesterWorkspace />
+  return <ConsoleLayout><AdTesterWorkspace /></ConsoleLayout>
 }

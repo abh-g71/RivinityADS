@@ -21,10 +21,3 @@ export type Creative = {
   destinationUrl: string
   media: MediaAsset | null
 }
-
-export type CheckResult = {
-  id: 'headline' | 'description' | 'destinationUrl' | 'media' | 'attribution'
-  label: string
-  status: 'pass' | 'warning' | 'error'
-  detail: string
-}

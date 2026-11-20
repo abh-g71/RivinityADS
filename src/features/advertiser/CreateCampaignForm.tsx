@@ -306,12 +306,12 @@ function AdPreview({ draft, mobile }: { draft: CampaignDraft; mobile: boolean })
         </div>
       )}
       <div className="space-y-2 p-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Sponsored preview</p>
+        <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">Sponsored preview</p>
         <h3 className="font-semibold text-foreground">{draft.headline || 'Headline will appear here'}</h3>
         <p className="line-clamp-3 text-sm text-muted-foreground">{draft.primaryText || 'Primary text will appear here'}</p>
-        {draft.description && <p className="text-xs text-muted-foreground">{draft.description}</p>}
+        {draft.description && <p className="text-sm text-muted-foreground">{draft.description}</p>}
         <Button type="button" size="sm" disabled>{draft.callToAction || 'CTA'}</Button>
-        {draft.landingUrl && <p className="truncate text-xs text-muted-foreground">{draft.landingUrl}</p>}
+        {draft.landingUrl && <p className="truncate text-sm text-muted-foreground">{draft.landingUrl}</p>}
       </div>
     </div>
   )
@@ -358,7 +358,7 @@ function SummarySection({
       <dl className="grid gap-3 sm:grid-cols-2">
         {rows.map((row) => (
           <div key={row.label}>
-            <dt className="text-xs text-muted-foreground">{row.label}</dt>
+            <dt className="text-sm text-muted-foreground">{row.label}</dt>
             <dd className="break-words text-sm text-foreground">{row.value}</dd>
           </div>
         ))}
@@ -613,9 +613,9 @@ export function CreateCampaignForm({
 
   if (published) {
     return (
-      <div className="mx-auto max-w-3xl space-y-6">
+      <div className="mx-auto max-w-3xl space-y-4">
         <Card>
-          <CardContent className="space-y-4 p-6 sm:p-8">
+          <CardContent className="space-y-3 p-4">
             <p className="text-sm font-semibold text-foreground">Mock action complete</p>
             <h1 className="text-2xl font-bold text-foreground">Campaign ready</h1>
             <p className="text-muted-foreground">
@@ -634,7 +634,7 @@ export function CreateCampaignForm({
         <CardTitle>Campaign</CardTitle>
         <p className="text-sm text-muted-foreground">Set the campaign identity and buying preferences.</p>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         <TextField
           id="campaign-name"
           label="Campaign name"
@@ -689,7 +689,7 @@ export function CreateCampaignForm({
         <CardTitle>Ad Set</CardTitle>
         <p className="text-sm text-muted-foreground">Choose audience, placements, budget, and schedule.</p>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
             id="minimum-age"
@@ -833,7 +833,7 @@ export function CreateCampaignForm({
             </span>
           </div>
           <Progress value={draft.country && (draft.city || draft.state) && draft.interests.length ? 100 : draft.country || draft.interests.length ? 50 : 0} aria-label="Mock audience configuration completeness" />
-          <p className="text-xs text-muted-foreground">Mock configuration indicator only. It does not estimate audience size or reach.</p>
+          <p className="text-sm text-muted-foreground">Mock configuration indicator only. It does not estimate audience size or reach.</p>
         </section>
         <Accordion type="single" collapsible value={advancedOpen ? 'advanced' : ''} onValueChange={(value) => setAdvancedOpen(value === 'advanced')}>
           <AccordionItem value="advanced">
@@ -861,7 +861,7 @@ export function CreateCampaignForm({
               <TextField id="blacklist" label="Blacklist / whitelist" value={draft.blacklist} onChange={(value) => updateDraft('blacklist', value)} placeholder="Optional domains or categories" />
               <TextField id="ip-range" label="IP range" value={draft.ipRange} onChange={(value) => updateDraft('ipRange', value)} placeholder="Optional CIDR range" />
               <TextField id="custom-bid" label="Custom bid (₹)" type="number" min={0} value={draft.customBid} onChange={(value) => updateDraft('customBid', value)} />
-              <p className="text-xs text-muted-foreground">Delivery, pricing, capping, and targeting rules require real backend enforcement before launch.</p>
+              <p className="text-sm text-muted-foreground">Delivery, pricing, capping, and targeting rules require real backend enforcement before launch.</p>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -873,7 +873,7 @@ export function CreateCampaignForm({
         <CardTitle>Ad</CardTitle>
         <p className="text-sm text-muted-foreground">Add creative and preview how the ad may appear.</p>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="creative-image">Creative image</Label>
           <Input
@@ -884,7 +884,7 @@ export function CreateCampaignForm({
             onChange={handleImageChange}
             aria-describedby={imageError ? 'creative-image-error' : undefined}
           />
-          <p className="text-xs text-muted-foreground">PNG, JPEG, or WebP up to 2 MB. Stored locally in this browser.</p>
+          <p className="text-sm text-muted-foreground">PNG, JPEG, or WebP up to 2 MB. Stored locally in this browser.</p>
           {imageError && <p id="creative-image-error" role="alert" className="text-sm text-red-700">{imageError}</p>}
           {draft.imageDataUrl && (
             <div className="flex items-center gap-3 rounded-lg border border-border p-3">
@@ -923,7 +923,7 @@ export function CreateCampaignForm({
             onBlur={() => markTouched('primaryText')}
             aria-invalid={Boolean(fieldError('primaryText'))}
             aria-describedby={fieldError('primaryText') ? 'primary-text-error' : undefined}
-            rows={4}
+            rows={3}
             placeholder="Describe the offer or message"
           />
           {fieldError('primaryText') && <p id="primary-text-error" className="text-sm text-red-700">{fieldError('primaryText')}</p>}
@@ -1009,7 +1009,7 @@ export function CreateCampaignForm({
   )
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PageHeader
         breadcrumbs={[{ label: 'Advertiser' }, { label: 'Campaigns', href: '/campaigns' }, { label: 'New' }]}
         title="Create campaign"
@@ -1025,8 +1025,8 @@ export function CreateCampaignForm({
         steps={['Campaign', 'Ad Set', 'Ad']}
         current={step}
       />
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="min-w-0 space-y-6">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-4">
           {reviewing ? (
             <Card>
               <CardHeader>

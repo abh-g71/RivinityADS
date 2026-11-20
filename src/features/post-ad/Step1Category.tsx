@@ -23,7 +23,7 @@ export function Step1Category({ data, update }: StepProps) {
       <p className="mt-1 text-sm text-muted-foreground">Choose a category, then narrow it down.</p>
 
       {/* Selection path */}
-      <div className="mt-4 flex min-h-9 flex-wrap items-center gap-2 text-sm">
+      <div className="mt-3 flex min-h-9 flex-wrap items-center gap-2 text-sm">
         {labels.length === 0 ? (
           <span className="text-muted-foreground">Nothing selected yet</span>
         ) : (
@@ -36,10 +36,10 @@ export function Step1Category({ data, update }: StepProps) {
         )}
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {columns.map((nodes, level) => (
           <div key={level}>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="mb-2 text-sm font-medium uppercase tracking-wide text-muted-foreground">
               {levelTitles[level]}
             </p>
             <ul className="flex flex-col gap-1 rounded-lg border border-border bg-secondary p-2">
@@ -51,7 +51,7 @@ export function Step1Category({ data, update }: StepProps) {
                     <button
                       type="button"
                       onClick={() => update({ path: [...data.path.slice(0, level), node.id] })}
-                      className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
+                      className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-1.5 text-left text-sm transition-colors ${
                         selected
                           ? 'bg-primary text-white'
                           : 'text-foreground hover:bg-white'

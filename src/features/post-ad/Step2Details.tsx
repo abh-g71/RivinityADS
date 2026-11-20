@@ -45,7 +45,7 @@ function Section({
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
   return (
-    <p role="alert" className="mt-1 text-xs text-red-600">
+    <p role="alert" className="mt-1 text-sm text-red-600">
       {message}
     </p>
   )
@@ -69,21 +69,22 @@ export function Step2Details({ data, update }: StepProps) {
       <h2 className="text-base font-semibold">Listing details</h2>
       <p className="mt-1 text-sm text-muted-foreground">Create your ad by entering detailed information.</p>
 
-      <div className="mt-5 flex flex-col gap-3">
+      <div className="mt-3 flex flex-col gap-2">
         <Section title="Contact information" icon={User}>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Input label="Name" placeholder="Your name" />
-            <Input label="Phone" type="tel" placeholder="+91" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Input compact label="Name" placeholder="Your name" />
+            <Input compact label="Phone" type="tel" placeholder="+91" />
           </div>
         </Section>
 
         <Section title="Ad information" icon={FileText} open>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div
               className="sm:col-span-2"
               onBlur={() => setTouched((t) => ({ ...t, title: true }))}
             >
               <Input
+                compact
                 label="Title *"
                 placeholder="Enter ad title"
                 value={data.title}
@@ -93,6 +94,7 @@ export function Step2Details({ data, update }: StepProps) {
             </div>
             <div onBlur={() => setTouched((t) => ({ ...t, price: true }))}>
               <Input
+                compact
                 label="Price *"
                 type="number"
                 placeholder="0.00"
@@ -102,6 +104,7 @@ export function Step2Details({ data, update }: StepProps) {
               {touched.price && <FieldError message={errors.price} />}
             </div>
             <Select
+              compact
               label="Currency"
               value={data.currency}
               onChange={(e) => update({ currency: e.target.value })}
@@ -117,11 +120,11 @@ export function Step2Details({ data, update }: StepProps) {
           <label htmlFor="desc" className="text-sm font-medium text-foreground">Description</label>
           <textarea
             id="desc"
-            rows={4}
+            rows={2}
             value={data.description}
             onChange={(e) => update({ description: e.target.value })}
             placeholder="Describe your ad"
-            className="mt-1.5 w-full rounded-lg border border-border bg-white p-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="mt-1 w-full rounded-lg border border-border bg-white px-3 py-1.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </Section>
 
@@ -130,14 +133,14 @@ export function Step2Details({ data, update }: StepProps) {
         </Section>
 
         <Section title="Ad location" icon={MapPin}>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Input label="City" placeholder="City" />
-            <Input label="Area" placeholder="Area or locality" />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Input compact label="City" placeholder="City" />
+            <Input compact label="Area" placeholder="Area or locality" />
           </div>
         </Section>
       </div>
 
-      <div className="mt-5">
+      <div className="mt-3">
         <Checkbox
           label="By clicking Publish, you agree to our Terms of Use and Privacy Policy and confirm you are the rightful owner of this item."
           checked={data.terms}
