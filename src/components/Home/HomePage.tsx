@@ -1,95 +1,197 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'motion/react'
-import { ArrowRight, ArrowUpRight, BarChart3, Check, ChevronDown, Globe2, Layers3, Menu, MousePointer2, ShieldCheck, Target, X } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
+import { ArrowRight, ArrowUpRight, Check, Menu, Play, ShieldCheck, Target, X } from 'lucide-react'
 
-const services = [
-  { title: 'Advertiser Campaigns', detail: 'Build, launch and optimize campaigns from one clear workspace.', tags: ['Campaigns', 'AI bidding', 'Budget control'], href: '/campaigns/new', a: '2.8M', b: '2.9%' },
-  { title: 'Publisher Inventory & Payouts', detail: 'Manage placements, monitor fill and follow earnings in real time.', tags: ['Inventory', 'Placements', 'Payouts'], href: '/publisher', a: '$18.4k', b: '96.8%' },
-  { title: 'Campaign Optimization', detail: 'Turn a plain-language brief into a campaign ready to review.', tags: ['Bidding', 'Creative', 'Automation'], href: '/campaigns/new', a: '34.2%', b: '4.6x' },
-  { title: 'Geo & Map Targeting', detail: 'Focus delivery by country, city, postal code or custom radius.', tags: ['Geo targeting', 'Radius', 'Audience'], href: '/campaigns/new', a: '42', b: '18.6M' },
-  { title: 'Real-Time Analytics & Reports', detail: 'Understand performance with transparent, up-to-date reporting.', tags: ['Analytics', 'Reports', 'Live data'], href: '/dashboard', a: '1.2B', b: '99.9%' },
+type Role = 'advertiser' | 'publisher'
+type Format = 'Native' | 'Display' | 'Push' | 'Video'
+
+const roleContent: Record<Role, {
+  eyebrow: string
+  headline: string
+  description: string
+  cta: string
+  href: string
+  stats: { value: string; label: string }[]
+  metricLabel: string
+  metric: string
+}> = {
+  advertiser: {
+    eyebrow: 'For buying teams',
+    headline: 'Reach the right audience. See what it costs.',
+    description: 'Set a budget, choose where ads appear, and follow delivery from the first impression.',
+    cta: 'Create a campaign',
+    href: '/campaigns/new',
+    stats: [
+      { value: '₹4.2L+', label: 'daily spend managed' },
+      { value: '1.2B', label: 'monthly impressions' },
+      { value: '<40ms', label: 'auction response' },
+    ],
+    metricLabel: 'Blended ROAS',
+    metric: '3.84x',
+  },
+  publisher: {
+    eyebrow: 'For supply teams',
+    headline: 'Make every placement work harder.',
+    description: 'Manage inventory, monitor fill, and follow earnings across your sites in one workspace.',
+    cta: 'View publisher tools',
+    href: '/publisher',
+    stats: [
+      { value: '98.4%', label: 'sample fill rate' },
+      { value: '₹12L+', label: 'monthly payouts tracked' },
+      { value: '<40ms', label: 'auction response' },
+    ],
+    metricLabel: 'Average eCPM',
+    metric: '₹24.80',
+  },
+}
+
+const formats: Record<Format, { ratio: string; ctr: string; use: string }> = {
+  Native: { ratio: '1.91:1', ctr: '1.20%', use: 'In-feed articles and recommendations' },
+  Display: { ratio: '300 × 250', ctr: '0.42%', use: 'Sidebar and standard page placements' },
+  Push: { ratio: '2:1', ctr: '1.80%', use: 'Opt-in alerts and return visits' },
+  Video: { ratio: '16:9', ctr: '0.85%', use: 'In-stream and editorial video' },
+}
+
+const pipeline = [
+  { number: '01', title: 'Placement request', detail: 'A page calls for an ad.' },
+  { number: '02', title: 'Bid match', detail: 'Eligible campaigns compete.' },
+  { number: '03', title: 'Creative delivery', detail: 'The selected ad is served.' },
+  { number: '04', title: 'Verified attribution', detail: 'Delivery and events are recorded.' },
 ]
 
-const steps = [
-  ['01', 'Set objective', 'Choose the result that matters to your business.', Target],
-  ['02', 'Target audience', 'Find the right people, places and moments.', Globe2],
-  ['03', 'Launch ads', 'Build your campaign and go live with confidence.', MousePointer2],
-  ['04', 'Scale ROAS', 'Track results and grow what is working.', BarChart3],
-] as const
-
 function Reveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  return <motion.div className={className} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}>{children}</motion.div>
+  return <motion.div className={className} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.14 }} transition={{ duration: 0.42, delay, ease: [0.22, 1, 0.36, 1] }}>{children}</motion.div>
 }
 
 function Brand() {
-  return <Link href="/" className="flex items-center gap-2.5 font-bold tracking-tight text-[#0A0A0A]" aria-label="RivinityADS home"><span className="grid h-9 w-9 place-items-center rounded-xl bg-[#0A0A0A] text-lg text-white">R</span><span>RivinityADS</span></Link>
+  return <Link href="/" aria-label="RivinityADS home" className="inline-flex items-center gap-2.5 text-sm font-semibold tracking-tight text-zinc-950"><span className="grid size-8 place-items-center rounded-md bg-[#0D0F12] text-sm font-semibold text-white">R</span><span>RivinityADS</span></Link>
 }
 
-function Chart({ light = false }: { light?: boolean }) {
-  return <svg viewBox="0 0 320 110" className="h-24 w-full" preserveAspectRatio="none" aria-label="Campaign performance trend" role="img"><path d="M0 84 C24 76 34 82 52 68 S85 60 105 69 S140 47 159 52 S194 34 215 44 S251 17 271 28 S299 18 320 8" fill="none" stroke="#10B981" strokeWidth="3" vectorEffect="non-scaling-stroke"/></svg>
+function ProductWindow({ role }: { role: Role }) {
+  const bars = role === 'advertiser' ? [30, 42, 35, 56, 48, 72, 61, 85, 75, 100] : [44, 34, 59, 51, 69, 58, 86, 74, 93, 82]
+  const data = roleContent[role]
+  return <div className="overflow-hidden rounded-xl border border-zinc-200/80 bg-white">
+    <div className="flex items-center justify-between border-b border-zinc-200/80 px-4 py-3">
+      <div className="flex items-center gap-2"><span className="size-2 rounded-full bg-emerald-500" /><span className="text-xs font-medium text-zinc-700">{role === 'advertiser' ? 'Advertiser' : 'Publisher'} workspace</span></div>
+      <span className="font-sans text-[11px] tabular-nums text-zinc-500">LAST 30 DAYS</span>
+    </div>
+    <div className="grid gap-4 p-4 sm:grid-cols-[1fr_0.8fr] sm:gap-6 sm:p-5">
+      <div>
+        <div className="flex items-start justify-between gap-3"><div><p className="text-xs text-zinc-500">{data.metricLabel}</p><p className="mt-1 font-sans text-3xl font-semibold tabular-nums tracking-tight text-zinc-950">{data.metric}</p></div><span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200/80 px-2.5 py-1 text-[11px] text-zinc-600"><span className="size-1.5 rounded-full bg-emerald-500" /> Live</span></div>
+        <div className="mt-6 flex h-28 items-end gap-2 border-b border-zinc-200/80 pb-0.5" aria-label="Daily performance bars" role="img">{bars.map((height, index) => <span key={index} className={`flex-1 rounded-t-sm ${index === bars.indexOf(Math.max(...bars)) ? 'bg-emerald-500' : 'bg-zinc-200'}`} style={{ height: `${height}%` }} />)}</div>
+        <div className="mt-2 flex justify-between font-sans text-[10px] tabular-nums text-zinc-500"><span>01 Nov</span><span>08 Nov</span><span>15 Nov</span><span>30 Nov</span></div>
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-1 sm:content-start">
+        <div className="rounded-lg border border-zinc-200/80 p-3"><p className="text-[11px] text-zinc-500">{role === 'advertiser' ? 'Spend' : 'Earnings'}</p><p className="mt-1 font-sans text-lg font-semibold tabular-nums text-zinc-950">₹{role === 'advertiser' ? '4,153' : '28,460'}</p><p className="mt-1 text-[10px] text-emerald-700">+8.2% this period</p></div>
+        <div className="rounded-lg border border-zinc-200/80 p-3"><p className="text-[11px] text-zinc-500">{role === 'advertiser' ? 'Conversions' : 'Filled requests'}</p><p className="mt-1 font-sans text-lg font-semibold tabular-nums text-zinc-950">{role === 'advertiser' ? '58' : '98.4%'}</p><p className="mt-1 text-[10px] text-zinc-500">Compared with prior period</p></div>
+      </div>
+    </div>
+    <div className="flex flex-wrap items-center justify-between gap-2 border-t border-zinc-200/80 px-4 py-2.5 text-[11px]"><span className="text-zinc-500">{role === 'advertiser' ? '3 campaigns delivering' : '4 sites connected'}</span><span className="font-sans tabular-nums text-zinc-700">{role === 'advertiser' ? '1,209 clicks' : '246,820 requests'}</span></div>
+  </div>
+}
+
+function AdPreview({ format }: { format: Format }) {
+  const copy = formats[format]
+  return <AnimatePresence mode="wait">
+    <motion.div key={format} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.22 }} className="grid h-full grid-rows-[auto_1fr]">
+      <div className="flex items-center justify-between border-b border-zinc-200/80 px-4 py-3"><div className="flex items-center gap-2"><span className="size-2 rounded-full bg-zinc-300" /><span className="size-2 rounded-full bg-zinc-300" /><span className="size-2 rounded-full bg-zinc-300" /></div><span className="font-sans text-[11px] text-zinc-500">sample-publication.com / stories</span><span className="hidden text-[11px] text-zinc-500 sm:block">•••</span></div>
+      <div className="grid gap-4 p-4 sm:grid-cols-[1fr_190px] sm:p-6">
+        <article className="min-w-0"><p className="text-[10px] font-medium uppercase tracking-[0.14em] text-zinc-500">The Daily Ledger <span className="mx-1 text-zinc-300">/</span> Business</p><h3 className="mt-3 max-w-lg text-xl font-semibold leading-tight tracking-[-0.03em] text-zinc-950 sm:text-2xl">What a changing market means for independent businesses</h3><p className="mt-2 text-xs text-zinc-500">By Morgan Lee <span className="px-1">·</span> 6 min read</p><div className="mt-4 h-20 rounded-md border border-zinc-200/80 bg-[#F8F9FA] sm:h-28" /><div className="mt-3 space-y-2"><div className="h-2 w-full rounded-full bg-zinc-100" /><div className="h-2 w-[88%] rounded-full bg-zinc-100" /><div className="h-2 w-[72%] rounded-full bg-zinc-100" /></div>
+          {format === 'Native' && <div className="mt-4 rounded-lg border border-zinc-200/80 p-3"><div className="flex items-center justify-between"><span className="text-[10px] font-medium uppercase tracking-wide text-zinc-500">Sponsored</span><ArrowUpRight size={14} className="text-zinc-500" /></div><div className="mt-2 grid grid-cols-[58px_1fr] gap-3"><div className="h-12 rounded-sm bg-zinc-100" /><div><p className="text-xs font-semibold text-zinc-900">A practical guide to smarter energy use</p><p className="mt-1 text-[10px] text-zinc-500">See how small changes add up.</p></div></div></div>}
+        </article>
+        <aside className="space-y-3">
+          {format === 'Display' && <div className="flex aspect-[6/5] flex-col justify-between border border-zinc-200/80 bg-[#F8F9FA] p-3"><span className="text-[10px] uppercase tracking-wide text-zinc-500">Ad</span><div><p className="text-sm font-semibold leading-tight text-zinc-900">Tools for work that moves</p><p className="mt-1 text-[10px] text-zinc-600">Explore the collection.</p></div><span className="inline-flex w-fit items-center gap-1 text-[10px] font-medium text-emerald-700">Learn more <ArrowRight size={12} /></span></div>}
+          {format === 'Push' && <div className="rounded-lg border border-zinc-200/80 bg-white p-3"><div className="flex items-center justify-between"><span className="text-[10px] font-semibold text-zinc-700">Daily Ledger</span><span className="text-[10px] text-zinc-500">now</span></div><p className="mt-2 text-xs font-semibold text-zinc-900">Your morning market brief</p><p className="mt-1 text-[10px] leading-4 text-zinc-500">Five updates to start your day.</p><span className="mt-3 block text-[10px] text-zinc-500">Sponsored notification</span></div>}
+          {format === 'Video' && <div className="relative flex aspect-video items-center justify-center border border-zinc-200/80 bg-[#F8F9FA]"><span className="grid size-9 place-items-center rounded-full border border-zinc-300 bg-white"><Play size={14} fill="currentColor" /></span><span className="absolute bottom-2 left-2 text-[10px] text-zinc-600">Sponsored video</span><span className="absolute bottom-2 right-2 font-sans text-[10px] tabular-nums text-zinc-600">0:15</span></div>}
+          <div className="hidden rounded-md border border-zinc-200/80 p-3 sm:block"><p className="text-[10px] font-medium uppercase tracking-wide text-zinc-500">Placement details</p><p className="mt-2 text-xs font-medium text-zinc-800">{copy.ratio}</p><p className="mt-1 text-[10px] leading-4 text-zinc-500">{copy.use}</p></div>
+        </aside>
+      </div>
+    </motion.div>
+  </AnimatePresence>
 }
 
 export function HomePage() {
+  const [role, setRole] = useState<Role>('advertiser')
+  const [format, setFormat] = useState<Format>('Native')
+  const [budget, setBudget] = useState(100000)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [active, setActive] = useState(0)
-  const [budget, setBudget] = useState(42)
-  const service = services[active]
+  const activeRole = roleContent[role]
+  const estimatedImpressions = Math.round(budget / 24 * 1000)
+  const estimatedClicks = Math.round(estimatedImpressions * 0.0098)
+  const currency = (value: number) => `₹${value.toLocaleString('en-IN')}`
 
-  return <div className="landing min-h-screen overflow-hidden bg-[#F7F7F8] text-[#0A0A0A] selection:bg-[#F7F7F8]">
-    <header className="fixed inset-x-0 top-3 z-50 px-3 sm:top-5 sm:px-6">
-      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-neutral-200/80 bg-white px-4 py-2.5 sm:px-6">
+  const navLinks = [
+    { label: 'Advertisers', href: '/advertisers' },
+    { label: 'Publishers', href: '/publishers' },
+    { label: 'Ad Formats', href: '/ad-formats' },
+    { label: 'How It Works', href: '#how-it-works' },
+  ]
+
+  return <div className="min-h-screen bg-white text-zinc-950 selection:bg-emerald-100 selection:text-zinc-950">
+    <header className="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/85 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Brand />
-        <nav className="hidden items-center gap-7 text-[13px] font-medium text-[#52525B] lg:flex" aria-label="Main navigation"><Link className="hover:text-[#0D0F12]" href="/advertisers">Advertisers</Link><Link className="hover:text-[#0D0F12]" href="/publishers">Publishers</Link><Link className="hover:text-[#0D0F12]" href="/ad-formats">Ad Formats</Link><a className="hover:text-[#0D0F12]" href="#how-it-works">How It Works</a></nav>
-        <div className="hidden items-center gap-5 sm:flex"><Link href="/login" className="text-sm font-semibold text-[#52525B] hover:text-black">Log in</Link><Link href="/signup" className="inline-flex items-center gap-2 rounded-full bg-[#10B981] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#059669]">Get Started <ArrowUpRight size={16}/></Link></div>
-        <button className="grid h-10 w-10 place-items-center rounded-full bg-[#F7F7F8] lg:hidden" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}>{mobileOpen ? <X size={19}/> : <Menu size={19}/>}</button>
+        <nav aria-label="Main navigation" className="hidden items-center gap-7 text-[13px] font-medium text-zinc-600 lg:flex">{navLinks.map((item) => <Link key={item.label} href={item.href} className="transition-colors hover:text-zinc-950">{item.label}</Link>)}</nav>
+        <div className="hidden items-center gap-5 sm:flex"><Link href="/login" className="text-sm font-medium text-zinc-700 hover:text-zinc-950">Log in</Link><Link href="/signup" className="inline-flex items-center gap-2 rounded-md bg-[#0D0F12] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700">Get Started <ArrowUpRight size={15} /></Link></div>
+        <button type="button" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)} className="grid size-10 place-items-center rounded-md border border-zinc-200/80 text-zinc-800 sm:hidden">{mobileOpen ? <X size={18} /> : <Menu size={18} />}</button>
       </div>
-      {mobileOpen && <nav className="mx-auto mt-2 grid max-w-7xl gap-1 rounded-3xl border border-neutral-200/80 bg-white p-4 lg:hidden" aria-label="Mobile navigation">{[['Advertisers','/advertisers'],['Publishers','/publishers'],['Ad Formats','/ad-formats'],['How It Works','#how-it-works'],['Log in','/login'],['Get Started','/signup']].map(([name, href]) => <Link key={name} href={href} onClick={() => setMobileOpen(false)} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-[#F7F7F8]">{name}</Link>)}</nav>}
+      <AnimatePresence>{mobileOpen && <motion.nav initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden border-t border-zinc-200/80 bg-white sm:hidden" aria-label="Mobile navigation"><div className="mx-auto grid max-w-7xl gap-1 px-4 py-3">{navLinks.map((item) => <Link key={item.label} href={item.href} onClick={() => setMobileOpen(false)} className="rounded-md px-3 py-2.5 text-sm font-medium text-zinc-700 hover:bg-[#F8F9FA]">{item.label}</Link>)}<div className="mt-2 flex gap-2 border-t border-zinc-200/80 pt-3"><Link href="/login" className="flex-1 rounded-md border border-zinc-200/80 px-3 py-2.5 text-center text-sm font-medium">Log in</Link><Link href="/signup" className="flex-1 rounded-md bg-[#0D0F12] px-3 py-2.5 text-center text-sm font-medium text-white">Get Started</Link></div></div></motion.nav>}</AnimatePresence>
     </header>
 
     <main>
-      <Reveal className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 pb-20 pt-32 sm:px-8 sm:pt-40 lg:min-h-[760px] lg:grid-cols-[1fr_1.05fr] lg:gap-8 lg:pb-28">
-        <div className="relative z-10">
-          <div className="inline-flex rounded-full border border-neutral-200/80 bg-white px-3.5 py-2 text-xs font-semibold text-[#52525B]">Self-serve ad network</div>
-          <h1 className="mt-7 max-w-2xl text-[clamp(3.35rem,7vw,6rem)] font-extrabold leading-[.98] tracking-[-.065em]">Ads that work.<br/><em className="not-italic">Growth that lasts.</em></h1>
-          <p className="mt-6 max-w-xl text-base leading-7 text-[#52525B] sm:text-lg sm:leading-8">Self-serve ad tools for performance teams and publishers. Plan campaigns, reach the right audience and track results in one place.</p>
-          <div className="mt-8 flex flex-wrap items-center gap-3"><Link href="/signup" className="group inline-flex items-center gap-3 rounded-full bg-[#10B981] py-2 pl-6 pr-2 text-sm font-bold text-white transition hover:bg-[#059669]">Get started for free<span className="grid h-9 w-9 place-items-center rounded-full bg-[#0D0F12] text-white transition group-hover:rotate-45"><ArrowUpRight size={17}/></span></Link><Link href="/campaigns/new" className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[#52525B] hover:bg-white">Explore the platform <ArrowRight size={16}/></Link></div>
-          <div className="mt-9 flex items-center gap-3"><div className="flex -space-x-2">{['AM','JK','RS','+'].map((initials)=><span key={initials} className="grid h-9 w-9 place-items-center rounded-full border-2 border-[#F7F7F8] bg-white text-[10px] font-bold text-[#52525B]">{initials}</span>)}</div><div><div className="text-sm font-bold"><span className="text-[#10B981]">★★★★★</span> 4.9/5</div><p className="text-xs text-[#52525B]">Rated by 500+ brands &amp; publishers</p></div></div>
-        </div>
-        <div className="relative mx-auto w-full max-w-[610px] lg:ml-auto">
-          <div className="relative overflow-hidden rounded-[2rem] border border-neutral-200/80 bg-white p-3 sm:p-5">
-            <div className="relative min-h-[390px] overflow-hidden rounded-[1.5rem] border border-neutral-200/80 bg-[#F7F7F8] p-5 sm:min-h-[470px] sm:p-7">
-              <div className="absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200 bg-white sm:h-72 sm:w-72"><div className="absolute inset-7 rounded-full border border-neutral-200"/><div className="absolute inset-14 rounded-full border border-neutral-200"/><span className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#10B981]"/></div>
-              <div className="relative z-10 flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-[.16em] text-[#52525B]">Live overview</p><p className="mt-1 text-sm font-bold">Campaign performance</p></div><span className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5 text-[11px] font-semibold text-[#059669]"><span className="h-1.5 w-1.5 rounded-full bg-[#10B981]"/> LIVE</span></div>
-              <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.15}} transition={{duration:.5,ease:[.22,1,.36,1]}} className="absolute bottom-7 left-4 z-20 w-[min(260px,70%)] rounded-2xl border border-neutral-200/80 bg-white p-4 sm:bottom-9 sm:left-7"><div className="flex items-start justify-between"><div><p className="text-xs font-medium text-[#52525B]">ROAS Growth</p><p className="mt-1 text-2xl font-extrabold tracking-tight">+34.2%</p></div><span className="rounded-lg bg-[#F7F7F8] p-2 text-[#059669]"><BarChart3 size={18}/></span></div><div className="mt-3 flex h-14 items-end gap-1.5">{[28,40,34,54,47,68,58,84,75,100].map((h,i)=><motion.span key={i} initial={{height:0}} whileInView={{height:`${h}%`}} viewport={{once:true}} transition={{duration:.5,delay:i*.04,ease:[.22,1,.36,1]}} className="flex-1 rounded-t bg-[#10B981]"/>)}</div><div className="mt-2 flex justify-between text-[10px] text-[#52525B]"><span>Last 30 days</span><span>+12.8% vs prev.</span></div></motion.div>
-              <div className="absolute right-3 top-[37%] z-20 rounded-2xl border border-neutral-200/80 bg-white p-3 sm:right-5"><div className="flex items-center gap-2.5"><span className="grid h-9 w-9 place-items-center rounded-xl bg-[#F7F7F8] text-[#059669]"><Check size={17}/></span><div><p className="text-[11px] font-medium text-[#52525B]">Avg. campaign</p><p className="text-xs font-bold">Live in 3 mins</p></div></div></div>
+      <section className="border-b border-zinc-200/80 bg-[#F8F9FA]">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14 lg:px-8 lg:py-20">
+          <div>
+            <div role="tablist" aria-label="Choose your role" className="relative inline-grid grid-cols-2 rounded-md border border-zinc-200/80 bg-white p-1">
+              {(['advertiser', 'publisher'] as Role[]).map((item) => <button key={item} role="tab" aria-selected={role === item} onClick={() => setRole(item)} className={`relative z-10 rounded px-3 py-2 text-xs font-medium transition-colors sm:px-4 ${role === item ? 'text-white' : 'text-zinc-600 hover:text-zinc-950'}`}>{role === item && <motion.span layoutId="role-toggle" className="absolute inset-0 -z-10 rounded bg-[#0D0F12]" transition={{ type: 'spring', stiffness: 360, damping: 32 }} />}For {item === 'advertiser' ? 'Advertisers' : 'Publishers'}</button>)}
             </div>
+            <AnimatePresence mode="wait"><motion.div key={role} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }}>
+              <p className="mt-7 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">{activeRole.eyebrow}</p>
+              <h1 className="mt-3 max-w-xl text-[clamp(2.6rem,5.4vw,4.6rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-zinc-950">{activeRole.headline}</h1>
+              <p className="mt-4 max-w-lg text-base leading-7 text-zinc-600">{activeRole.description}</p>
+              <div className="mt-6 flex flex-wrap items-center gap-3"><Link href={activeRole.href} className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700">{activeRole.cta}<ArrowRight size={16} /></Link><Link href="/ad-formats" className="inline-flex items-center gap-2 rounded-md px-3 py-3 text-sm font-medium text-zinc-700 hover:bg-white">View ad formats <ArrowUpRight size={15} /></Link></div>
+              <div className="mt-8 grid grid-cols-3 gap-3 border-t border-zinc-200/80 pt-4">{activeRole.stats.map((stat) => <div key={stat.label} className="min-w-0"><p className="truncate font-sans text-lg font-semibold tabular-nums tracking-tight text-zinc-950 sm:text-xl">{stat.value}</p><p className="mt-1 text-[10px] leading-4 text-zinc-500 sm:text-xs">{stat.label}</p></div>)}</div>
+            </motion.div></AnimatePresence>
           </div>
-        </div>
-      </Reveal>
-
-      <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24">
-        <Reveal className="mb-9 flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-[#10B981]">One network. More momentum.</p><h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-5xl">Everything clicks into place.</h2></div><p className="max-w-sm text-sm leading-6 text-[#52525B]">A smarter way to connect ad spend with real audience reach.</p></Reveal>
-        <div className="grid auto-rows-[minmax(210px,auto)] grid-cols-1 gap-4 md:grid-cols-4">
-          <Reveal delay={0} className="group rounded-3xl border border-neutral-200/80 bg-white p-6 transition md:col-span-2"><div className="flex items-center justify-between"><span className="rounded-full bg-[#F7F7F8] px-3 py-1.5 text-xs font-semibold">01 / Advertisers</span><ArrowUpRight size={18} className="text-[#52525B] transition group-hover:text-[#10B981]"/></div><h3 className="mt-8 text-2xl font-bold tracking-tight">Advertiser strategy</h3><p className="mt-2 max-w-sm text-sm leading-6 text-[#52525B]">Precise targeting, budget controls and bidding options for every campaign.</p><div className="mt-6 flex gap-2"><span className="rounded-full bg-[#F7F7F8] px-3 py-1.5 text-xs">Audience</span><span className="rounded-full bg-[#F7F7F8] px-3 py-1.5 text-xs">Bidding</span></div></Reveal>
-          <Reveal delay={0.08} className="flex flex-col justify-between rounded-3xl bg-[#0D0F12] p-6 text-white md:col-span-2"><span className="text-xs font-semibold uppercase tracking-[.16em] text-white/70">Clear reporting, every step</span><p className="mt-7 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Transparent ad spend.<br/>Trust in every impression.</p><span className="mt-5 flex items-center gap-2 text-sm text-white/70"><ShieldCheck size={17} className="text-[#10B981]"/> Campaign data you can follow</span></Reveal>
-          <Reveal delay={0.16} className="rounded-3xl border border-neutral-200/80 bg-white p-6 md:col-span-2 md:row-span-2"><div className="relative z-10"><span className="text-xs font-semibold text-[#059669]">Reach estimator</span><h3 className="mt-7 text-2xl font-bold tracking-tight">Plan reach against budget.</h3><p className="mt-2 text-sm text-[#52525B]">Adjust the monthly budget to estimate audience reach.</p><div className="mt-7 flex items-baseline gap-2"><span className="text-4xl font-extrabold tracking-tight">{(budget*12600/100).toLocaleString('en-US')}</span><span className="text-sm text-[#52525B]">estimated people reached</span></div><input aria-label="Monthly budget" type="range" min="10" max="100" value={budget} onChange={(e)=>setBudget(Number(e.target.value))} className="mt-5 h-2 w-full cursor-pointer accent-[#059669]"/><div className="mt-2 flex justify-between text-xs text-[#52525B]"><span>$1,000 / month</span><span>${(budget*100).toLocaleString()} / month</span><span>$10,000</span></div><div className="mt-8 space-y-3"><div className="flex justify-between text-xs font-semibold"><span>Audience fit</span><span>86%</span></div><div className="h-2 rounded-full bg-[#F7F7F8]"><div className="h-full w-[86%] rounded-full bg-[#10B981]"/></div><div className="flex justify-between text-xs font-semibold"><span>Potential reach</span><span>{Math.min(100,budget+32)}%</span></div><div className="h-2 rounded-full bg-[#F7F7F8]"><div className="h-full rounded-full bg-[#059669] transition-all" style={{width:`${Math.min(100,budget+32)}%`}}/></div></div></div></Reveal>
-          <Reveal delay={0.24} className="rounded-3xl border border-neutral-200/80 bg-[#F7F7F8] p-6"><span className="text-xs font-semibold text-[#52525B]">02 / Publishers</span><Layers3 size={22} className="mt-6 text-[#52525B]"/><h3 className="mt-4 text-xl font-bold">Publisher monetization</h3><p className="mt-2 text-sm leading-6 text-[#52525B]">Manage inventory, placements and payout details.</p></Reveal>
-          <Reveal delay={0.32} className="rounded-3xl border border-neutral-200/80 bg-[#F7F7F8] p-6"><span className="text-xs font-semibold text-[#52525B]">03 / Optimization</span><BarChart3 size={22} className="mt-6 text-[#52525B]"/><h3 className="mt-4 text-xl font-bold">Campaign optimization</h3><p className="mt-2 text-sm leading-6 text-[#52525B]">Review delivery and adjust campaigns with clear data.</p></Reveal>
+          <Reveal><AnimatePresence mode="wait"><motion.div key={role} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.2 }}><ProductWindow role={role} /></motion.div></AnimatePresence></Reveal>
         </div>
       </section>
 
-      <section className="bg-white py-20 sm:py-28"><div className="mx-auto max-w-7xl px-5 sm:px-8"><Reveal className="mx-auto max-w-3xl text-center"><p className="text-xs font-bold uppercase tracking-[.2em] text-[#059669]">Built for outcomes</p><h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">Better results, for <em className="not-italic">both sides.</em></h2><p className="mx-auto mt-5 max-w-xl text-[#52525B]">A connected ad network gives advertisers and publishers clearer performance data.</p></Reveal><div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">{[['98%','Viewability rate','bg-white text-[#0A0A0A] border border-neutral-200/80'],['3.8x','Avg. advertiser ROAS','bg-[#10B981] text-white'],['1.2B+','Monthly ad impressions','bg-[#F7F7F8] text-[#0A0A0A] border border-neutral-200/80'],['24/7','Real-time fraud protection','bg-white text-[#0A0A0A] border border-neutral-200/80']].map(([value,label,style],i)=><Reveal key={value} delay={i*.08} className={`rounded-3xl p-6 ${style}`}><p className="text-4xl font-extrabold tracking-tight sm:text-5xl">{value}</p><p className="mt-3 text-sm font-medium text-[#52525B]">{label}</p></Reveal>)}</div><div className="mt-14 border-t border-neutral-200/80 pt-8"><p className="text-center text-[10px] font-bold uppercase tracking-[.24em] text-[#52525B]">Teams building on RivinityADS</p><div className="mt-7 flex flex-wrap items-center justify-center gap-x-12 gap-y-5 text-lg font-extrabold tracking-tight text-[#52525B] sm:gap-x-16"><span>northstar</span><span>orbit</span><span>VANTAGE</span><span>flux</span><span>monocle</span></div></div></div></section>
+      <section aria-labelledby="capabilities-title" className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-20">
+        <Reveal className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">Clear operations</p><h2 id="capabilities-title" className="mt-2 text-2xl font-semibold leading-tight tracking-[-0.03em] text-zinc-950 sm:text-3xl">The details stay in view.</h2></div><p className="max-w-md text-sm leading-6 text-zinc-600">Tools for campaign setup, billing, and creative checks, with the same numbers from setup through delivery.</p></Reveal>
+        <div className="grid divide-y divide-zinc-200 border-y border-zinc-200 bg-white md:grid-cols-[1fr_0.92fr_1.08fr] md:divide-x md:divide-y-0">
+          <Reveal className="min-w-0 p-5 sm:p-6"><p className="font-sans text-xs font-medium tabular-nums text-zinc-500">01 <span className="mx-1 text-zinc-300">/</span> Precision Geo &amp; Audience</p><div className="relative mt-5 flex h-28 items-center justify-center overflow-hidden border border-zinc-200/80 bg-[#F8F9FA]"><div className="absolute inset-0 opacity-60" style={{ backgroundImage: 'linear-gradient(to right, #E4E4E7 1px, transparent 1px), linear-gradient(to bottom, #E4E4E7 1px, transparent 1px)', backgroundSize: '24px 24px' }} /><span className="absolute h-20 w-20 rounded-full border border-zinc-400" /><span className="absolute h-12 w-12 rounded-full border border-zinc-400" /><span className="absolute size-2 rounded-full bg-emerald-500" /><Target className="relative z-10 size-5 text-zinc-500" strokeWidth={1.5} /></div><h3 className="mt-4 text-sm font-semibold text-zinc-900">Choose a delivery area</h3><p className="mt-1.5 text-xs leading-5 text-zinc-600">Set country, region, or a custom radius around a location.</p><Link href="/campaigns/new" className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-zinc-700 hover:text-emerald-700">Set targeting <ArrowRight size={13} /></Link></Reveal>
+          <Reveal delay={0.05} className="min-w-0 p-5 sm:p-6"><p className="font-sans text-xs font-medium tabular-nums text-zinc-500">02 <span className="mx-1 text-zinc-300">/</span> Transparent ₹ Billing</p><div className="mt-5 border border-zinc-200/80"><div className="grid grid-cols-3 border-b border-zinc-200/80 bg-[#F8F9FA] px-3 py-2 text-[10px] font-medium uppercase tracking-wide text-zinc-500"><span>Spend</span><span>Clicks</span><span>Platform fee</span></div><div className="grid grid-cols-3 items-center px-3 py-3 font-sans text-xs tabular-nums text-zinc-800"><span>₹4,153.00</span><span>1,209</span><span>₹0.00</span></div><div className="flex items-center gap-2 border-t border-zinc-200/80 px-3 py-2 text-[11px] text-zinc-600"><Check size={13} className="text-emerald-700" /> No hidden platform fees</div></div><h3 className="mt-4 text-sm font-semibold text-zinc-900">A line for every charge</h3><p className="mt-1.5 text-xs leading-5 text-zinc-600">Review spend and activity in the same ledger.</p><Link href="/finance" className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-zinc-700 hover:text-emerald-700">View billing <ArrowRight size={13} /></Link></Reveal>
+          <Reveal delay={0.1} className="min-w-0 p-5 sm:p-6"><p className="font-sans text-xs font-medium tabular-nums text-zinc-500">03 <span className="mx-1 text-zinc-300">/</span> Instant Creative QA</p><div className="mt-5 space-y-2 border border-zinc-200/80 p-3"><div className="flex items-center justify-between gap-3 border-b border-zinc-200/80 pb-2 text-xs"><span className="text-zinc-700">Headline</span><span className="inline-flex items-center gap-1.5 text-zinc-600"><Check size={13} className="text-emerald-700" /> OK</span></div><div className="flex items-center justify-between gap-3 border-b border-zinc-200/80 pb-2 text-xs"><span className="text-zinc-700">Ratio</span><span className="font-sans tabular-nums text-zinc-800">1.91:1</span></div><div className="flex items-center justify-between gap-3 text-xs"><span className="text-zinc-700">Landing page</span><span className="inline-flex items-center gap-1.5 text-zinc-600"><ShieldCheck size={13} className="text-emerald-700" /> HTTPS verified</span></div></div><h3 className="mt-4 text-sm font-semibold text-zinc-900">Check before launch</h3><p className="mt-1.5 text-xs leading-5 text-zinc-600">Review destination and creative requirements early.</p><Link href="/ad-tester" className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-zinc-700 hover:text-emerald-700">Open ad tester <ArrowRight size={13} /></Link></Reveal>
+        </div>
+      </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28"><Reveal className="mb-10 max-w-2xl"><p className="text-xs font-bold uppercase tracking-[.2em] text-[#10B981]">A clear view, at every step</p><h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">One platform.<br/>Every moving part.</h2><p className="mt-4 text-[#52525B]">The tools to plan, launch and understand your advertising, all connected.</p></Reveal><div className="grid gap-7 lg:grid-cols-[.85fr_1.15fr] lg:items-stretch"><div className="divide-y divide-[#E4E4E7]">{services.map((s,i)=><div key={s.title} className="border-t border-[#E4E4E7] first:border-t-0"><button type="button" aria-expanded={active===i} onClick={()=>setActive(i)} className="flex w-full items-center gap-4 py-5 text-left"><span className={`font-mono text-sm ${active===i?'text-[#10B981]':'text-[#52525B]'}`}>0{i+1}</span><span className="flex-1 text-lg font-bold tracking-tight">{s.title}</span><ChevronDown size={18} className={`text-[#52525B] transition-transform ${active===i?'rotate-180':''}`}/></button>{active===i&&<motion.div initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}} className="overflow-hidden pb-5 pl-10"><p className="max-w-md text-sm leading-6 text-[#52525B]">{s.detail}</p><div className="mt-3 flex flex-wrap gap-2">{s.tags.map(t=><span key={t} className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-[#52525B]">{t}</span>)}</div></motion.div>}</div>)}</div>
-        <motion.div key={active} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:.3}} className="overflow-hidden rounded-3xl border border-neutral-200/80 bg-white p-5 sm:p-7"><div className="flex items-center justify-between"><div><p className="text-xs font-medium text-[#52525B]">RivinityADS / Workspace</p><h3 className="mt-1 text-lg font-bold">{service.title}</h3></div><span className="rounded-full bg-[#F7F7F8] px-3 py-1.5 text-[11px] font-semibold text-[#059669]">Live preview</span></div><div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-[#F7F7F8] p-4"><p className="text-xs text-[#52525B]">Reach this month</p><p className="mt-2 text-2xl font-extrabold tracking-tight">{service.a}</p><p className="mt-1 text-[11px] text-[#10B981]">↗ 12.8% this month</p></div><div className="rounded-2xl bg-[#F7F7F8] p-4"><p className="text-xs text-[#52525B]">Performance</p><p className="mt-2 text-2xl font-extrabold tracking-tight">{service.b}</p><p className="mt-1 text-[11px] text-[#10B981]">↗ Trending up</p></div></div><div className="mt-4 rounded-2xl border border-neutral-200/80 p-4"><div className="mb-2 flex items-center justify-between"><p className="text-xs font-semibold">Performance overview</p><span className="text-[10px] text-[#52525B]">Last 7 days</span></div><Chart light/><div className="flex justify-between text-[10px] text-[#52525B]"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div></div><Link href={service.href} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#10B981] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#059669]">Open your workspace <ArrowUpRight size={16}/></Link></motion.div>
-      </div></section>
+      <section id="ad-formats" className="border-y border-zinc-200/80 bg-[#F8F9FA]">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 sm:py-16 lg:grid-cols-[0.72fr_1.28fr] lg:gap-12 lg:px-8 lg:py-20">
+          <div><Reveal><p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">Live ad slot</p><h2 className="mt-2 text-3xl font-semibold leading-[1.05] tracking-[-0.03em] text-zinc-950">See each format in context.</h2><p className="mt-3 text-sm leading-6 text-zinc-600">Select a placement to preview how it can appear within a publication.</p></Reveal>
+            <div role="tablist" aria-label="Ad format preview" className="mt-6 flex flex-wrap gap-2">{(['Native', 'Display', 'Push', 'Video'] as Format[]).map((item) => <button key={item} type="button" role="tab" aria-selected={format === item} onClick={() => setFormat(item)} className={`rounded-md border px-3 py-2 text-xs font-medium transition-colors ${format === item ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-zinc-200/80 bg-white text-zinc-700 hover:border-zinc-400'}`}>{item}</button>)}</div>
+            <AnimatePresence mode="wait"><motion.div key={`${format}-spec`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.18 }} className="mt-5 border-t border-zinc-200/80 pt-4"><div className="grid grid-cols-2 gap-4"><div><p className="text-[11px] text-zinc-500">Placement spec</p><p className="mt-1 font-sans text-sm font-semibold tabular-nums text-zinc-900">{formats[format].ratio}</p></div><div><p className="text-[11px] text-zinc-500">Typical CTR</p><p className="mt-1 font-sans text-sm font-semibold tabular-nums text-zinc-900">{formats[format].ctr}</p></div></div><p className="mt-4 text-xs leading-5 text-zinc-600">{formats[format].use}</p></motion.div></AnimatePresence>
+          </div>
+          <div className="min-h-[360px] overflow-hidden rounded-lg border border-zinc-200/80 bg-white sm:min-h-[390px]"><AdPreview format={format} /></div>
+        </div>
+      </section>
 
-      <section id="how-it-works" className="bg-[#0D0F12] py-20 text-white sm:py-28"><div className="mx-auto max-w-7xl px-5 sm:px-8"><Reveal className="mx-auto max-w-2xl text-center"><p className="text-xs font-bold uppercase tracking-[.2em] text-[#10B981]">Up and running, quickly</p><h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-6xl">From idea to impact.</h2><p className="mt-4 text-white/70">Four steps take you from campaign brief to measurable results.</p></Reveal><div className="relative mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><div className="absolute left-[12%] right-[12%] top-6 hidden h-px bg-[#10B981] lg:block"/>{steps.map(([number,title,desc,Icon],i)=><Reveal key={number} delay={i*.08} className="relative rounded-3xl border border-white/15 bg-white/[.04] p-6 transition-colors hover:bg-white/[.08]"><div className="flex items-center justify-between"><span className="grid h-11 w-11 place-items-center rounded-full border border-[#10B981] bg-[#0D0F12] text-sm font-bold text-[#10B981]">{number}</span><Icon size={20} className="text-white/70"/></div><h3 className="mt-7 text-xl font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-white/70">{desc}</p></Reveal>)}</div><div className="mt-10 text-center"><Link href="/signup" className="group inline-flex items-center gap-3 rounded-full bg-[#10B981] py-2 pl-6 pr-2 text-sm font-bold text-white transition hover:bg-[#059669]">Launch your first campaign<span className="grid h-9 w-9 place-items-center rounded-full bg-[#0D0F12] text-white"><ArrowUpRight size={17}/></span></Link></div></div></section>
+      <section id="how-it-works" className="bg-[#0D0F12] text-white">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+          <Reveal className="flex flex-col justify-between gap-5 border-b border-zinc-800 pb-8 sm:flex-row sm:items-end"><div><p className="text-xs font-medium uppercase tracking-[0.14em] text-emerald-500">Auction workflow</p><h2 className="mt-3 max-w-2xl text-3xl font-semibold leading-[1.05] tracking-[-0.03em] sm:text-4xl">From placement request to verified event in &lt; 40ms.</h2></div><p className="max-w-sm text-sm leading-6 text-zinc-400">Each step records what was requested, selected, delivered, and measured.</p></Reveal>
+          <div className="relative mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><div className="absolute left-[10%] right-[10%] top-5 hidden h-px bg-zinc-800 lg:block" /><motion.span aria-hidden="true" className="absolute left-[10%] top-[17px] z-10 hidden size-2 rounded-full bg-emerald-500 lg:block" animate={{ left: ['10%', '90%'] }} transition={{ duration: 5, repeat: Infinity, ease: 'linear' }} />{pipeline.map((item, index) => <Reveal key={item.number} delay={index * 0.05} className="relative border border-zinc-800 bg-[#0D0F12] p-4"><div className="flex items-center justify-between"><span className="font-sans text-xs tabular-nums text-emerald-500">{item.number}</span>{index < pipeline.length - 1 && <ArrowRight size={14} className="text-zinc-500 lg:hidden" />}</div><h3 className="mt-6 text-sm font-semibold text-white">{item.title}</h3><p className="mt-1.5 text-xs leading-5 text-zinc-400">{item.detail}</p></Reveal>)}</div>
+          <div className="mt-8 grid gap-6 border border-zinc-800 p-4 sm:p-5 lg:grid-cols-[0.8fr_1.2fr] lg:items-center"><div><p className="text-xs font-medium uppercase tracking-[0.12em] text-zinc-400">Reach &amp; budget estimator</p><p className="mt-2 font-sans text-2xl font-semibold tabular-nums tracking-tight text-white">{currency(budget)} <span className="text-sm font-normal text-zinc-400">monthly</span></p><label htmlFor="budget-range" className="sr-only">Monthly campaign budget</label><input id="budget-range" type="range" min="10000" max="500000" step="10000" value={budget} onChange={(event) => setBudget(Number(event.target.value))} className="mt-4 h-1.5 w-full cursor-pointer accent-[#10B981]" /><div className="mt-1 flex justify-between font-sans text-[10px] tabular-nums text-zinc-500"><span>₹10,000</span><span>₹5,00,000</span></div></div><div className="grid grid-cols-2 gap-3"><div className="border border-zinc-800 p-3"><p className="text-[11px] text-zinc-400">Estimated impressions</p><p className="mt-1 font-sans text-xl font-semibold tabular-nums text-white">{estimatedImpressions.toLocaleString('en-IN')}</p></div><div className="border border-zinc-800 p-3"><p className="text-[11px] text-zinc-400">Estimated clicks</p><p className="mt-1 font-sans text-xl font-semibold tabular-nums text-white">{estimatedClicks.toLocaleString('en-IN')}</p></div></div></div>
+        </div>
+      </section>
+
+      <section className="border-b border-zinc-200/80 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-col justify-between gap-6 px-4 py-14 sm:px-6 sm:py-16 md:flex-row md:items-center lg:px-8"><Reveal><p className="text-xs font-medium uppercase tracking-[0.14em] text-emerald-700">RivinityADS</p><h2 className="mt-3 max-w-2xl text-3xl font-semibold leading-[1.05] tracking-[-0.03em] text-zinc-950 sm:text-4xl">Launch your first campaign in under 3 minutes.</h2></Reveal><div className="flex flex-wrap gap-3"><Link href="/signup" className="inline-flex items-center gap-2 rounded-md bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700">Start Advertising <ArrowRight size={15} /></Link><Link href="/publishers" className="inline-flex items-center gap-2 rounded-md border border-zinc-200/80 px-4 py-3 text-sm font-semibold text-zinc-800 hover:bg-[#F8F9FA]">Monetize Traffic <ArrowRight size={15} /></Link></div></div>
+      </section>
     </main>
 
-    <footer className="bg-white"><div className="mx-auto max-w-7xl px-5 py-10 sm:px-8"><div className="flex flex-col justify-between gap-8 border-b border-[#E4E4E7] pb-8 sm:flex-row sm:items-center"><div><Brand/><p className="mt-3 max-w-sm text-sm leading-6 text-[#52525B]">Smarter advertising for the people building what’s next.</p></div><nav className="flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-[#52525B]" aria-label="Footer"><Link href="/advertisers">Advertisers</Link><Link href="/publishers">Publishers</Link><Link href="/ad-formats">Ad Formats</Link><Link href="/login">Log in</Link><Link href="/signup">Get started</Link></nav></div><div className="flex flex-col gap-2 pt-5 text-xs text-[#52525B] sm:flex-row sm:items-center sm:justify-between"><span>© 2026 RivinityADS. All rights reserved.</span><span>Built for better outcomes.</span></div></div></footer>
+    <footer className="bg-white"><div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8"><div className="grid gap-8 border-b border-zinc-200/80 pb-7 sm:grid-cols-[1fr_auto]"><div><Brand /><p className="mt-3 max-w-sm text-xs leading-5 text-zinc-500">Campaign delivery and publisher tools with clear reporting at every step.</p></div><nav aria-label="Footer navigation" className="grid grid-cols-2 gap-x-8 gap-y-2 text-xs text-zinc-600 sm:grid-cols-3"><Link href="/advertisers" className="hover:text-zinc-950">Advertisers</Link><Link href="/publishers" className="hover:text-zinc-950">Publishers</Link><Link href="/ad-formats" className="hover:text-zinc-950">Ad formats</Link><Link href="/login" className="hover:text-zinc-950">Log in</Link><Link href="/signup" className="hover:text-zinc-950">Get started</Link><Link href="/forgot-password" className="hover:text-zinc-950">Account help</Link></nav></div><div className="flex flex-col gap-2 pt-4 text-[11px] text-zinc-500 sm:flex-row sm:items-center sm:justify-between"><span>© 2026 RivinityADS</span><span>Advertiser and publisher services</span></div></div></footer>
   </div>
 }
