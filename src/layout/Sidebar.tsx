@@ -208,7 +208,7 @@ export function Sidebar({
 }: SidebarProps) {
   return (
     <>
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden overflow-y-auto border-r border-border bg-sidebar px-3 py-6 text-sidebar-foreground transition-[width] duration-200 lg:block ${isCollapsed ? 'w-20' : 'w-64'}`}>
+      <aside className={`console-scrollbar fixed inset-y-0 left-0 z-30 hidden overflow-y-auto border-r border-border bg-sidebar px-3 py-6 text-sidebar-foreground transition-[width] duration-200 lg:block ${isCollapsed ? 'w-20' : 'w-64'}`}>
         <NavigationContent
           role={role}
           onClose={onClose}
@@ -218,7 +218,7 @@ export function Sidebar({
         />
       </aside>
       <Sheet open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
-        <SheetContent side="left" className="w-64 overflow-y-auto border-r border-border bg-sidebar px-3 py-6 text-sidebar-foreground sm:max-w-64">
+        <SheetContent side="left" className="console-scrollbar w-64 overflow-y-auto border-r border-border bg-sidebar px-3 py-6 text-sidebar-foreground sm:max-w-64">
           <SheetTitle className="sr-only">Console navigation</SheetTitle>
           <NavigationContent
             role={role}

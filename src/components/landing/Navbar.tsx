@@ -2,70 +2,52 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Menu } from 'lucide-react'
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/primitives/sheet'
+import { Menu, X } from 'lucide-react'
 
 const links = [
-  { label: 'Product', href: '/#product' },
-  { label: 'Pricing', href: '/#faq' },
+  { label: 'Advertisers', href: '/advertisers' },
+  { label: 'Publishers', href: '/publishers' },
+  { label: 'Ad formats', href: '/ad-formats' },
+  { label: 'FAQ', href: '#faq' },
 ]
 
 export function Navbar() {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-20 w-full border-b border-border bg-white shadow-sm">
-      <div className="mx-auto flex min-h-16 w-full max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
-        <Link
-          href="/"
-          className="flex shrink-0 items-center gap-2.5 rounded-md text-base font-bold tracking-tight text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-white" aria-hidden="true">R</span>
+    <div className="landing-navbar-wrap">
+      <header className="landing-navbar">
+        <Link href="/" className="landing-brand" aria-label="RivinityADS home">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#221632] text-sm font-bold text-white" aria-hidden="true">R</span>
           <span>RivinityADS</span>
         </Link>
 
-        <nav aria-label="Main navigation" className="hidden items-center gap-8 text-sm font-medium md:flex">
-          {links.map((link) => (
-            <Link key={link.label} href={link.href} className="rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-              {link.label}
-            </Link>
-          ))}
+        <nav aria-label="Main navigation" className="landing-nav-links">
+          {links.map((link) => <Link key={link.label} href={link.href} className="landing-nav-link">{link.label}</Link>)}
         </nav>
 
-        <div className="flex items-center gap-2 text-sm font-semibold sm:gap-4">
-          <Link href="/login" className="hidden min-h-10 items-center rounded-md px-2 text-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:inline-flex">
-            Sign in
-          </Link>
-          <Link href="/signup" className="hidden min-h-10 items-center rounded-lg bg-primary px-4 text-white transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:inline-flex">
-            Get started
-          </Link>
-
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <button type="button" className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:hidden" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}>
-                <Menu className="h-5 w-5" aria-hidden="true" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[min(20rem,85vw)] border-border bg-white p-5 md:hidden">
-              <SheetTitle className="mt-2 text-base">RivinityADS navigation</SheetTitle>
-              <nav aria-label="Mobile navigation" className="mt-4 flex flex-col gap-1">
-                {links.map((link) => (
-                  <Link key={link.label} href={link.href} onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                    {link.label}
-                  </Link>
-                ))}
-                <div className="my-2 border-t border-border" />
-                <Link href="/login" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                  Sign in
-                </Link>
-                <Link href="/signup" onClick={() => setOpen(false)} className="mt-1 inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                  Get started
-                </Link>
-              </nav>
-            </SheetContent>
-          </Sheet>
+        <div className="landing-nav-actions">
+          <Link href="/login" className="landing-nav-signin">Sign in</Link>
+          <Link href="/signup" className="landing-nav-cta">Get started</Link>
         </div>
-      </div>
-    </header>
+
+        <button
+          type="button"
+          className="landing-menu-button"
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+        >
+          {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+        </button>
+      </header>
+      {open && (
+        <nav className="landing-mobile-menu" aria-label="Mobile navigation">
+          {links.map((link) => <Link key={link.label} href={link.href} onClick={() => setOpen(false)} className="landing-nav-link">{link.label}</Link>)}
+          <Link href="/login" onClick={() => setOpen(false)} className="landing-nav-link">Sign in</Link>
+          <Link href="/signup" onClick={() => setOpen(false)} className="landing-nav-cta">Get started</Link>
+        </nav>
+      )}
+    </div>
   )
 }

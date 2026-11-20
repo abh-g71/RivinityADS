@@ -98,7 +98,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
 
   if (complete) {
     return (
-      <Card className="p-6 sm:p-8">
+      <Card className="!rounded-[20px] !border-0 !shadow-[0_1px_3px_rgba(0,0,0,0.10)] p-8">
         <p className="text-sm font-semibold text-foreground">{isForgot ? 'Recovery request complete' : 'Password reset preview'}</p>
         <h1 className="mt-2 text-2xl font-bold text-foreground">{isForgot ? 'Check your inbox' : 'You’re all set'}</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
@@ -113,9 +113,9 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   }
 
   return (
-    <Card className="p-6 shadow-sm sm:p-8">
+    <Card className="!rounded-[20px] !border-0 !shadow-[0_1px_3px_rgba(0,0,0,0.10)] p-8">
       <p className="text-sm font-semibold text-foreground">RivinityADS</p>
-      <h1 className="mt-2 text-2xl font-bold text-foreground">{heading}</h1>
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">{heading}</h1>
       {!isLogin && <p className="mt-2 text-sm leading-6 text-muted-foreground">
         {isSignup
           ? 'Choose a workspace to explore. No account is created.'
@@ -124,7 +124,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
             : 'Set a password to preview the reset flow.'}
       </p>}
 
-      <form className="mt-6 space-y-5" onSubmit={handleSubmit} noValidate>
+      <form className="mt-6 space-y-5 [&_input]:!rounded-[12px]" onSubmit={handleSubmit} noValidate>
         {isSignup && (
           <Input
             id="auth-name"
@@ -233,7 +233,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
                     onChange={() => setRole(option.id)}
                     aria-describedby={fieldError('role') ? 'auth-role-error' : undefined}
                   />
-                  <span className={`block h-full rounded-lg border p-3 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-ring ${role === option.id ? 'border-primary bg-secondary' : 'border-border hover:border-accent'}`}>
+                  <span className={`block h-full rounded-md border p-3 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-ring ${role === option.id ? 'border-primary bg-secondary' : 'border-border hover:border-accent'}`}>
                     <span className="block text-sm font-semibold capitalize text-foreground">{option.title}</span>
                     <span className="mt-1 block text-xs leading-5 text-muted-foreground">{option.description}</span>
                   </span>
@@ -250,7 +250,7 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           </div>
         )}
 
-        <Button type="submit" className="w-full" disabled={loading} aria-busy={loading}>
+        <Button type="submit" className="!w-full !rounded-[12px]" disabled={loading} aria-busy={loading}>
           {loading ? 'Please wait…' : isSignup ? 'Create account' : isLogin ? 'Continue to workspace' : isForgot ? 'Preview recovery' : 'Save new password'}
         </Button>
 

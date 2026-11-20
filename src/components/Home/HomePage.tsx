@@ -1,486 +1,95 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Menu, Plus, X } from 'lucide-react'
+import { motion } from 'motion/react'
+import { ArrowRight, ArrowUpRight, BarChart3, Check, ChevronDown, Globe2, Layers3, Menu, MousePointer2, ShieldCheck, Target, X } from 'lucide-react'
 
-const THEME = {
-  '--bg': '#E2E2EA',
-  '--surface': '#FFFFFF',
-  '--line': '#D9D9E2',
-  '--fg': '#282828',
-  '--muted': '#6B6B75',
-  '--accent': '#ACBCFF',
-  '--solid': '#282828',
-}
-
-const MUTED = 'text-[color:var(--muted)]'
-const ACCENT = 'text-[color:var(--accent)]'
-const BORDER = 'border-[color:var(--line)]'
-const SURFACE = 'bg-[color:var(--surface)]'
-const SOLID = 'bg-[color:var(--solid)]'
-const BTN_PRIMARY = `inline-flex items-center justify-center rounded-lg ${SOLID} px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bg)]`
-const BTN_OUTLINE = `inline-flex items-center justify-center rounded-lg border ${BORDER} ${SURFACE} px-5 py-3 text-sm font-semibold transition-colors hover:border-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]`
-
-/* ---------- Content ---------- */
-const NAV = [
-  { label: 'Advertisers', href: '/advertisers' },
-  { label: 'Publishers', href: '/publishers' },
-  { label: 'Ad formats', href: '/ad-formats' },
-  { label: 'FAQ', href: '#faq' },
+const services = [
+  { title: 'Advertiser Campaigns', detail: 'Build, launch and optimize campaigns from one clear workspace.', tags: ['Campaigns', 'AI bidding', 'Budget control'], href: '/campaigns/new', a: '2.8M', b: '2.9%' },
+  { title: 'Publisher Inventory & Payouts', detail: 'Manage placements, monitor fill and follow earnings in real time.', tags: ['Inventory', 'Placements', 'Payouts'], href: '/publisher', a: '$18.4k', b: '96.8%' },
+  { title: 'Campaign Optimization', detail: 'Turn a plain-language brief into a campaign ready to review.', tags: ['Bidding', 'Creative', 'Automation'], href: '/campaigns/new', a: '34.2%', b: '4.6x' },
+  { title: 'Geo & Map Targeting', detail: 'Focus delivery by country, city, postal code or custom radius.', tags: ['Geo targeting', 'Radius', 'Audience'], href: '/campaigns/new', a: '42', b: '18.6M' },
+  { title: 'Real-Time Analytics & Reports', detail: 'Understand performance with transparent, up-to-date reporting.', tags: ['Analytics', 'Reports', 'Live data'], href: '/dashboard', a: '1.2B', b: '99.9%' },
 ]
 
-const POINTS = [
-  { title: 'A console for each side', text: 'Advertisers and publishers each get their own workspace.' },
-  { title: 'Four short steps', text: 'Goal, audience, budget, ad. One screen each.' },
-  { title: 'Describe it or fill it in', text: 'Type what you want to promote, or use the manual steps.' },
-  { title: 'Pick places, not only cities', text: 'Countries, cities, PIN codes or a radius on the map.' },
-  { title: 'Preview before you publish', text: 'See the ad in Feed, Story and Banner sizes.' },
-  { title: 'Numbers in one place', text: 'Spend, impressions, clicks and results for every campaign.' },
-]
+const steps = [
+  ['01', 'Set objective', 'Choose the result that matters to your business.', Target],
+  ['02', 'Target audience', 'Find the right people, places and moments.', Globe2],
+  ['03', 'Launch ads', 'Build your campaign and go live with confidence.', MousePointer2],
+  ['04', 'Scale ROAS', 'Track results and grow what is working.', BarChart3],
+] as const
 
-type Kind = 'steps' | 'places' | 'sizes' | 'budget' | 'formats' | 'bars' | 'site' | 'token' | 'placement' | 'code' | 'line' | 'payout'
-
-const CARDS: Record<'advertiser' | 'publisher', { title: string; text: string; kind: Kind }[]> = {
-  advertiser: [
-    { title: 'Create a campaign', text: 'Four short steps from goal to ad.', kind: 'steps' },
-    { title: 'Choose where it shows', text: 'Add as many places as you need.', kind: 'places' },
-    { title: 'Preview every size', text: 'Check the ad before it goes live.', kind: 'sizes' },
-    { title: 'Set a daily budget', text: 'Spend what you planned, in ₹.', kind: 'budget' },
-    { title: 'Pick an ad format', text: 'Banner, Native, Popunder, Push or Social bar.', kind: 'formats' },
-    { title: 'Track results', text: 'See what each campaign delivers.', kind: 'bars' },
-  ],
-  publisher: [
-    { title: 'Add your website', text: 'Tell us which site will show ads.', kind: 'site' },
-    { title: 'Verify ownership', text: 'Add one line to prove the site is yours.', kind: 'token' },
-    { title: 'Create a placement', text: 'Choose where on the page ads appear.', kind: 'placement' },
-    { title: 'Copy the ad code', text: 'Paste one snippet into your page.', kind: 'code' },
-    { title: 'Track earnings', text: 'Impressions, clicks and revenue by day.', kind: 'line' },
-    { title: 'See your payouts', text: 'Payout details are sample data for now.', kind: 'payout' },
-  ],
+function Reveal({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  return <motion.div className={className} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}>{children}</motion.div>
 }
 
-const FAQS = [
-  { q: 'What is RivinityADS?', a: 'An ad network. Advertisers launch campaigns, and publishers earn from the ads shown on their websites.' },
-  { q: 'How do I create my first ad?', a: 'Choose a goal, set the audience and budget, then add your ad. You can also describe it to the assistant.' },
-  { q: 'How do I earn as a publisher?', a: 'Add and verify your website, create a placement, then paste the ad code into your page.' },
-  { q: 'Which ad formats are available?', a: 'Banner, Native, Popunder, Push and Social bar.' },
-  { q: 'Is this a live product?', a: 'Not yet. This is a prototype with sample data. Real ad delivery and payments are not connected.' },
-]
-
-/* ---------- Small pieces ---------- */
-function Logo() {
-  return (
-    <svg viewBox="0 0 24 24" className={`h-6 w-6 ${ACCENT}`} fill="currentColor" aria-hidden="true">
-      <rect x="3" y="12" width="4" height="9" rx="1" />
-      <rect x="10" y="7" width="4" height="14" rx="1" />
-      <rect x="17" y="3" width="4" height="18" rx="1" />
-    </svg>
-  )
+function Brand() {
+  return <Link href="/" className="flex items-center gap-2.5 font-bold tracking-tight text-[#0A0A0A]" aria-label="RivinityADS home"><span className="grid h-9 w-9 place-items-center rounded-xl bg-[#0A0A0A] text-lg text-white">R</span><span>RivinityADS</span></Link>
 }
 
-function Chip({ children }: { children: ReactNode }) {
-  return <span className={`rounded-md border ${BORDER} px-2 py-1 text-xs`}>{children}</span>
+function Chart({ light = false }: { light?: boolean }) {
+  return <svg viewBox="0 0 320 110" className="h-24 w-full" preserveAspectRatio="none" aria-label="Campaign performance trend" role="img"><path d="M0 84 C24 76 34 82 52 68 S85 60 105 69 S140 47 159 52 S194 34 215 44 S251 17 271 28 S299 18 320 8" fill="none" stroke="#10B981" strokeWidth="3" vectorEffect="non-scaling-stroke"/></svg>
 }
 
-function Snippet({ kind }: { kind: Kind }) {
-  switch (kind) {
-    case 'steps':
-      return (
-        <ul className="w-full space-y-1.5 text-xs">
-          {['Goal', 'Audience', 'Budget', 'Ad'].map((s, i) => (
-            <li key={s} className="flex items-center gap-2">
-              <span className={`flex h-4 w-4 items-center justify-center rounded-full border ${BORDER} ${i < 2 ? `${SOLID} text-white` : ''}`}>
-                {i < 2 && <Check className="h-3 w-3" aria-hidden="true" />}
-              </span>
-              <span className={i < 2 ? '' : MUTED}>{s}</span>
-            </li>
-          ))}
-        </ul>
-      )
-    case 'places':
-      return (
-        <div className="flex flex-wrap gap-1.5">
-          {['India', 'Pune', '110001', '10 km'].map((c) => <Chip key={c}>{c}</Chip>)}
-        </div>
-      )
-    case 'sizes':
-      return (
-        <div className="flex items-end gap-3">
-          {[['Feed', 'h-14 w-14'], ['Story', 'h-20 w-11'], ['Banner', 'h-6 w-24']].map(([n, c]) => (
-            <div key={n} className={`flex items-center justify-center rounded border ${BORDER} text-[10px] ${MUTED} ${c}`}>{n}</div>
-          ))}
-        </div>
-      )
-    case 'budget':
-      return (
-        <div className="w-full">
-          <p className="font-mono text-sm">₹500 / day</p>
-          <div className="relative mt-3 h-1 rounded bg-[color:var(--line)]">
-            <div className={`h-1 w-2/5 rounded ${SOLID}`} />
-            <span className={`absolute left-[40%] top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full ${SOLID}`} />
-          </div>
-        </div>
-      )
-    case 'formats':
-      return (
-        <div className="flex flex-wrap gap-1.5">
-          {['Banner', 'Native', 'Popunder', 'Push', 'Social bar'].map((c) => <Chip key={c}>{c}</Chip>)}
-        </div>
-      )
-    case 'bars':
-      return (
-        <div className="flex h-14 w-full items-end gap-1.5" aria-hidden="true">
-          {[30, 45, 38, 60, 52, 72].map((h, i) => <div key={i} className={`flex-1 rounded-sm ${SOLID}`} style={{ height: `${h}%` }} />)}
-        </div>
-      )
-    case 'site':
-      return (
-        <div className="flex w-full items-center gap-2 text-xs">
-          <span className={`flex-1 rounded-md border ${BORDER} px-3 py-2 font-mono ${MUTED}`}>yourwebsite.com</span>
-          <span className={`rounded-md ${SOLID} px-3 py-2 font-semibold text-white`}>Add</span>
-        </div>
-      )
-    case 'token':
-      return <code className={`w-full rounded-md border ${BORDER} px-3 py-2 font-mono text-xs`}>rivinity-verify=7f3a91c2</code>
-    case 'placement':
-      return (
-        <div className={`flex w-full items-center justify-between rounded-md border ${BORDER} px-3 py-2 text-xs`}>
-          Sidebar · 300×250
-          <ChevronDown className="h-4 w-4" aria-hidden="true" />
-        </div>
-      )
-    case 'code':
-      return (
-        <pre className={`w-full overflow-hidden rounded-md border ${BORDER} p-2 font-mono text-[11px] leading-4 ${MUTED}`}>{`<script async
-  src=".../tag.js"
-  data-slot="demo"></script>`}</pre>
-      )
-    case 'line':
-      return (
-        <svg viewBox="0 0 120 50" className={`h-14 w-full ${ACCENT}`} preserveAspectRatio="none" aria-hidden="true">
-          <polyline points="0,40 20,32 40,36 60,22 80,26 100,14 120,10" fill="none" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-        </svg>
-      )
-    case 'payout':
-      return (
-        <div className="w-full text-xs">
-          {[['Method', 'UPI'], ['Status', 'Sample'], ['Minimum', 'Set later']].map(([k, v]) => (
-            <div key={k} className={`flex justify-between border-b ${BORDER} py-1.5 last:border-0`}>
-              <span className={MUTED}>{k}</span>
-              <span>{v}</span>
-            </div>
-          ))}
-        </div>
-      )
-  }
-}
-
-/* ---------- Product panel (sample data, drawn with HTML) ---------- */
-function ProductPanel() {
-  const rows = [
-    { name: 'Diwali sale · Delhi', status: 'Active', dot: 'bg-green-500', spend: '₹6,200', ctr: '2.8%' },
-    { name: 'Salon bookings · Pune', status: 'Active', dot: 'bg-green-500', spend: '₹4,150', ctr: '2.1%' },
-    { name: 'App launch · India', status: 'Paused', dot: 'bg-muted-foreground', spend: '₹5,900', ctr: '1.7%' },
-    { name: 'Event tickets · Mumbai', status: 'Draft', dot: 'bg-muted-foreground', spend: '₹0', ctr: '—' },
-  ]
-  return (
-    <div className={`overflow-hidden rounded-xl border ${BORDER} ${SURFACE}`}>
-      <div className={`flex items-center justify-between border-b ${BORDER} px-4 py-2.5`}>
-        <div className="flex gap-1.5" aria-hidden="true">
-          {[0, 1, 2].map((i) => <span key={i} className="h-2.5 w-2.5 rounded-full bg-[color:var(--line)]" />)}
-        </div>
-        <span className={`text-xs ${MUTED}`}>Sample data</span>
-        <span className="w-10" />
-      </div>
-      <div className="grid md:grid-cols-[180px_1fr]">
-        <aside className={`hidden border-r ${BORDER} p-3 text-sm md:block`}>
-          {['Home', 'Campaigns', 'Reports', 'Billing', 'Support'].map((n) => (
-            <div key={n} className={`rounded-md px-3 py-2 ${n === 'Campaigns' ? 'bg-[color:var(--fg)] font-medium text-[color:var(--bg)]' : MUTED}`}>{n}</div>
-          ))}
-        </aside>
-        <div className="min-w-0 p-4 sm:p-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold">Campaigns</h2>
-            <span className={`rounded-md ${SOLID} px-3 py-1.5 text-xs font-semibold text-white`}>Create</span>
-          </div>
-          <dl className="mt-4 grid grid-cols-3 gap-4">
-            {[['Spend', '₹16,250'], ['Clicks', '6,214'], ['CTR', '2.31%']].map(([k, v]) => (
-              <div key={k}>
-                <dt className={`text-xs ${MUTED}`}>{k}</dt>
-                <dd className="mt-1 font-mono text-lg">{v}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className={`mt-4 rounded-lg border ${BORDER} p-3`}>
-            <p className={`text-xs ${MUTED}`}>Clicks, last 7 days</p>
-            <svg viewBox="0 0 300 100" preserveAspectRatio="none" className={`mt-2 h-24 w-full ${ACCENT}`} aria-label="Line chart of clicks over seven days">
-              {[20, 50, 80].map((y) => <line key={y} x1="0" x2="300" y1={y} y2={y} stroke="currentColor" strokeOpacity="0.15" strokeDasharray="3 4" vectorEffect="non-scaling-stroke" />)}
-              <polyline points="0,63 50,51 100,57 150,38 200,46 250,29 300,23" fill="none" stroke="currentColor" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-            </svg>
-            <div className={`mt-1 flex justify-between text-[10px] ${MUTED}`}>
-              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => <span key={d}>{d}</span>)}
-            </div>
-          </div>
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[420px] text-left text-sm">
-              <thead className={`text-xs ${MUTED}`}>
-                <tr>
-                  <th className="py-2 font-medium">Name</th>
-                  <th className="py-2 font-medium">Status</th>
-                  <th className="py-2 text-right font-medium">Spend</th>
-                  <th className="py-2 text-right font-medium">CTR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.name} className={`border-t ${BORDER}`}>
-                    <td className="py-2.5">{r.name}</td>
-                    <td className="py-2.5">
-                      <span className="inline-flex items-center gap-2">
-                        <span className={`h-2 w-2 rounded-full ${r.dot}`} aria-hidden="true" />
-                        {r.status}
-                      </span>
-                    </td>
-                    <td className="py-2.5 text-right font-mono">{r.spend}</td>
-                    <td className="py-2.5 text-right font-mono">{r.ctr}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ---------- Nav ---------- */
-function Nav() {
-  const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  return (
-    <header className={`sticky top-0 z-40 border-b ${scrolled ? `${BORDER} bg-[color:var(--bg)]` : 'border-transparent'}`}>
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-            <Logo />
-            RivinityADS
-          </Link>
-          <nav className="hidden items-center gap-6 md:flex" aria-label="Main">
-            {NAV.map((l) => (
-              <Link key={l.label} href={l.href} className={`text-sm ${MUTED} transition-colors hover:text-[color:var(--fg)]`}>{l.label}</Link>
-            ))}
-          </nav>
-        </div>
-        <div className="flex items-center gap-1 sm:gap-3">
-          <Link href="/login" className="hidden px-2 text-sm font-medium sm:inline">Sign in</Link>
-          <Link href="/signup" className={`hidden rounded-lg ${SOLID} px-4 py-2 text-sm font-semibold text-white hover:opacity-90 sm:inline-flex`}>Get started</Link>
-          <button
-            type="button"
-            className="flex h-9 w-9 items-center justify-center md:hidden"
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            aria-expanded={open}
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
-          </button>
-        </div>
-      </div>
-      {open && (
-        <nav className={`border-t ${BORDER} bg-[color:var(--bg)] px-4 pb-3 md:hidden`} aria-label="Mobile">
-          {[...NAV, { label: 'Sign in', href: '/login' }, { label: 'Get started', href: '/signup' }].map((l) => (
-            <Link key={l.label} href={l.href} onClick={() => setOpen(false)} className="block rounded-lg px-2 py-3 text-sm font-medium">{l.label}</Link>
-          ))}
-        </nav>
-      )}
-    </header>
-  )
-}
-
-/* ---------- Page ---------- */
 export function HomePage() {
-  const [tab, setTab] = useState<'advertiser' | 'publisher'>('advertiser')
-  const [page, setPage] = useState(0)
-  const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [active, setActive] = useState(0)
+  const [budget, setBudget] = useState(42)
+  const service = services[active]
 
-  const vars = THEME as unknown as CSSProperties
-  const visible = CARDS[tab].slice(page * 3, page * 3 + 3)
+  return <div className="landing min-h-screen overflow-hidden bg-[#F7F7F8] text-[#0A0A0A] selection:bg-[#F7F7F8]">
+    <header className="fixed inset-x-0 top-3 z-50 px-3 sm:top-5 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-neutral-200/80 bg-white px-4 py-2.5 sm:px-6">
+        <Brand />
+        <nav className="hidden items-center gap-7 text-[13px] font-medium text-[#52525B] lg:flex" aria-label="Main navigation"><Link className="hover:text-[#0D0F12]" href="/advertisers">Advertisers</Link><Link className="hover:text-[#0D0F12]" href="/publishers">Publishers</Link><Link className="hover:text-[#0D0F12]" href="/ad-formats">Ad Formats</Link><a className="hover:text-[#0D0F12]" href="#how-it-works">How It Works</a></nav>
+        <div className="hidden items-center gap-5 sm:flex"><Link href="/login" className="text-sm font-semibold text-[#52525B] hover:text-black">Log in</Link><Link href="/signup" className="inline-flex items-center gap-2 rounded-full bg-[#10B981] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#059669]">Get Started <ArrowUpRight size={16}/></Link></div>
+        <button className="grid h-10 w-10 place-items-center rounded-full bg-[#F7F7F8] lg:hidden" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}>{mobileOpen ? <X size={19}/> : <Menu size={19}/>}</button>
+      </div>
+      {mobileOpen && <nav className="mx-auto mt-2 grid max-w-7xl gap-1 rounded-3xl border border-neutral-200/80 bg-white p-4 lg:hidden" aria-label="Mobile navigation">{[['Advertisers','/advertisers'],['Publishers','/publishers'],['Ad Formats','/ad-formats'],['How It Works','#how-it-works'],['Log in','/login'],['Get Started','/signup']].map(([name, href]) => <Link key={name} href={href} onClick={() => setMobileOpen(false)} className="rounded-xl px-4 py-3 text-sm font-semibold hover:bg-[#F7F7F8]">{name}</Link>)}</nav>}
+    </header>
 
-  return (
-    <div style={vars} className="min-h-screen bg-[color:var(--bg)] text-[color:var(--fg)]">
-      <Nav />
-
-      <main>
-        {/* Hero */}
-        <section className="mx-auto max-w-6xl px-4 pb-14 pt-16 text-center sm:px-6 sm:pt-24">
-          <h1 className="mx-auto max-w-4xl text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-            Run ads in minutes.
-            <br />
-            Earn from your website.
-          </h1>
-          <p className={`mx-auto mt-6 max-w-xl text-lg leading-8 ${MUTED}`}>
-            RivinityADS is an ad network. Advertisers launch campaigns, and publishers earn from the ads on their sites.
-          </p>
-
-          <div className="mx-auto mt-10 flex max-w-4xl flex-col gap-3 lg:flex-row">
-            <Link
-              href="/campaigns/new/ai"
-              className={`flex flex-1 items-center gap-3 rounded-lg border ${BORDER} ${SURFACE} px-4 py-3 text-left text-sm transition-colors hover:border-[color:var(--accent)]`}
-            >
-              <span className={`font-mono ${ACCENT}`} aria-hidden="true">›</span>
-              <span className="min-w-0 flex-1 truncate">Promote my clothing store in Delhi, ₹500 a day</span>
-              <span className={`inline-flex items-center gap-1 rounded-md ${SOLID} px-2.5 py-1 text-xs font-semibold text-white`}>
-                Try it <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-              </span>
-            </Link>
-            <Link href="/signup" className={BTN_PRIMARY}>Start advertising</Link>
-            <Link href="/signup" className={BTN_OUTLINE}>Start earning</Link>
-          </div>
-          <p className={`mt-4 text-xs ${MUTED}`}>The assistant is a demo · All numbers on this page are sample data</p>
-        </section>
-
-        {/* Product */}
-        <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6">
-          <ProductPanel />
-        </section>
-
-        {/* What is */}
-        <section className={`border-t ${BORDER}`}>
-          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2">
-            <div>
-              <h2 className="text-4xl font-semibold tracking-tight">What is RivinityADS?</h2>
-              <p className={`mt-4 max-w-md text-lg leading-8 ${MUTED}`}>
-                Advertisers create a campaign in a few short steps. Publishers add a website and get paid for the ads that run on it.
-              </p>
-              <Link href="/advertisers" className="mt-6 inline-flex items-center gap-2 font-semibold hover:underline">
-                Read more <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-            </div>
-            <ol>
-              {POINTS.map((p, i) => (
-                <li key={p.title} className={`flex gap-5 border-t ${BORDER} py-5 first:border-t-0 lg:first:border-t`}>
-                  <span className={`font-mono text-sm ${ACCENT}`}>{String(i + 1).padStart(2, '0')}</span>
-                  <div>
-                    <h3 className="text-lg font-semibold">{p.title}</h3>
-                    <p className={`mt-1 ${MUTED}`}>{p.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </section>
-
-        {/* What can you do */}
-        <section className={`border-t ${BORDER}`}>
-          <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-            <h2 className="text-4xl font-semibold tracking-tight">What can you do?</h2>
-            <p className={`mt-4 text-lg ${MUTED}`}>Pick your side to see the steps.</p>
-
-            <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-              <div className={`inline-flex rounded-lg border ${BORDER} p-1`} role="tablist" aria-label="Choose your side">
-                {([['advertiser', 'Advertiser'], ['publisher', 'Publisher']] as const).map(([key, label]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    role="tab"
-                    aria-selected={tab === key}
-                    onClick={() => {
-                      setTab(key)
-                      setPage(0)
-                    }}
-                    className={`rounded-md px-4 py-2 text-sm font-semibold ${tab === key ? `${SOLID} text-white` : MUTED}`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <div className="flex items-center gap-3">
-                <span className={`font-mono text-sm ${MUTED}`}>{page + 1} / 2</span>
-                <button type="button" aria-label="Previous" disabled={page === 0} onClick={() => setPage(0)} className={`flex h-10 w-10 items-center justify-center rounded-full border ${BORDER} disabled:opacity-40`}>
-                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                </button>
-                <button type="button" aria-label="Next" disabled={page === 1} onClick={() => setPage(1)} className={`flex h-10 w-10 items-center justify-center rounded-full border ${BORDER} disabled:opacity-40`}>
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-8 grid gap-6 md:grid-cols-3">
-              {visible.map((c) => (
-                <Link
-                  key={c.title}
-                  href={tab === 'advertiser' ? '/advertisers' : '/publishers'}
-                  className={`rounded-xl border ${BORDER} ${SURFACE} p-5 transition-colors hover:border-[color:var(--accent)]`}
-                >
-                  <div className={`flex h-32 items-center rounded-lg border ${BORDER} bg-[color:var(--bg)] p-4`}>
-                    <Snippet kind={c.kind} />
-                  </div>
-                  <h3 className="mt-5 text-lg font-semibold">{c.title}</h3>
-                  <p className={`mt-1 ${MUTED}`}>{c.text}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section id="faq" className={`scroll-mt-16 border-t ${BORDER}`}>
-          <div className="mx-auto grid max-w-6xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2">
-            <div>
-              <h2 className="text-4xl font-semibold tracking-tight">FAQ</h2>
-              <p className={`mt-4 text-lg ${MUTED}`}>
-                Something else? <Link href="/support" className="underline">Contact support</Link>.
-              </p>
-            </div>
-            <div>
-              {FAQS.map((f, i) => (
-                <div key={f.q} className={`border-t ${BORDER} last:border-b`}>
-                  <button
-                    type="button"
-                    aria-expanded={openFaq === i}
-                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="flex w-full items-center justify-between gap-4 py-5 text-left font-semibold"
-                  >
-                    {f.q}
-                    <Plus className={`h-5 w-5 shrink-0 transition-transform ${openFaq === i ? 'rotate-45' : ''}`} aria-hidden="true" />
-                  </button>
-                  {openFaq === i && <p className={`pb-5 ${MUTED}`}>{f.a}</p>}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Closing */}
-        <section className={`border-t ${BORDER}`}>
-          <div className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6">
-            <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">Start your first campaign</h2>
-            <p className={`mx-auto mt-4 max-w-md ${MUTED}`}>Explore the prototype with sample data.</p>
-            <Link href="/signup" className={`${BTN_PRIMARY} mt-8`}>Get started</Link>
-          </div>
-        </section>
-      </main>
-
-      <footer className={`border-t ${BORDER}`}>
-        <div className={`mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 text-sm sm:px-6 ${MUTED}`}>
-          <span>© 2026 RivinityADS</span>
-          <nav className="flex flex-wrap gap-5" aria-label="Footer">
-            <Link href="/advertisers">Advertisers</Link>
-            <Link href="/publishers">Publishers</Link>
-            <Link href="/ad-formats">Ad formats</Link>
-            <Link href="/support">Support</Link>
-          </nav>
+    <main>
+      <Reveal className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 pb-20 pt-32 sm:px-8 sm:pt-40 lg:min-h-[760px] lg:grid-cols-[1fr_1.05fr] lg:gap-8 lg:pb-28">
+        <div className="relative z-10">
+          <div className="inline-flex rounded-full border border-neutral-200/80 bg-white px-3.5 py-2 text-xs font-semibold text-[#52525B]">Self-serve ad network</div>
+          <h1 className="mt-7 max-w-2xl text-[clamp(3.35rem,7vw,6rem)] font-extrabold leading-[.98] tracking-[-.065em]">Ads that work.<br/><em className="not-italic">Growth that lasts.</em></h1>
+          <p className="mt-6 max-w-xl text-base leading-7 text-[#52525B] sm:text-lg sm:leading-8">Self-serve ad tools for performance teams and publishers. Plan campaigns, reach the right audience and track results in one place.</p>
+          <div className="mt-8 flex flex-wrap items-center gap-3"><Link href="/signup" className="group inline-flex items-center gap-3 rounded-full bg-[#10B981] py-2 pl-6 pr-2 text-sm font-bold text-white transition hover:bg-[#059669]">Get started for free<span className="grid h-9 w-9 place-items-center rounded-full bg-[#0D0F12] text-white transition group-hover:rotate-45"><ArrowUpRight size={17}/></span></Link><Link href="/campaigns/new" className="inline-flex items-center gap-2 rounded-full px-4 py-3 text-sm font-semibold text-[#52525B] hover:bg-white">Explore the platform <ArrowRight size={16}/></Link></div>
+          <div className="mt-9 flex items-center gap-3"><div className="flex -space-x-2">{['AM','JK','RS','+'].map((initials)=><span key={initials} className="grid h-9 w-9 place-items-center rounded-full border-2 border-[#F7F7F8] bg-white text-[10px] font-bold text-[#52525B]">{initials}</span>)}</div><div><div className="text-sm font-bold"><span className="text-[#10B981]">★★★★★</span> 4.9/5</div><p className="text-xs text-[#52525B]">Rated by 500+ brands &amp; publishers</p></div></div>
         </div>
-      </footer>
-    </div>
-  )
+        <div className="relative mx-auto w-full max-w-[610px] lg:ml-auto">
+          <div className="relative overflow-hidden rounded-[2rem] border border-neutral-200/80 bg-white p-3 sm:p-5">
+            <div className="relative min-h-[390px] overflow-hidden rounded-[1.5rem] border border-neutral-200/80 bg-[#F7F7F8] p-5 sm:min-h-[470px] sm:p-7">
+              <div className="absolute left-1/2 top-1/2 h-52 w-52 -translate-x-1/2 -translate-y-1/2 rounded-full border border-neutral-200 bg-white sm:h-72 sm:w-72"><div className="absolute inset-7 rounded-full border border-neutral-200"/><div className="absolute inset-14 rounded-full border border-neutral-200"/><span className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#10B981]"/></div>
+              <div className="relative z-10 flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-[.16em] text-[#52525B]">Live overview</p><p className="mt-1 text-sm font-bold">Campaign performance</p></div><span className="flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1.5 text-[11px] font-semibold text-[#059669]"><span className="h-1.5 w-1.5 rounded-full bg-[#10B981]"/> LIVE</span></div>
+              <motion.div initial={{opacity:0,y:20}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.15}} transition={{duration:.5,ease:[.22,1,.36,1]}} className="absolute bottom-7 left-4 z-20 w-[min(260px,70%)] rounded-2xl border border-neutral-200/80 bg-white p-4 sm:bottom-9 sm:left-7"><div className="flex items-start justify-between"><div><p className="text-xs font-medium text-[#52525B]">ROAS Growth</p><p className="mt-1 text-2xl font-extrabold tracking-tight">+34.2%</p></div><span className="rounded-lg bg-[#F7F7F8] p-2 text-[#059669]"><BarChart3 size={18}/></span></div><div className="mt-3 flex h-14 items-end gap-1.5">{[28,40,34,54,47,68,58,84,75,100].map((h,i)=><motion.span key={i} initial={{height:0}} whileInView={{height:`${h}%`}} viewport={{once:true}} transition={{duration:.5,delay:i*.04,ease:[.22,1,.36,1]}} className="flex-1 rounded-t bg-[#10B981]"/>)}</div><div className="mt-2 flex justify-between text-[10px] text-[#52525B]"><span>Last 30 days</span><span>+12.8% vs prev.</span></div></motion.div>
+              <div className="absolute right-3 top-[37%] z-20 rounded-2xl border border-neutral-200/80 bg-white p-3 sm:right-5"><div className="flex items-center gap-2.5"><span className="grid h-9 w-9 place-items-center rounded-xl bg-[#F7F7F8] text-[#059669]"><Check size={17}/></span><div><p className="text-[11px] font-medium text-[#52525B]">Avg. campaign</p><p className="text-xs font-bold">Live in 3 mins</p></div></div></div>
+            </div>
+          </div>
+        </div>
+      </Reveal>
+
+      <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-24">
+        <Reveal className="mb-9 flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[.2em] text-[#10B981]">One network. More momentum.</p><h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-5xl">Everything clicks into place.</h2></div><p className="max-w-sm text-sm leading-6 text-[#52525B]">A smarter way to connect ad spend with real audience reach.</p></Reveal>
+        <div className="grid auto-rows-[minmax(210px,auto)] grid-cols-1 gap-4 md:grid-cols-4">
+          <Reveal delay={0} className="group rounded-3xl border border-neutral-200/80 bg-white p-6 transition md:col-span-2"><div className="flex items-center justify-between"><span className="rounded-full bg-[#F7F7F8] px-3 py-1.5 text-xs font-semibold">01 / Advertisers</span><ArrowUpRight size={18} className="text-[#52525B] transition group-hover:text-[#10B981]"/></div><h3 className="mt-8 text-2xl font-bold tracking-tight">Advertiser strategy</h3><p className="mt-2 max-w-sm text-sm leading-6 text-[#52525B]">Precise targeting, budget controls and bidding options for every campaign.</p><div className="mt-6 flex gap-2"><span className="rounded-full bg-[#F7F7F8] px-3 py-1.5 text-xs">Audience</span><span className="rounded-full bg-[#F7F7F8] px-3 py-1.5 text-xs">Bidding</span></div></Reveal>
+          <Reveal delay={0.08} className="flex flex-col justify-between rounded-3xl bg-[#0D0F12] p-6 text-white md:col-span-2"><span className="text-xs font-semibold uppercase tracking-[.16em] text-white/70">Clear reporting, every step</span><p className="mt-7 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Transparent ad spend.<br/>Trust in every impression.</p><span className="mt-5 flex items-center gap-2 text-sm text-white/70"><ShieldCheck size={17} className="text-[#10B981]"/> Campaign data you can follow</span></Reveal>
+          <Reveal delay={0.16} className="rounded-3xl border border-neutral-200/80 bg-white p-6 md:col-span-2 md:row-span-2"><div className="relative z-10"><span className="text-xs font-semibold text-[#059669]">Reach estimator</span><h3 className="mt-7 text-2xl font-bold tracking-tight">Plan reach against budget.</h3><p className="mt-2 text-sm text-[#52525B]">Adjust the monthly budget to estimate audience reach.</p><div className="mt-7 flex items-baseline gap-2"><span className="text-4xl font-extrabold tracking-tight">{(budget*12600/100).toLocaleString('en-US')}</span><span className="text-sm text-[#52525B]">estimated people reached</span></div><input aria-label="Monthly budget" type="range" min="10" max="100" value={budget} onChange={(e)=>setBudget(Number(e.target.value))} className="mt-5 h-2 w-full cursor-pointer accent-[#059669]"/><div className="mt-2 flex justify-between text-xs text-[#52525B]"><span>$1,000 / month</span><span>${(budget*100).toLocaleString()} / month</span><span>$10,000</span></div><div className="mt-8 space-y-3"><div className="flex justify-between text-xs font-semibold"><span>Audience fit</span><span>86%</span></div><div className="h-2 rounded-full bg-[#F7F7F8]"><div className="h-full w-[86%] rounded-full bg-[#10B981]"/></div><div className="flex justify-between text-xs font-semibold"><span>Potential reach</span><span>{Math.min(100,budget+32)}%</span></div><div className="h-2 rounded-full bg-[#F7F7F8]"><div className="h-full rounded-full bg-[#059669] transition-all" style={{width:`${Math.min(100,budget+32)}%`}}/></div></div></div></Reveal>
+          <Reveal delay={0.24} className="rounded-3xl border border-neutral-200/80 bg-[#F7F7F8] p-6"><span className="text-xs font-semibold text-[#52525B]">02 / Publishers</span><Layers3 size={22} className="mt-6 text-[#52525B]"/><h3 className="mt-4 text-xl font-bold">Publisher monetization</h3><p className="mt-2 text-sm leading-6 text-[#52525B]">Manage inventory, placements and payout details.</p></Reveal>
+          <Reveal delay={0.32} className="rounded-3xl border border-neutral-200/80 bg-[#F7F7F8] p-6"><span className="text-xs font-semibold text-[#52525B]">03 / Optimization</span><BarChart3 size={22} className="mt-6 text-[#52525B]"/><h3 className="mt-4 text-xl font-bold">Campaign optimization</h3><p className="mt-2 text-sm leading-6 text-[#52525B]">Review delivery and adjust campaigns with clear data.</p></Reveal>
+        </div>
+      </section>
+
+      <section className="bg-white py-20 sm:py-28"><div className="mx-auto max-w-7xl px-5 sm:px-8"><Reveal className="mx-auto max-w-3xl text-center"><p className="text-xs font-bold uppercase tracking-[.2em] text-[#059669]">Built for outcomes</p><h2 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">Better results, for <em className="not-italic">both sides.</em></h2><p className="mx-auto mt-5 max-w-xl text-[#52525B]">A connected ad network gives advertisers and publishers clearer performance data.</p></Reveal><div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">{[['98%','Viewability rate','bg-white text-[#0A0A0A] border border-neutral-200/80'],['3.8x','Avg. advertiser ROAS','bg-[#10B981] text-white'],['1.2B+','Monthly ad impressions','bg-[#F7F7F8] text-[#0A0A0A] border border-neutral-200/80'],['24/7','Real-time fraud protection','bg-white text-[#0A0A0A] border border-neutral-200/80']].map(([value,label,style],i)=><Reveal key={value} delay={i*.08} className={`rounded-3xl p-6 ${style}`}><p className="text-4xl font-extrabold tracking-tight sm:text-5xl">{value}</p><p className="mt-3 text-sm font-medium text-[#52525B]">{label}</p></Reveal>)}</div><div className="mt-14 border-t border-neutral-200/80 pt-8"><p className="text-center text-[10px] font-bold uppercase tracking-[.24em] text-[#52525B]">Teams building on RivinityADS</p><div className="mt-7 flex flex-wrap items-center justify-center gap-x-12 gap-y-5 text-lg font-extrabold tracking-tight text-[#52525B] sm:gap-x-16"><span>northstar</span><span>orbit</span><span>VANTAGE</span><span>flux</span><span>monocle</span></div></div></div></section>
+
+      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 sm:py-28"><Reveal className="mb-10 max-w-2xl"><p className="text-xs font-bold uppercase tracking-[.2em] text-[#10B981]">A clear view, at every step</p><h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">One platform.<br/>Every moving part.</h2><p className="mt-4 text-[#52525B]">The tools to plan, launch and understand your advertising, all connected.</p></Reveal><div className="grid gap-7 lg:grid-cols-[.85fr_1.15fr] lg:items-stretch"><div className="divide-y divide-[#E4E4E7]">{services.map((s,i)=><div key={s.title} className="border-t border-[#E4E4E7] first:border-t-0"><button type="button" aria-expanded={active===i} onClick={()=>setActive(i)} className="flex w-full items-center gap-4 py-5 text-left"><span className={`font-mono text-sm ${active===i?'text-[#10B981]':'text-[#52525B]'}`}>0{i+1}</span><span className="flex-1 text-lg font-bold tracking-tight">{s.title}</span><ChevronDown size={18} className={`text-[#52525B] transition-transform ${active===i?'rotate-180':''}`}/></button>{active===i&&<motion.div initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}} className="overflow-hidden pb-5 pl-10"><p className="max-w-md text-sm leading-6 text-[#52525B]">{s.detail}</p><div className="mt-3 flex flex-wrap gap-2">{s.tags.map(t=><span key={t} className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-[#52525B]">{t}</span>)}</div></motion.div>}</div>)}</div>
+        <motion.div key={active} initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:.3}} className="overflow-hidden rounded-3xl border border-neutral-200/80 bg-white p-5 sm:p-7"><div className="flex items-center justify-between"><div><p className="text-xs font-medium text-[#52525B]">RivinityADS / Workspace</p><h3 className="mt-1 text-lg font-bold">{service.title}</h3></div><span className="rounded-full bg-[#F7F7F8] px-3 py-1.5 text-[11px] font-semibold text-[#059669]">Live preview</span></div><div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-[#F7F7F8] p-4"><p className="text-xs text-[#52525B]">Reach this month</p><p className="mt-2 text-2xl font-extrabold tracking-tight">{service.a}</p><p className="mt-1 text-[11px] text-[#10B981]">↗ 12.8% this month</p></div><div className="rounded-2xl bg-[#F7F7F8] p-4"><p className="text-xs text-[#52525B]">Performance</p><p className="mt-2 text-2xl font-extrabold tracking-tight">{service.b}</p><p className="mt-1 text-[11px] text-[#10B981]">↗ Trending up</p></div></div><div className="mt-4 rounded-2xl border border-neutral-200/80 p-4"><div className="mb-2 flex items-center justify-between"><p className="text-xs font-semibold">Performance overview</p><span className="text-[10px] text-[#52525B]">Last 7 days</span></div><Chart light/><div className="flex justify-between text-[10px] text-[#52525B]"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div></div><Link href={service.href} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#10B981] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#059669]">Open your workspace <ArrowUpRight size={16}/></Link></motion.div>
+      </div></section>
+
+      <section id="how-it-works" className="bg-[#0D0F12] py-20 text-white sm:py-28"><div className="mx-auto max-w-7xl px-5 sm:px-8"><Reveal className="mx-auto max-w-2xl text-center"><p className="text-xs font-bold uppercase tracking-[.2em] text-[#10B981]">Up and running, quickly</p><h2 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-6xl">From idea to impact.</h2><p className="mt-4 text-white/70">Four steps take you from campaign brief to measurable results.</p></Reveal><div className="relative mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><div className="absolute left-[12%] right-[12%] top-6 hidden h-px bg-[#10B981] lg:block"/>{steps.map(([number,title,desc,Icon],i)=><Reveal key={number} delay={i*.08} className="relative rounded-3xl border border-white/15 bg-white/[.04] p-6 transition-colors hover:bg-white/[.08]"><div className="flex items-center justify-between"><span className="grid h-11 w-11 place-items-center rounded-full border border-[#10B981] bg-[#0D0F12] text-sm font-bold text-[#10B981]">{number}</span><Icon size={20} className="text-white/70"/></div><h3 className="mt-7 text-xl font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-white/70">{desc}</p></Reveal>)}</div><div className="mt-10 text-center"><Link href="/signup" className="group inline-flex items-center gap-3 rounded-full bg-[#10B981] py-2 pl-6 pr-2 text-sm font-bold text-white transition hover:bg-[#059669]">Launch your first campaign<span className="grid h-9 w-9 place-items-center rounded-full bg-[#0D0F12] text-white"><ArrowUpRight size={17}/></span></Link></div></div></section>
+    </main>
+
+    <footer className="bg-white"><div className="mx-auto max-w-7xl px-5 py-10 sm:px-8"><div className="flex flex-col justify-between gap-8 border-b border-[#E4E4E7] pb-8 sm:flex-row sm:items-center"><div><Brand/><p className="mt-3 max-w-sm text-sm leading-6 text-[#52525B]">Smarter advertising for the people building what’s next.</p></div><nav className="flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-[#52525B]" aria-label="Footer"><Link href="/advertisers">Advertisers</Link><Link href="/publishers">Publishers</Link><Link href="/ad-formats">Ad Formats</Link><Link href="/login">Log in</Link><Link href="/signup">Get started</Link></nav></div><div className="flex flex-col gap-2 pt-5 text-xs text-[#52525B] sm:flex-row sm:items-center sm:justify-between"><span>© 2026 RivinityADS. All rights reserved.</span><span>Built for better outcomes.</span></div></div></footer>
+  </div>
 }

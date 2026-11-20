@@ -1,89 +1,47 @@
 import Link from 'next/link'
-import { ArrowRight, Eye, Megaphone, MousePointer2 } from 'lucide-react'
+import { ArrowRight, Megaphone, Play, Sparkles } from 'lucide-react'
 
 export function Hero() {
   return (
-    <section className="mx-auto grid min-h-[72vh] max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14 lg:py-20">
-      <div className="max-w-xl">
-        <div className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-          <Megaphone className="h-4 w-4 text-foreground" aria-hidden="true" />
+    <section className="landing-hero">
+      <div className="landing-hero-copy">
+        <div className="landing-hero-badge">
+          <Megaphone className="h-4 w-4" aria-hidden="true" />
           RivinityADS advertising platform
         </div>
-        <h1 className="max-w-xl text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-          Reach the right audience. Make every ad budget count.
+        <h1 className="landing-hero-title">
+          Run ads in minutes.<br />
+          <span className="landing-hero-title-accent">Earn from your website.</span>
         </h1>
-        <p className="mt-5 max-w-lg text-base leading-7 text-muted-foreground">
-          Plan and manage campaigns across digital channels with clear targeting, transparent spend, and performance you can track.
+        <p className="landing-hero-description">
+          RivinityADS is an ad network. Advertisers launch campaigns, and publishers earn from the ads on their sites.
         </p>
-        <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
-          <Link
-            href="/signup"
-            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            Get started <ArrowRight className="h-4 w-4" aria-hidden="true" />
+
+        <div className="landing-hero-actions">
+          <Link href="/signup" className="landing-hero-primary">
+            Start advertising
+            <span className="landing-hero-arrow"><ArrowRight className="h-4 w-4" aria-hidden="true" /></span>
           </Link>
-          <span className="text-sm text-muted-foreground">Start with a campaign you control</span>
+          <Link href="/signup" className="landing-hero-secondary">
+            <Play className="h-4 w-4" aria-hidden="true" />
+            Start earning
+          </Link>
         </div>
-        <p className="mt-4 text-xs text-muted-foreground">A product demo with sample data. No ads are delivered.</p>
+
+        <Link href="/campaigns/new/ai" className="landing-demo-link">
+          <Sparkles className="h-4 w-4 shrink-0 text-[#7C48D2]" aria-hidden="true" />
+          <span className="landing-demo-text">Promote my clothing store in Delhi, ₹500 a day</span>
+          <span className="landing-demo-try">Try it <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" /></span>
+        </Link>
+        <p className="landing-hero-note">The assistant is a demo · All numbers on this page are sample data</p>
       </div>
 
-      <div aria-label="Sample advertising campaign dashboard" className="relative mx-auto w-full max-w-xl">
-        <div className="absolute -inset-4 -z-10 opacity-[0.06]" style={{ backgroundImage: 'linear-gradient(to right, #ACBCFF 1px, transparent 1px), linear-gradient(to bottom, #ACBCFF 1px, transparent 1px)', backgroundSize: '24px 24px' }} aria-hidden="true" />
-        <div className="overflow-hidden rounded-lg border border-border bg-white">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4 sm:px-6">
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                <Megaphone className="h-4 w-4" aria-hidden="true" />
-              </span>
-              <div>
-                <p className="text-xs text-muted-foreground">Campaign overview</p>
-                <h2 className="mt-0.5 text-sm font-semibold text-foreground">Spring collection</h2>
-              </div>
-            </div>
-            <span className="rounded-md border border-border px-2 py-1 text-xs text-muted-foreground">Sample data</span>
-          </div>
-
-          <div className="p-5 sm:p-6">
-            <div className="grid grid-cols-2 gap-4 border-b border-border pb-4 sm:grid-cols-4">
-              {[
-                { label: 'Impressions', value: '48,260', Icon: Eye },
-                { label: 'Clicks', value: '1,284', Icon: MousePointer2 },
-                { label: 'CTR', value: '2.66%', Icon: MousePointer2 },
-                { label: 'Spend', value: 'INR 3,240', Icon: Megaphone },
-              ].map(({ label, value, Icon }) => (
-                <div key={label}>
-                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><Icon className="h-3.5 w-3.5" aria-hidden="true" />{label}</div>
-                  <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{value}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">Performance</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">Daily impressions · last 7 days</p>
-                </div>
-                <span className="text-xs text-muted-foreground">Sample data</span>
-              </div>
-              <svg viewBox="0 0 520 112" role="img" aria-label="Sample daily impressions chart for the last seven days" className="mt-3 h-28 w-full">
-                <path d="M0 91H520M0 57H520M0 23H520" fill="none" stroke="#D9D9E2" strokeWidth="1" />
-                <path d="M4 83L89 71L174 76L259 48L344 56L429 29L516 17" fill="none" stroke="#ACBCFF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
-                {[['4','83'],['89','71'],['174','76'],['259','48'],['344','56'],['429','29'],['516','17']].map(([cx, cy], index) => <circle key={index} cx={cx} cy={cy} r="3" fill="#ACBCFF" />)}
-              </svg>
-              <div className="flex justify-between text-[11px] text-muted-foreground"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
-            </div>
-
-            <div className="mt-5 overflow-x-auto rounded-lg border border-border">
-              <table className="w-full min-w-[400px] text-left text-xs">
-                <thead className="bg-secondary text-muted-foreground"><tr><th className="px-3 py-2 font-medium">Campaign</th><th className="px-3 py-2 font-medium">Status</th><th className="px-3 py-2 font-medium">Spend</th><th className="px-3 py-2 font-medium">Clicks</th></tr></thead>
-                <tbody className="divide-y divide-border text-foreground">
-                  <tr><td className="px-3 py-2.5 font-medium text-foreground">Spring collection</td><td className="px-3 py-2.5">Active</td><td className="px-3 py-2.5">INR 3,240</td><td className="px-3 py-2.5">1,284</td></tr>
-                  <tr><td className="px-3 py-2.5 font-medium text-foreground">Weekend offers</td><td className="px-3 py-2.5">Paused</td><td className="px-3 py-2.5">INR 1,860</td><td className="px-3 py-2.5">742</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div className="landing-hero-visual" role="img" aria-label="Neutral photo area for a campaign image">
+        <div className="landing-photo-slot" aria-hidden="true" />
+        <div className="landing-floating-card" aria-label="Sample campaign card">
+          <p className="landing-floating-card-label">Campaign overview</p>
+          <p className="landing-floating-card-title">Spring collection</p>
+          <span className="landing-floating-card-status"><span className="h-2 w-2 rounded-full bg-[#7C48D2]" /> Sample data</span>
         </div>
       </div>
     </section>

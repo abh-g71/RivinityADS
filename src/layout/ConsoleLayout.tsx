@@ -40,7 +40,7 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
               onMenuClick={() => setMenuOpen(true)}
               onLogout={() => router.push('/login')}
             />
-            <main className="min-h-[calc(100vh-5.5rem)] p-4 sm:p-6 lg:p-5">
+            <main className="console-scrollbar min-h-[calc(100vh-5.5rem)] p-4 sm:p-6 lg:p-5">
               <ConsoleRoleProvider role={role}>
                 <PageTransition pageKey={pathname}>{children}</PageTransition>
               </ConsoleRoleProvider>
